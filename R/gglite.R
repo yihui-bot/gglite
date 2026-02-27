@@ -10,7 +10,8 @@
 #' Get the CDN URL for the G2 Library
 #'
 #' Returns the URL for loading the G2 JavaScript library. Customizable via the
-#' `gglite.g2_cdn` global option, e.g.,
+#' `gglite.g2_cdn` global option. The default `@5` resolves to the latest v5.x
+#' release. To pin a specific version, use e.g.,
 #' `options(gglite.g2_cdn = 'https://unpkg.com/@antv/g2@@5.2.1/dist/g2.min.js')`.
 #'
 #' @return A character string with the CDN URL.

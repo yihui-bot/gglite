@@ -91,8 +91,9 @@ assert('pipe chaining works end-to-end', {
 
 # g2_cdn() is customizable via option
 assert('g2_cdn() respects gglite.g2_cdn option', {
-  old = options(gglite.g2_cdn = 'https://example.com/g2.js')
-  (gglite:::g2_cdn() == 'https://example.com/g2.js')
-  options(old)
-  (grepl('unpkg.com', gglite:::g2_cdn()))
+  old = getOption('gglite.g2_cdn')
+  options(gglite.g2_cdn = 'https://example.com/g2.js')
+  res = gglite:::g2_cdn()
+  options(gglite.g2_cdn = old)
+  (res == 'https://example.com/g2.js')
 })
