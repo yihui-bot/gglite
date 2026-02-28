@@ -17,7 +17,7 @@ Add a Word Cloud Mark
 }
 \examples{
 df = data.frame(
-  text = c('�码', 'Data', 'Science', 'R', 'G2', 'Chart'),
+  text = c('Hello', 'Data', 'Science', 'R', 'G2', 'Chart'),
   value = c(30, 25, 20, 15, 10, 5)
 )
 g2(df) |>
