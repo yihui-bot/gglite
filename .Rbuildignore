@@ -1,0 +1,8 @@
+^\.Rproj\.user$
+^.*\.Rproj$
+^LICENSE\.md$
+^README\.md$
+^\.github$
+^node_modules$
+^package\.json$
+^package-lock\.json$
