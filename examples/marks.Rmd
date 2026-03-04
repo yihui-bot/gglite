@@ -1,0 +1,359 @@
+---
+title: Marks (Geometry Layers)
+---
+
+```{r}
+library(gglite)
+```
+
+## Point Mark (Scatter Plot)
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+```
+
+### Color by a variable
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl') |> mark_point()
+```
+
+### Size by a variable
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp', size = 'wt') |> mark_point()
+```
+
+### Shape by a variable
+
+```{r}
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', shape = 'Species') |>
+  mark_point()
+```
+
+### Custom style
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_point(style = list(fill = 'steelblue', stroke = 'white', lineWidth = 1))
+```
+
+## Line Mark
+
+```{r}
+df = data.frame(x = 1:10, y = cumsum(rnorm(10)))
+g2(df, x = 'x', y = 'y') |> mark_line()
+```
+
+### Multi-series line
+
+```{r}
+df = data.frame(
+  x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
+  group = rep(c('A', 'B'), each = 5)
+)
+g2(df, x = 'x', y = 'y', color = 'group') |> mark_line()
+```
+
+## Interval Mark (Bar Chart)
+
+```{r}
+df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
+g2(df, x = 'x', y = 'y') |> mark_interval()
+```
+
+### Stacked bar
+
+```{r}
+df = data.frame(
+  x = rep(c('A', 'B', 'C'), each = 2), y = c(3, 2, 5, 4, 1, 6),
+  color = rep(c('a', 'b'), 3)
+)
+g2(df, x = 'x', y = 'y', color = 'color') |>
+  mark_interval() |> transform_of('stackY')
+```
+
+### Grouped (dodged) bar
+
+```{r}
+g2(df, x = 'x', y = 'y', color = 'color') |>
+  mark_interval() |> transform_of('dodgeX')
+```
+
+## Area Mark
+
+```{r}
+df = data.frame(x = 1:10, y = c(3, 1, 4, 1, 5, 9, 2, 6, 5, 3))
+g2(df, x = 'x', y = 'y') |> mark_area()
+```
+
+### Stacked area
+
+```{r}
+df = data.frame(
+  x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
+  group = rep(c('A', 'B'), each = 5)
+)
+g2(df, x = 'x', y = 'y', color = 'group') |>
+  mark_area() |> transform_of('stackY')
+```
+
+## Rect Mark
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_rect(
+    transform = list(list(type = 'bin', thresholdsX = 10, thresholdsY = 10))
+  )
+```
+
+## Cell Mark
+
+```{r}
+df = expand.grid(x = LETTERS[1:5], y = LETTERS[1:5])
+df$value = seq_len(nrow(df))
+g2(df, x = 'x', y = 'y', color = 'value') |> mark_cell()
+```
+
+## Text Mark
+
+```{r}
+df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
+g2(df, x = 'x', y = 'y') |>
+  mark_interval() |>
+  mark_text(encode = list(text = 'y'))
+```
+
+## Path Mark
+
+```{r}
+n = 100
+t = seq(0, 4 * pi, length.out = n)
+df = data.frame(x = t * cos(t), y = t * sin(t))
+g2(df, x = 'x', y = 'y') |> mark_path()
+```
+
+## Polygon Mark
+
+```{r}
+df = data.frame(x = c(0, 1, 0.5), y = c(0, 0, 1))
+g2(df, x = 'x', y = 'y') |> mark_polygon()
+```
+
+## Link Mark
+
+```{r}
+df = data.frame(x = c(0, 1), y = c(0, 0), x1 = c(1, 2), y1 = c(1, 1))
+g2(df) |>
+  mark_link(encode = list(x = c('x', 'x1'), y = c('y', 'y1')))
+```
+
+## Reference Lines
+
+### Vertical reference line (lineX)
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_point() |>
+  mark_line_x(
+    data = list(list(x = 20)),
+    style = list(stroke = 'red', lineDash = c(4, 4))
+  )
+```
+
+### Horizontal reference line (lineY)
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_point() |>
+  mark_line_y(
+    data = list(list(y = 150)),
+    style = list(stroke = 'red', lineDash = c(4, 4))
+  )
+```
+
+## Range Marks
+
+### Full range
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_point() |>
+  mark_range(
+    data = list(list(x = c(15, 25), y = c(100, 200))),
+    style = list(fill = 'steelblue', fillOpacity = 0.15)
+  )
+```
+
+### Horizontal range (rangeX)
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_point() |>
+  mark_range_x(
+    data = list(list(x = c(15, 25))),
+    style = list(fill = 'steelblue', fillOpacity = 0.15)
+  )
+```
+
+### Vertical range (rangeY)
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp') |>
+  mark_point() |>
+  mark_range_y(
+    data = list(list(y = c(100, 200))),
+    style = list(fill = 'orange', fillOpacity = 0.15)
+  )
+```
+
+## Connector Mark
+
+```{r}
+df = data.frame(x = c('A', 'B'), y = c(3, 7))
+g2(df, x = 'x', y = 'y') |>
+  mark_interval() |>
+  mark_connector(
+    data = list(list(x = 'A', x1 = 'B')),
+    encode = list(x = 'x', x1 = 'x1'),
+    labels = list(list(text = '+133%'))
+  )
+```
+
+## Box Plot Mark
+
+```{r}
+g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
+```
+
+## Density Mark
+
+```{r}
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
+  mark_density(
+    transform = list(list(type = 'kde')),
+    style = list(fill = 'steelblue', fillOpacity = 0.5)
+  )
+```
+
+## Heatmap Mark
+
+```{r}
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Petal.Length') |>
+  mark_heatmap()
+```
+
+## Treemap Mark
+
+```{r}
+tree_data = list(
+  name = 'root', children = list(
+    list(name = 'A', value = 10),
+    list(name = 'B', value = 20),
+    list(name = 'C', value = 15),
+    list(name = 'D', value = 8)
+  )
+)
+g2() |>
+  mark_treemap(
+    data = list(value = tree_data),
+    encode = list(value = 'value')
+  )
+```
+
+## Pack (Circle Packing) Mark
+
+```{r}
+tree_data = list(
+  name = 'root', children = list(
+    list(name = 'A', value = 10),
+    list(name = 'B', value = 20),
+    list(name = 'C', value = 15)
+  )
+)
+g2() |>
+  mark_pack(
+    data = list(value = tree_data),
+    encode = list(value = 'value', color = 'name')
+  )
+```
+
+## Sankey Mark
+
+```{r}
+df = data.frame(
+  source = c('A', 'A', 'B', 'B'), target = c('B', 'C', 'C', 'D'),
+  value = c(5, 3, 2, 4)
+)
+g2(df) |>
+  mark_sankey(
+    encode = list(source = 'source', target = 'target', value = 'value'),
+    layout = list(nodeAlign = 'center')
+  )
+```
+
+## Chord Mark
+
+```{r}
+df = data.frame(
+  source = c('A', 'A', 'B'), target = c('B', 'C', 'C'),
+  value = c(5, 3, 2)
+)
+g2(df) |>
+  mark_chord(
+    encode = list(source = 'source', target = 'target', value = 'value')
+  )
+```
+
+## Word Cloud Mark
+
+```{r}
+df = data.frame(
+  text = c('Hello', 'Data', 'Science', 'R', 'G2', 'Chart',
+           'Visualization', 'Package', 'gglite'),
+  value = c(30, 25, 20, 15, 12, 10, 8, 6, 5)
+)
+g2(df) |>
+  mark_word_cloud(encode = list(text = 'text', value = 'value', color = 'text'))
+```
+
+## Liquid Mark
+
+```{r}
+g2() |>
+  mark_liquid(
+    data = list(list(value = 0.6)),
+    encode = list(y = 'value'),
+    style = list(textContent = '60%')
+  )
+```
+
+## Partition (Sunburst) Mark
+
+```{r}
+tree_data = list(
+  name = 'root', children = list(
+    list(name = 'A', value = 10, children = list(
+      list(name = 'A1', value = 5), list(name = 'A2', value = 5)
+    )),
+    list(name = 'B', value = 20),
+    list(name = 'C', value = 15)
+  )
+)
+g2() |>
+  mark_partition(
+    data = list(value = tree_data),
+    encode = list(value = 'value'),
+    coordinate = list(type = 'theta', innerRadius = 0.3)
+  )
+```
+
+## Image Mark
+
+```{r}
+df = data.frame(x = 1:2, y = 1:2)
+g2(df, x = 'x', y = 'y') |>
+  mark_image(style = list(
+    src = 'https://gw.alipayobjects.com/mdn/rms_dfc253/afts/img/A*SZGfRaFPkIoAAAAAAAAAAAAAARQnAQ'
+  ))
+```

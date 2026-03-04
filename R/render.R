@@ -88,6 +88,13 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
   )
 }
 
+cdn_scripts = function() {
+  paste0(
+    '<script defer src="', g2_cdn(), '"></script>\n',
+    '<script defer src="', g2_col_cdn, '"></script>'
+  )
+}
+
 #' Preview a Chart in the Viewer or Browser
 #'
 #' @param chart A `g2` object.
@@ -99,8 +106,7 @@ preview = function(chart, ...) {
   html = paste0(
     '<!DOCTYPE html>\n<html>\n<head>\n',
     '<meta charset="utf-8">\n',
-    '<script defer src="', g2_cdn(), '"></script>\n',
-    '<script defer src="', g2_col_cdn(), '"></script>\n',
+    cdn_scripts(), '\n',
     '</head>\n<body>\n',
     body, '\n',
     '</body>\n</html>'
@@ -125,13 +131,14 @@ print.g2 = function(x, ...) {
 #' @param ... Ignored.
 #' @return A `knit_asis` character vector.
 knit_print.g2 = function(x, ...) {
-  cdn = paste0(
-    '<script defer src="', g2_cdn(), '"></script>\n',
-    '<script defer src="', g2_col_cdn(), '"></script>'
-  )
-  body = chart_html(x, ...)
-  out = paste0(cdn, '\n', body)
+  out = paste0(cdn_scripts(), '\n', chart_html(x, ...))
   structure(out, class = c('knit_asis', 'html'))
+}
+
+#' @export
+record_print.g2 = function(x, ...) {
+  out = paste0(cdn_scripts(), '\n', chart_html(x, ...))
+  xfun:::new_record(out, 'asis')
 }
 
 .onLoad = function(libname, pkgname) {
@@ -139,6 +146,8 @@ knit_print.g2 = function(x, ...) {
     registerS3method('knit_print', 'g2', knit_print.g2,
                      envir = asNamespace('knitr'))
   }
+  registerS3method('record_print', 'g2', record_print.g2,
+                   envir = asNamespace('xfun'))
 }
 
 #' Render a Chart in Shiny
