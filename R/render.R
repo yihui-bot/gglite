@@ -135,10 +135,11 @@ knit_print.g2 = function(x, ...) {
   structure(out, class = c('knit_asis', 'html'))
 }
 
+#' @importFrom xfun record_print
 #' @export
 record_print.g2 = function(x, ...) {
   out = paste0(cdn_scripts(), '\n', chart_html(x, ...))
-  xfun:::new_record(out, 'asis')
+  xfun::new_record(out, 'asis')
 }
 
 .onLoad = function(libname, pkgname) {
@@ -146,8 +147,6 @@ record_print.g2 = function(x, ...) {
     registerS3method('knit_print', 'g2', knit_print.g2,
                      envir = asNamespace('knitr'))
   }
-  registerS3method('record_print', 'g2', record_print.g2,
-                   envir = asNamespace('xfun'))
 }
 
 #' Render a Chart in Shiny
