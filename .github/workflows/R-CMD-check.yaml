@@ -37,12 +37,6 @@ jobs:
           http-user-agent: ${{ matrix.config.http-user-agent }}
           use-public-rspm: true
 
-      - uses: r-lib/actions/setup-r-dependencies@HEAD
-        with:
-          extra-packages: any::rcmdcheck
-          needs: check
+      - uses: yihui/actions/setup-r-dependencies@HEAD
 
-      - uses: r-lib/actions/check-r-package@HEAD
-        with:
-          upload-snapshots: true
-          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
+      - uses: yihui/actions/check-r-package@HEAD
