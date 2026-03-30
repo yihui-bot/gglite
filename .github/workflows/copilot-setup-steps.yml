@@ -26,3 +26,4 @@ jobs:
           use-public-rspm: true
 
       - uses: yihui/actions/setup-r-dependencies@HEAD
+        extra-packages: roxygen2
