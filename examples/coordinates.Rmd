@@ -86,6 +86,45 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
   coordinate('radial', innerRadius = 0.3)
 ```
 
+## Parallel
+
+Maps multiple numeric variables to parallel axes. Use a `position`
+encoding (a character vector of column names) instead of `x`/`y`.
+
+```{r}
+g2(iris, position = c('Sepal.Length', 'Sepal.Width',
+    'Petal.Length', 'Petal.Width'), color = 'Species') |>
+  mark_line() |>
+  coordinate('parallel')
+```
+
+## Radar
+
+Displays data on radial axes emanating from a center point. Like
+parallel coordinates, radar charts require a `position` encoding.
+
+```{r}
+df_radar = data.frame(
+  item = c('A', 'B', 'C', 'D', 'E'),
+  score = c(3, 7, 2, 5, 4)
+)
+g2(df_radar, position = c('item', 'score')) |>
+  mark_line(style = list(closed = TRUE)) |>
+  mark_point() |>
+  coordinate('radar')
+```
+
+## Helix
+
+Arranges data along a helix spiral.
+
+```{r}
+df_helix = data.frame(x = 1:50, y = sin(1:50 / 5))
+g2(df_helix, x = 'x', y = 'y') |>
+  mark_line() |>
+  coordinate('helix')
+```
+
 ## Transpose (coord_flip)
 
 Swap x and y axes, equivalent to ggplot2's `coord_flip()`. This is a

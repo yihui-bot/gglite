@@ -24,6 +24,10 @@ types: \code{'cartesian'} (default), \code{'polar'}, \code{'theta'}, \code{'radi
 transforms such as \code{'transpose'} (equivalent to ggplot2's \code{coord_flip()}) or
 \code{'fisheye'}.
 }
+\details{
+The \code{'radar'} and \code{'parallel'} coordinates require a \code{position} encoding
+(a character vector of column names) instead of separate \code{x}/\code{y} encodings.
+}
 \examples{
 # Polar coordinate (rose chart)
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
@@ -42,9 +46,17 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
   mark_interval() |>
   coordinate('radial')
 
-# Parallel coordinate
+# Parallel coordinate (uses position encoding)
 g2(iris, position = c('Sepal.Length', 'Sepal.Width',
     'Petal.Length', 'Petal.Width'), color = 'Species') |>
-  mark_line(transform = list(list(type = 'normalizeY'))) |>
+  mark_line() |>
   coordinate('parallel')
+
+# Radar coordinate (uses position encoding)
+df2 = data.frame(item = c('A', 'B', 'C', 'D', 'E'),
+  score = c(3, 7, 2, 5, 4))
+g2(df2, position = c('item', 'score')) |>
+  mark_line(style = list(closed = TRUE)) |>
+  mark_point() |>
+  coordinate('radar')
 }

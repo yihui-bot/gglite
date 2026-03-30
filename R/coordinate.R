@@ -6,6 +6,9 @@
 #' transforms such as `'transpose'` (equivalent to ggplot2's `coord_flip()`) or
 #' `'fisheye'`.
 #'
+#' The `'radar'` and `'parallel'` coordinates require a `position` encoding
+#' (a character vector of column names) instead of separate `x`/`y` encodings.
+#'
 #' @param chart A `g2` object.
 #' @param type Coordinate type string.
 #' @param ... Additional options such as `innerRadius`, `outerRadius`,
@@ -30,11 +33,19 @@
 #'   mark_interval() |>
 #'   coordinate('radial')
 #'
-#' # Parallel coordinate
+#' # Parallel coordinate (uses position encoding)
 #' g2(iris, position = c('Sepal.Length', 'Sepal.Width',
 #'     'Petal.Length', 'Petal.Width'), color = 'Species') |>
-#'   mark_line(transform = list(list(type = 'normalizeY'))) |>
+#'   mark_line() |>
 #'   coordinate('parallel')
+#'
+#' # Radar coordinate (uses position encoding)
+#' df2 = data.frame(item = c('A', 'B', 'C', 'D', 'E'),
+#'   score = c(3, 7, 2, 5, 4))
+#' g2(df2, position = c('item', 'score')) |>
+#'   mark_line(style = list(closed = TRUE)) |>
+#'   mark_point() |>
+#'   coordinate('radar')
 coordinate = function(chart, type, ...) {
   chart$coords = c(list(type = type), list(...))
   chart
