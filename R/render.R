@@ -149,17 +149,12 @@ preview = function(chart, ...) {
     '</body>', '</html>'
   )
   xfun::html_view(html)
+  invisible(chart)
 }
 
 #' @export
 print.g2 = function(x, ...) {
-  if (requireNamespace('knitr', quietly = TRUE) &&
-      isTRUE(getOption('knitr.in.progress'))) {
-    print(knit_print.g2(x, ...))
-  } else {
-    preview(x, ...)
-  }
-  invisible(x)
+  preview(x, ...)
 }
 
 #' Custom Printing in Knitr
