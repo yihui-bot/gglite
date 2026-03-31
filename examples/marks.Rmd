@@ -41,7 +41,7 @@ g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species',
 
 ```{r}
 g2(mtcars, x = 'mpg', y = 'hp') |>
-  mark_point(style = list(fill = 'steelblue', stroke = 'navy', lineWidth = 1))
+  mark_point(style = list(fill = 'steelblue', stroke = 'darkred', lineWidth = 1))
 ```
 
 ## Line Mark
@@ -185,6 +185,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
   mark_point() |>
   mark_line_x(
     data = list(list(x = mean(mtcars$mpg))),
+    encode = list(x = 'x'),
     style = list(stroke = 'red', lineDash = c(4, 4))
   )
 ```
@@ -196,6 +197,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
   mark_point() |>
   mark_line_y(
     data = list(list(y = mean(mtcars$hp))),
+    encode = list(y = 'y'),
     style = list(stroke = 'red', lineDash = c(4, 4))
   )
 ```
@@ -357,7 +359,7 @@ tree_data = list(
 g2() |>
   mark_treemap(
     data = list(type = 'inline', value = tree_data),
-    encode = list(value = 'value', color = 'name')
+    encode = list(value = 'value')
   )
 ```
 
@@ -367,7 +369,8 @@ g2() |>
 g2() |>
   mark_pack(
     data = list(type = 'inline', value = tree_data),
-    encode = list(value = 'value')
+    encode = list(value = 'value'),
+    labels = list(list(text = 'value'))
   )
 ```
 
@@ -412,7 +415,7 @@ g2() |>
         list(source = 'Backend', target = 'Frontend')
       )
     )),
-    labels = list(list(text = 'id', fontSize = 10))
+    nodeLabels = list(list(text = 'id', fontSize = 10))
   )
 ```
 
@@ -438,7 +441,7 @@ g2() |>
         ))
       )
     )),
-    labels = list(list(text = 'name', fontSize = 10))
+    nodeLabels = list(list(text = 'name', fontSize = 10))
   )
 ```
 

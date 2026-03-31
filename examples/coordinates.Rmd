@@ -96,7 +96,8 @@ g2(iris, position = c('Sepal.Length', 'Sepal.Width',
     'Petal.Length', 'Petal.Width'), color = 'Species') |>
   mark_line() |>
   coordinate('parallel') |>
-  legend_of('color', position = 'bottom')
+  legend_of('color', position = 'bottom') |>
+  padding_of(top = 30)
 ```
 
 ## Radar
@@ -119,7 +120,6 @@ g2(df_radar, x = 'item', y = 'score', color = 'team') |>
   coordinate('polar') |>
   scale_of('x', padding = 0.5, align = 0) |>
   scale_of('y', domainMin = 0, domainMax = 100) |>
-  axis_of('x', grid = TRUE) |>
   axis_of('y', grid = TRUE, title = FALSE)
 ```
 
@@ -146,9 +146,13 @@ g2(df, x = 'x', y = 'y') |>
   coord_transpose()
 ```
 
-### Transpose with radial
+### Transpose with polar
 
-```{r}
+Note: coordinate transposing typically works for Cartesian only. With
+polar or radial coordinates, swapping angle and radius often produces
+confusing results.
+
+```{r, eval=FALSE}
 g2(df, x = 'x', y = 'y', color = 'x') |>
   mark_interval() |>
   coordinate('radial') |>

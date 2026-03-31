@@ -52,7 +52,8 @@ g2(iris, position = c('Sepal.Length', 'Sepal.Width',
     'Petal.Length', 'Petal.Width'), color = 'Species') |>
   mark_line() |>
   coordinate('parallel') |>
-  legend_of('color', position = 'bottom')
+  legend_of('color', position = 'bottom') |>
+  padding_of(top = 30)
 
 # Radar coordinate (polar with long-format data)
 df2 = data.frame(

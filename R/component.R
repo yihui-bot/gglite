@@ -1,3 +1,25 @@
+#' Set Chart Padding
+#'
+#' Set padding around the chart plotting area. This is useful when axis
+#' labels or titles are cut off.
+#'
+#' @param chart A `g2` object.
+#' @param top,right,bottom,left Padding in pixels for each side.
+#' @return The modified `g2` object.
+#' @export
+#' @examples
+#' g2(mtcars, x = 'mpg', y = 'hp') |>
+#'   mark_point() |>
+#'   padding_of(top = 30)
+padding_of = function(chart, top = NULL, right = NULL, bottom = NULL,
+                      left = NULL) {
+  if (!is.null(top)) chart$padding$paddingTop = top
+  if (!is.null(right)) chart$padding$paddingRight = right
+  if (!is.null(bottom)) chart$padding$paddingBottom = bottom
+  if (!is.null(left)) chart$padding$paddingLeft = left
+  chart
+}
+
 #' Configure an Axis
 #'
 #' Customise the axis for a positional channel (`'x'` or `'y'`). Set to
