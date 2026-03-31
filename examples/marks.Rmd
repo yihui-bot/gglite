@@ -27,13 +27,13 @@ g2(mtcars, x = 'mpg', y = 'hp', size = 'wt') |> mark_point()
 
 ### Shape by a variable
 
-Note: G2 may use different shapes in the legend and plot area for some
-shape palettes.
+Note: shape mapping may produce mismatched shapes between the legend
+and plot area in some G2 versions.
 
-```{r}
+```{r, eval=FALSE}
 g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species',
     shape = 'Species') |>
-  mark_point(style = list(shape = 'point'))
+  mark_point()
 ```
 
 ### Custom style
