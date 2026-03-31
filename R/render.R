@@ -136,10 +136,10 @@ cdn_scripts = function() {
 #'
 #' @param chart A `g2` object.
 #' @param ... Additional arguments passed to [chart_html()].
-#' @return The path to the temporary HTML file (invisibly).
+#' @return The chart object (invisibly).
 #' @export
-preview = function(chart, ...) {
-  body = chart_html(chart, ...)
+print.g2 = function(x, ...) {
+  body = chart_html(x, ...)
   html = c(
     '<!DOCTYPE html>', '<html>', '<head>',
     '<meta charset="utf-8">',
@@ -149,12 +149,7 @@ preview = function(chart, ...) {
     '</body>', '</html>'
   )
   xfun::html_view(html)
-  invisible(chart)
-}
-
-#' @export
-print.g2 = function(x, ...) {
-  preview(x, ...)
+  invisible(x)
 }
 
 #' Custom Printing in Knitr
