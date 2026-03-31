@@ -14,5 +14,30 @@ render_shiny(chart, session, output_id)
 \item{output_id}{The container element ID on the client side.}
 }
 \description{
-Render a Chart in Shiny
+Render a \code{g2} chart in a Shiny app by sending the chart spec to a container
+element via a custom message. The UI must load the G2 CDN scripts and the
+gglite message handler; the container \verb{<div>} must have a non-zero height.
+Call \code{render_shiny()} inside \code{observe()} or \code{observeEvent()} to re-render
+the chart reactively.
+}
+\examples{
+\dontrun{
+library(shiny)
+ui = fluidPage(
+  tags$head(
+    tags$script(src = 'https://unpkg.com/@antv/g2@5/dist/g2.min.js'),
+    tags$script(
+      src = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
+    ),
+    includeScript(system.file('www/g2-handler.js', package = 'gglite'))
+  ),
+  div(id = 'chart1', style = 'height:480px')
+)
+server = function(input, output, session) {
+  render_shiny(
+    g2(mtcars, x = 'mpg', y = 'hp') |> mark_point(), session, 'chart1'
+  )
+}
+shinyApp(ui, server)
+}
 }
