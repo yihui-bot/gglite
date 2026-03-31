@@ -40,8 +40,8 @@ g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species',
 ### Custom style
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
-  mark_point(style = list(fill = 'steelblue', stroke = 'darkred', lineWidth = 1))
+g2(mtcars, x = 'mpg', y = 'hp', size = 10) |>
+  mark_point(style = list(fill = 'lightyellow', stroke = 'steelblue', lineWidth = 2))
 ```
 
 ## Line Mark
