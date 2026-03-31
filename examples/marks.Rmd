@@ -15,7 +15,8 @@ g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
 ### Color by a variable
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl') |> mark_point()
+g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl') |>
+  mark_point(style = list(shape = 'point'))
 ```
 
 ### Size by a variable
@@ -26,9 +27,13 @@ g2(mtcars, x = 'mpg', y = 'hp', size = 'wt') |> mark_point()
 
 ### Shape by a variable
 
+Note: G2 may use different shapes in the legend and plot area for some
+shape palettes.
+
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', shape = 'Species') |>
-  mark_point()
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species',
+    shape = 'Species') |>
+  mark_point(style = list(shape = 'point'))
 ```
 
 ### Custom style
@@ -126,16 +131,32 @@ g2(df, x = 'x', y = 'y') |>
 
 ## Path Mark
 
-```{r}
+The `path` mark connects points in data order. Note: due to G2's
+column-major data handling, the `path` mark may not render correctly
+with gglite. Use `mark_line()` as an alternative.
+
+```{r, eval=FALSE}
 n = 100
 t = seq(0, 4 * pi, length.out = n)
 df = data.frame(x = t * cos(t), y = t * sin(t))
 g2(df, x = 'x', y = 'y') |> mark_path()
 ```
 
-## Polygon Mark
+A line mark connecting the same spiral data:
 
 ```{r}
+n = 100
+t = seq(0, 4 * pi, length.out = n)
+df = data.frame(x = t * cos(t), y = t * sin(t))
+g2(df, x = 'x', y = 'y') |> mark_line()
+```
+
+## Polygon Mark
+
+The `polygon` mark draws filled polygons. Note: this mark does not
+currently work with gglite's column-major data format.
+
+```{r, eval=FALSE}
 df = data.frame(x = c(0, 1, 0.5), y = c(0, 0, 1))
 g2(df, x = 'x', y = 'y') |> mark_polygon()
 ```
@@ -143,9 +164,15 @@ g2(df, x = 'x', y = 'y') |> mark_polygon()
 ## Link Mark
 
 ```{r}
-df = data.frame(x = c(0, 1), y = c(0, 0), x1 = c(1, 2), y1 = c(1, 1))
+df = data.frame(
+  x = c('A', 'B', 'C'), y = c(1, 3, 2),
+  x1 = c('B', 'C', 'D'), y1 = c(3, 1, 4)
+)
 g2(df) |>
-  mark_link(encode = list(x = c('x', 'x1'), y = c('y', 'y1')))
+  mark_link(
+    encode = list(x = c('x', 'x1'), y = c('y', 'y1')),
+    style = list(stroke = 'steelblue', lineWidth = 2)
+  )
 ```
 
 ## Reference Lines
@@ -153,10 +180,11 @@ g2(df) |>
 ### Vertical reference line (lineX)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
-  mark_point() |>
+df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
+g2(df, x = 'x', y = 'y') |>
+  mark_interval() |>
   mark_line_x(
-    data = list(list(x = 20)),
+    data = list(list(x = 'B')),
     style = list(stroke = 'red', lineDash = c(4, 4))
   )
 ```
@@ -164,10 +192,10 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ### Horizontal reference line (lineY)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
-  mark_point() |>
+g2(df, x = 'x', y = 'y') |>
+  mark_interval() |>
   mark_line_y(
-    data = list(list(y = 150)),
+    data = list(list(y = 4)),
     style = list(stroke = 'red', lineDash = c(4, 4))
   )
 ```
@@ -234,8 +262,7 @@ g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
 ```{r}
 g2() |>
   mark_liquid(
-    data = list(list(value = 0.6)),
-    encode = list(y = 'value'),
+    data = list(value = 0.6),
     style = list(textContent = '60%')
   )
 ```
@@ -249,12 +276,13 @@ g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Petal.Length') |>
 
 ## Image Mark
 
-```{r}
+The `image` mark places images at data coordinates. The example below
+uses an external image URL which may not render in all environments.
+
+```{r, eval=FALSE}
 df = data.frame(x = 1:2, y = 1:2)
 g2(df, x = 'x', y = 'y') |>
-  mark_image(style = list(
-    src = 'https://gw.alipayobjects.com/mdn/rms_dfc253/afts/img/A*SZGfRaFPkIoAAAAAAAAAAAAAARQnAQ'
-  ))
+  mark_image(style = list(src = 'https://example.com/image.png'))
 ```
 
 ## Word Cloud Mark
@@ -274,13 +302,15 @@ g2(df) |>
 
 ```{r}
 df = data.frame(
-  source = c('A', 'A', 'B', 'C'), target = c('B', 'C', 'C', 'D'),
-  value = c(5, 3, 2, 4)
+  source = c('Coal', 'Coal', 'Oil', 'Oil', 'Gas', 'Gas', 'Solar'),
+  target = c('Electricity', 'Heat', 'Electricity', 'Transport',
+    'Electricity', 'Heat', 'Electricity'),
+  value = c(25, 10, 15, 20, 20, 5, 10)
 )
 g2(df) |>
   mark_sankey(
     encode = list(source = 'source', target = 'target', value = 'value'),
-    layout = list(nodeAlign = 'center')
+    layout = list(nodeAlign = 'center', nodePadding = 0.03)
   )
 ```
 
@@ -288,8 +318,9 @@ g2(df) |>
 
 ```{r}
 df = data.frame(
-  source = c('A', 'A', 'B'), target = c('B', 'C', 'C'),
-  value = c(5, 3, 2)
+  source = c('A', 'A', 'A', 'B', 'B', 'C'),
+  target = c('B', 'C', 'D', 'C', 'D', 'D'),
+  value = c(5, 3, 2, 4, 1, 3)
 )
 g2(df) |>
   mark_chord(
@@ -302,30 +333,27 @@ g2(df) |>
 ```{r}
 tree_data = list(
   name = 'root', children = list(
-    list(name = 'A', value = 10), list(name = 'B', value = 20),
-    list(name = 'C', value = 15), list(name = 'D', value = 8)
+    list(name = 'A', value = 30), list(name = 'B', value = 25),
+    list(name = 'C', value = 20), list(name = 'D', value = 15),
+    list(name = 'E', value = 10)
   )
 )
 g2() |>
   mark_treemap(
     data = list(value = tree_data),
-    encode = list(value = 'value', color = 'name')
+    encode = list(value = 'value', color = 'name'),
+    labels = list(list(text = 'name', position = 'inside'))
   )
 ```
 
 ## Pack (Circle Packing) Mark
 
 ```{r}
-tree_data = list(
-  name = 'root', children = list(
-    list(name = 'A', value = 10), list(name = 'B', value = 20),
-    list(name = 'C', value = 15), list(name = 'D', value = 8)
-  )
-)
 g2() |>
   mark_pack(
     data = list(value = tree_data),
-    encode = list(value = 'value', color = 'name')
+    encode = list(value = 'value', color = 'name'),
+    labels = list(list(text = 'name', position = 'inside'))
   )
 ```
 
@@ -342,32 +370,44 @@ g2() |>
 
 ```{r}
 g2() |>
-  mark_force_graph(data = list(value = list(
-    nodes = list(
-      list(id = 'a'), list(id = 'b'),
-      list(id = 'c'), list(id = 'd')
-    ),
-    links = list(
-      list(source = 'a', target = 'b'),
-      list(source = 'b', target = 'c'),
-      list(source = 'c', target = 'd'),
-      list(source = 'a', target = 'd')
-    )
-  )))
+  mark_force_graph(
+    data = list(value = list(
+      nodes = list(
+        list(id = 'Node1'), list(id = 'Node2'),
+        list(id = 'Node3'), list(id = 'Node4'),
+        list(id = 'Node5'), list(id = 'Node6')
+      ),
+      links = list(
+        list(source = 'Node1', target = 'Node2'),
+        list(source = 'Node1', target = 'Node3'),
+        list(source = 'Node2', target = 'Node4'),
+        list(source = 'Node3', target = 'Node4'),
+        list(source = 'Node4', target = 'Node5'),
+        list(source = 'Node5', target = 'Node6'),
+        list(source = 'Node3', target = 'Node6')
+      )
+    )),
+    labels = list(list(text = 'id'))
+  )
 ```
 
 ## Tree Mark
 
 ```{r}
 g2() |>
-  mark_tree(data = list(value = list(
-    name = 'root', children = list(
-      list(name = 'A', children = list(
-        list(name = 'A1'), list(name = 'A2')
-      )),
-      list(name = 'B', children = list(list(name = 'B1')))
-    )
-  )))
+  mark_tree(
+    data = list(value = list(
+      name = 'Root', children = list(
+        list(name = 'Branch A', children = list(
+          list(name = 'Leaf A1'), list(name = 'Leaf A2')
+        )),
+        list(name = 'Branch B', children = list(
+          list(name = 'Leaf B1'), list(name = 'Leaf B2')
+        ))
+      )
+    )),
+    labels = list(list(text = 'name'))
+  )
 ```
 
 ## Density Mark

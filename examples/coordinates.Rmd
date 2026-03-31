@@ -92,28 +92,32 @@ Maps multiple numeric variables to parallel axes. Use a `position`
 encoding (a character vector of column names) instead of `x`/`y`.
 
 ```{r}
-g2(iris, position = c('Sepal.Length', 'Sepal.Width',
-    'Petal.Length', 'Petal.Width'), color = 'Species') |>
+p = g2(mtcars, position = c('mpg', 'disp', 'hp', 'wt'),
+    color = 'cyl') |>
   mark_line() |>
   coordinate('parallel') |>
   legend_of('color', position = 'bottom')
+p$options$paddingTop = 30
+p
 ```
 
 ## Radar
 
 Displays data on radial axes emanating from a center point. Like
-parallel coordinates, radar charts require a `position` encoding.
+parallel coordinates, radar charts require a `position` encoding
+with multiple numeric columns.
 
 ```{r}
 df_radar = data.frame(
-  item = rep(c('Design', 'Dev', 'Marketing', 'Sales', 'Support'), 2),
-  score = c(70, 90, 60, 80, 75, 85, 65, 80, 70, 90),
-  team = rep(c('A', 'B'), each = 5)
+  Design = c(70, 85), Dev = c(90, 65), Marketing = c(60, 80),
+  Sales = c(80, 70), Support = c(75, 90), team = c('A', 'B')
 )
-g2(df_radar, position = c('item', 'score'), color = 'team') |>
+g2(df_radar, position = c('Design', 'Dev', 'Marketing',
+    'Sales', 'Support'), color = 'team') |>
   mark_line(style = list(closed = TRUE)) |>
   mark_point() |>
-  coordinate('radar')
+  coordinate('radar') |>
+  legend_of('color', position = 'bottom')
 ```
 
 ## Helix

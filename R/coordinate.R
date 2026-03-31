@@ -40,13 +40,13 @@
 #'   coordinate('parallel') |>
 #'   legend_of('color', position = 'bottom')
 #'
-#' # Radar coordinate (uses position encoding)
+#' # Radar coordinate (uses position encoding with numeric columns)
 #' df2 = data.frame(
-#'   item = rep(c('Design', 'Dev', 'Marketing', 'Sales', 'Support'), 2),
-#'   score = c(70, 90, 60, 80, 75, 85, 65, 80, 70, 90),
-#'   team = rep(c('A', 'B'), each = 5)
+#'   Design = c(70, 85), Dev = c(90, 65), Marketing = c(60, 80),
+#'   Sales = c(80, 70), Support = c(75, 90), team = c('A', 'B')
 #' )
-#' g2(df2, position = c('item', 'score'), color = 'team') |>
+#' g2(df2, position = c('Design', 'Dev', 'Marketing',
+#'     'Sales', 'Support'), color = 'team') |>
 #'   mark_line(style = list(closed = TRUE)) |>
 #'   mark_point() |>
 #'   coordinate('radar')

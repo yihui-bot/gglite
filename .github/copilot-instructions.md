@@ -86,6 +86,12 @@ no errors in the browser console. The workflow is:
    - The G2 chart renders without JavaScript errors.
    - No warnings or errors appear in the browser console.
 
+### Submitting Plot Changes in PRs
+
+When fixing or changing plot examples, **always submit screenshots** of the
+plots as PR comments so reviewers can see the visual results. Take screenshots
+in headless browsers (Playwright or Puppeteer) and attach them to the PR.
+
 ## Project Structure
 
 ### Key Files and Directories
