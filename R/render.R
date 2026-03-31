@@ -173,10 +173,8 @@ record_print.g2 = function(x, ...) {
   xfun::new_record(c(cdn_scripts(), chart_html(x, ...)), 'asis')
 }
 
-.onLoad = function(libname, pkgname) {
-  if (requireNamespace('knitr', quietly = TRUE)) {
-    registerS3method('knit_print', 'g2', knit_print.g2,
-                     envir = asNamespace('knitr'))
-  }
+.onLoad = function(...) {
+  setHook(packageEvent('knitr', 'onLoad'), function(...) {
+    registerS3method('knit_print', 'g2', knit_print.g2, envir = asNamespace('knitr'))
+  })
 }
-
