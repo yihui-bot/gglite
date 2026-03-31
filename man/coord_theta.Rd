@@ -13,12 +13,12 @@ coord_theta(chart, ...)
 \code{startAngle}, \code{endAngle}, or \code{transform}.}
 }
 \description{
-Shortcut for \code{coordinate(chart, 'theta', ...)}. Used for pie and donut
+Shortcut for \code{coord_(chart, 'theta', ...)}. Used for pie and donut
 charts.
 }
 \examples{
 g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)),
   x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |> transform_of('stackY') |>
+  mark_interval() |> transform_('stackY') |>
   coord_theta(innerRadius = 0.5)
 }

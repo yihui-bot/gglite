@@ -7,7 +7,7 @@
 g2_defaults(...)
 }
 \arguments{
-\item{...}{Named theme options in the same structure accepted by \code{\link[=theme_of]{theme_of()}},
+\item{...}{Named theme options in the same structure accepted by \code{\link[=theme_]{theme_()}},
 e.g., \code{axis = list(labelFontSize = 16)}. Pass a single list (e.g., the
 return value of a previous \code{g2_defaults()} call) to restore saved settings.
 Pass \code{NULL} to clear all R-level defaults.}
@@ -17,9 +17,8 @@ The previous defaults, invisibly (like \code{\link[=par]{par()}}).
 }
 \description{
 Similar to \code{\link[=par]{par()}}, get or set default theme options applied to all charts.
-When set, these options are merged with per-chart \code{\link[=theme_of]{theme_of()}} settings and
-passed to G2. Chart size defaults (fonts, point size, grid opacity) are
-applied automatically via a JavaScript patch loaded with every page.
+When set, these options are merged with per-chart \code{\link[=theme_]{theme_()}} settings and
+passed to G2.
 }
 \examples{
 # Increase axis label size for all subsequent charts

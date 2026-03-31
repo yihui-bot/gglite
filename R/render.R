@@ -1,15 +1,24 @@
 # ---- Configuration builder ----
 
+# Base theme defaults: ~25% larger fonts and more visible grid lines than G2's
+# built-in 12px / 0.1 opacity defaults.
+.theme_defaults = list(
+  axis = list(labelFontSize = 15, titleFontSize = 15, gridStrokeOpacity = 0.25),
+  label = list(fontSize = 15),
+  innerLabel = list(fontSize = 15),
+  legendCategory = list(itemLabelFontSize = 15, itemValueFontSize = 15)
+)
+
 #' Build G2 Spec
 #'
 #' Convert a `g2` chart object into a nested list matching G2's
 #' `chart.options()` spec format. Data frames are annotated for column-major
-#' JSON serialisation via [annotate_df()]. Constructor options (width, height,
-#' container) are handled separately by [chart_html()].
+#' JSON serialisation. Constructor options (width, height, container) are
+#' handled separately by [chart_html()].
 #'
 #' @param chart A `g2` object.
 #' @return A list suitable for JSON serialization.
-#' @keywords internal
+#' @noRd
 build_config = function(chart) {
   config = list()
 
@@ -39,16 +48,14 @@ build_config = function(chart) {
   if (!is.null(chart$tooltip_config)) config$tooltip = chart$tooltip_config
   if (!is.null(chart$sliders)) config$slider = chart$sliders
   if (!is.null(chart$scrollbars)) config$scrollbar = chart$scrollbars
-  if (length(chart$padding)) config = modifyList(config, chart$padding)
+  if (length(chart$layout)) config = modifyList(config, chart$layout)
 
-  # Theme: merge R-level g2_defaults() with per-chart theme_of() overrides.
-  # JS (g2-defaults.js) handles size/grid/shape defaults without R carrying them.
+  # Theme: start with base defaults, merge g2_defaults(), then per-chart theme
+  theme = .theme_defaults
   user_defaults = getOption('gglite.theme')
-  theme = if (length(user_defaults)) {
-    if (!is.null(chart$theme)) modifyList(user_defaults, chart$theme)
-    else user_defaults
-  } else chart$theme
-  if (!is.null(theme)) config$theme = theme
+  if (length(user_defaults)) theme = modifyList(theme, user_defaults)
+  if (!is.null(chart$theme)) theme = modifyList(theme, chart$theme)
+  config$theme = theme
 
   # Faceting wraps the spec as a facet view
   if (!is.null(chart$facet)) {
@@ -137,12 +144,7 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
 }
 
 cdn_scripts = function() {
-  js = readLines(system.file('js', 'g2-defaults.js', package = 'gglite'),
-                 warn = FALSE)
-  c(
-    sprintf('<script src="%s" defer></script>', c(g2_cdn(), g2_col_cdn)),
-    paste0('<script type="module">\n', paste(js, collapse = '\n'), '\n</script>')
-  )
+  sprintf('<script src="%s" defer></script>', c(g2_cdn(), g2_col_cdn))
 }
 
 #' Preview a Chart in the Viewer or Browser

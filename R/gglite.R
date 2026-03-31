@@ -13,7 +13,7 @@
 #' release.
 #'
 #' @return A character string.
-#' @keywords internal
+#' @noRd
 g2_cdn = function() {
   getOption('gglite.g2_cdn', 'https://unpkg.com/@antv/g2@5/dist/g2.min.js')
 }
@@ -23,11 +23,10 @@ g2_col_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
 #' Set or Get Global Chart Defaults
 #'
 #' Similar to [par()], get or set default theme options applied to all charts.
-#' When set, these options are merged with per-chart [theme_of()] settings and
-#' passed to G2. Chart size defaults (fonts, point size, grid opacity) are
-#' applied automatically via a JavaScript patch loaded with every page.
+#' When set, these options are merged with per-chart [theme_()] settings and
+#' passed to G2.
 #'
-#' @param ... Named theme options in the same structure accepted by [theme_of()],
+#' @param ... Named theme options in the same structure accepted by [theme_()],
 #'   e.g., `axis = list(labelFontSize = 16)`. Pass a single list (e.g., the
 #'   return value of a previous `g2_defaults()` call) to restore saved settings.
 #'   Pass `NULL` to clear all R-level defaults.
@@ -48,6 +47,32 @@ g2_defaults = function(...) {
   invisible(prev)
 }
 
+#' Process a layout argument (padding, margin, or inset)
+#'
+#' Convert a scalar or length-4 vector into named G2 layout options.
+#' A scalar sets the property directly (e.g., `padding = 20`). A length-4
+#' vector sets `Top`, `Right`, `Bottom`, `Left` variants; `NA` values are
+#' omitted.
+#'
+#' @param name Base name: `'padding'`, `'margin'`, or `'inset'`.
+#' @param value `NULL`, a scalar, or a length-4 numeric vector.
+#' @return A named list of layout options.
+#' @noRd
+process_layout = function(name, value) {
+  if (is.null(value)) return(list())
+  if (length(value) == 1) {
+    res = list(value)
+    names(res) = name
+    return(res)
+  }
+  if (length(value) != 4) stop(
+    "'", name, "' must be a scalar or a length-4 vector (top, right, bottom, left)"
+  )
+  sides = c('Top', 'Right', 'Bottom', 'Left')
+  res = stats::setNames(as.list(value), paste0(name, sides))
+  dropNulls(lapply(res, function(v) if (is.na(v)) NULL else v))
+}
+
 #' Create a G2 Chart Object
 #'
 #' Construct a base chart object, optionally with data and aesthetic mappings.
@@ -56,12 +81,19 @@ g2_defaults = function(...) {
 #' @param data A data frame (or `NULL`).
 #' @param ... Aesthetic mappings as `name = 'column'` pairs (character strings).
 #' @param width,height Width and height of the chart in pixels.
+#' @param padding,margin,inset Layout spacing in pixels. Each can be a scalar
+#'   (applied to all sides) or a length-4 vector `c(top, right, bottom, left)`;
+#'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
+#'   unset.
 #' @return A `g2` object (S3 class).
 #' @importFrom utils modifyList
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
-g2 = function(data = NULL, ..., width = 640, height = 480) {
+g2 = function(
+  data = NULL, ..., width = 640, height = 480,
+  padding = NULL, margin = NULL, inset = NULL
+) {
   chart = structure(list(
     data = data,
     options = list(width = width, height = height, autoFit = TRUE),
@@ -75,7 +107,11 @@ g2 = function(data = NULL, ..., width = 640, height = 480) {
     legends = list(),
     chart_title = NULL,
     facet = NULL,
-    padding = list()
+    layout = c(
+      process_layout('padding', padding),
+      process_layout('margin', margin),
+      process_layout('inset', inset)
+    )
   ), class = 'g2')
   dots = list(...)
   if (length(dots)) chart$aesthetics = modifyList(chart$aesthetics, dots)
@@ -107,7 +143,7 @@ encode = function(chart, ...) {
 #'
 #' @param x A nested list.
 #' @return The annotated list.
-#' @keywords internal
+#' @noRd
 annotate_df = function(x) {
   if (is.data.frame(x) || !is.list(x)) return(x)
   nms = names(x)
@@ -125,5 +161,5 @@ annotate_df = function(x) {
 }
 
 #' Remove NULL elements from a list
-#' @keywords internal
+#' @noRd
 dropNulls = function(x) x[!vapply(x, is.null, logical(1))]
