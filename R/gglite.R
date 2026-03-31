@@ -42,7 +42,7 @@ process_layout = function(name, value) {
     "'", name, "' must be a scalar or a length-4 vector (top, right, bottom, left)"
   )
   sides = c('Top', 'Right', 'Bottom', 'Left')
-  res = setNames(as.list(value), paste0(name, sides))
+  res = stats::setNames(as.list(value), paste0(name, sides))
   dropNulls(lapply(res, function(v) if (is.na(v)) NULL else v))
 }
 

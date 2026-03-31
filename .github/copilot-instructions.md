@@ -121,17 +121,17 @@ you cannot solve it.
 - `gglite.R` - Core: package doc, CDN URLs, `g2()`, `encode()`,
   `annotate_df()`
 - `mark.R` - All 35 mark (geometry) functions
-- `scale.R` - `scale_of()`
+- `scale.R` - `scale_()` and helpers (`scale_x()`, `scale_y()`, etc.)
 - `coordinate.R` - `coordinate()`, `coord_transpose()`
 - `interact.R` - `interact()`
-- `theme.R` - `theme_of()`
-- `transform.R` - `transform_of()`
+- `theme.R` - `theme_()` and theme shortcuts
+- `transform.R` - `transform_()`
 - `facet.R` - `facet_rect()`, `facet_circle()`
 - `animate.R` - `animate()`
-- `component.R` - `axis_of()`, `legend_of()`, `title_of()`, `tooltip_of()`,
-  `labels_of()`, `style_mark()`, `slider_of()`, `scrollbar_of()`
-- `render.R` - `build_config()`, `chart_html()`, `preview()`, `print.g2()`,
-  `knit_print.g2()`, `record_print.g2()`, `render_shiny()`
+- `component.R` - `axis_()`, `legend_()`, `title_()`, `tooltip_()`,
+  `labels_()`, `style_mark()`, `slider_()`, `scrollbar_()` and helpers
+- `render.R` - `build_config()`, `chart_html()`, `print.g2()`,
+  `knit_print.g2()`, `record_print.g2()`
 
 **Tests** (`tests/`):
 - `test-all.R` - Entry point
@@ -226,7 +226,7 @@ component functions:
 ```r
 g2(mtcars, x = 'mpg', y = 'hp') |>
   mark_point() |>
-  scale_of('x', type = 'log') |>
-  theme_of('dark') |>
-  title_of('Motor Trend Cars')
+  scale_x(type = 'log') |>
+  theme_('dark') |>
+  title_('Motor Trend Cars')
 ```
