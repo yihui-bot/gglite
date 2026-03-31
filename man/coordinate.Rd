@@ -24,6 +24,11 @@ types: \code{'cartesian'} (default), \code{'polar'}, \code{'theta'}, \code{'radi
 transforms such as \code{'transpose'} (equivalent to ggplot2's \code{coord_flip()}) or
 \code{'fisheye'}.
 }
+\details{
+The \code{'parallel'} coordinate requires a \code{position} encoding (a character
+vector of column names) instead of separate \code{x}/\code{y} encodings. For radar
+charts, use the \code{'polar'} coordinate with long-format data (x/y/color).
+}
 \examples{
 # Polar coordinate (rose chart)
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
@@ -42,9 +47,25 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
   mark_interval() |>
   coordinate('radial')
 
-# Parallel coordinate
+# Parallel coordinate (uses position encoding)
 g2(iris, position = c('Sepal.Length', 'Sepal.Width',
     'Petal.Length', 'Petal.Width'), color = 'Species') |>
-  mark_line(transform = list(list(type = 'normalizeY'))) |>
-  coordinate('parallel')
+  mark_line() |>
+  coordinate('parallel') |>
+  legend_of('color', position = 'bottom') |>
+  padding_of(top = 30)
+
+# Radar coordinate (polar with long-format data)
+df2 = data.frame(
+  item = rep(c('Design', 'Dev', 'Marketing', 'Sales', 'Support'), 2),
+  score = c(80, 90, 65, 75, 85, 60, 70, 85, 80, 70),
+  team = rep(c('A', 'B'), each = 5)
+)
+g2(df2, x = 'item', y = 'score', color = 'team') |>
+  mark_area(style = list(fillOpacity = 0.5)) |>
+  mark_line(style = list(lineWidth = 2)) |>
+  coordinate('polar') |>
+  scale_of('x', padding = 0.5, align = 0) |>
+  scale_of('y', domainMin = 0, domainMax = 100) |>
+  axis_of('x', grid = TRUE)
 }

@@ -86,6 +86,23 @@ no errors in the browser console. The workflow is:
    - The G2 chart renders without JavaScript errors.
    - No warnings or errors appear in the browser console.
 
+### Submitting Plot Changes in PRs
+
+When fixing or changing plot examples, **always submit screenshots** of the
+plots as PR comments so reviewers can see the visual results. Take screenshots
+in headless browsers (Playwright or Puppeteer) and attach them to the PR.
+
+### G2 Reference
+
+When in doubt about G2 features, marks, or coordinate systems, always refer to:
+- **G2 source repository**: https://github.com/antvis/G2
+- **G2 documentation site**: https://g2.antv.antgroup.com
+
+If you have consulted the source repository and documentation but still cannot
+solve a problem raised in a PR, **file a GitHub issue for that problem to keep
+track of it**. The issue should clearly describe what the problem is, and why
+you cannot solve it.
+
 ## Project Structure
 
 ### Key Files and Directories

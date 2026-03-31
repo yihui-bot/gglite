@@ -46,7 +46,8 @@ g2 = function(data = NULL, ..., width = 640, height = 480) {
     axes = list(),
     legends = list(),
     chart_title = NULL,
-    facet = NULL
+    facet = NULL,
+    padding = list()
   ), class = 'g2')
   dots = list(...)
   if (length(dots)) chart$aesthetics = modifyList(chart$aesthetics, dots)
@@ -94,3 +95,7 @@ annotate_df = function(x) {
   }
   x
 }
+
+#' Remove NULL elements from a list
+#' @keywords internal
+dropNulls = function(x) x[!vapply(x, is.null, logical(1))]

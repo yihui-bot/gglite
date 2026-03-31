@@ -248,16 +248,12 @@ mark_boxplot = function(chart, ...) mark(chart, 'boxplot', ...)
 
 #' Add a Density Mark
 #'
-#' A composite mark for kernel density estimation visualization.
+#' A composite mark for kernel density estimation visualization. Note that
+#' G2 v5 does not support the `kde` transform; use [mark_heatmap()] as an
+#' alternative for 2-D density visualizations.
 #'
 #' @inheritParams mark
 #' @export
-#' @examples
-#' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
-#'   mark_density(
-#'     transform = list(list(type = 'kde')),
-#'     style = list(fill = 'steelblue', fillOpacity = 0.5)
-#'   )
 mark_density = function(chart, ...) mark(chart, 'density', ...)
 
 #' Add a Heatmap Mark
@@ -435,21 +431,9 @@ mark_shape = function(chart, ...) mark(chart, 'shape', ...)
 
 #' Add a Partition (Sunburst) Mark
 #'
+#' Note: the `partition` mark may not work correctly in G2 v5. Consider using
+#' [mark_treemap()] as an alternative for hierarchical data visualization.
+#'
 #' @inheritParams mark
 #' @export
-#' @examples
-#' tree_data = list(
-#'   name = 'root', children = list(
-#'     list(name = 'A', value = 10, children = list(
-#'       list(name = 'A1', value = 5), list(name = 'A2', value = 5)
-#'     )),
-#'     list(name = 'B', value = 20)
-#'   )
-#' )
-#' g2() |>
-#'   mark_partition(
-#'     data = list(value = tree_data),
-#'     encode = list(value = 'value'),
-#'     coordinate = list(type = 'theta', innerRadius = 0.3)
-#'   )
 mark_partition = function(chart, ...) mark(chart, 'partition', ...)

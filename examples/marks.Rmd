@@ -15,7 +15,8 @@ g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
 ### Color by a variable
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl') |> mark_point()
+g2(mtcars, x = 'mpg', y = 'hp', color = 'wt', size = 5) |>
+  mark_point(style = list(shape = 'point'))
 ```
 
 ### Size by a variable
@@ -26,16 +27,21 @@ g2(mtcars, x = 'mpg', y = 'hp', size = 'wt') |> mark_point()
 
 ### Shape by a variable
 
-```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', shape = 'Species') |>
+Note: in G2 v5, shape encoding in point marks may not always match
+between the legend and the plot. See [G2 source](https://github.com/antvis/G2)
+and [documentation](https://g2.antv.antgroup.com) for details.
+
+```{r, eval=FALSE}
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species',
+    shape = 'Species') |>
   mark_point()
 ```
 
 ### Custom style
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
-  mark_point(style = list(fill = 'steelblue', stroke = 'white', lineWidth = 1))
+g2(mtcars, x = 'mpg', y = 'hp', size = 10) |>
+  mark_point(style = list(fill = 'lightyellow', stroke = 'steelblue', lineWidth = 2))
 ```
 
 ## Line Mark
@@ -126,26 +132,48 @@ g2(df, x = 'x', y = 'y') |>
 
 ## Path Mark
 
+The `path` mark in G2 uses an SVG-like `d` channel to draw arbitrary
+shapes. It does not use x/y data coordinates like `mark_line()`. Use
+`mark_line()` to connect data points in order.
+
+```{r, eval=FALSE}
+g2(df, x = 'x', y = 'y') |> mark_path()
+```
+
+A line mark connecting data points in order:
+
 ```{r}
 n = 100
 t = seq(0, 4 * pi, length.out = n)
 df = data.frame(x = t * cos(t), y = t * sin(t))
-g2(df, x = 'x', y = 'y') |> mark_path()
+g2(df, x = 'x', y = 'y') |> mark_line()
 ```
 
 ## Polygon Mark
 
+The `polygon` mark draws filled polygons. Use list columns to store
+vertex coordinates for each polygon.
+
 ```{r}
-df = data.frame(x = c(0, 1, 0.5), y = c(0, 0, 1))
-g2(df, x = 'x', y = 'y') |> mark_polygon()
+df = data.frame(group = c('triangle', 'square'))
+df$x = list(c(0, 1, 0.5), c(2, 3, 3, 2))
+df$y = list(c(0, 0, 1), c(0, 0, 1, 1))
+g2(df, color = 'group') |>
+  mark_polygon(encode = list(x = 'x', y = 'y'))
 ```
 
 ## Link Mark
 
 ```{r}
-df = data.frame(x = c(0, 1), y = c(0, 0), x1 = c(1, 2), y1 = c(1, 1))
+df = data.frame(
+  x = c('A', 'B', 'C'), y = c(1, 3, 2),
+  x1 = c('B', 'C', 'D'), y1 = c(3, 1, 4)
+)
 g2(df) |>
-  mark_link(encode = list(x = c('x', 'x1'), y = c('y', 'y1')))
+  mark_link(
+    encode = list(x = c('x', 'x1'), y = c('y', 'y1')),
+    style = list(stroke = 'steelblue', lineWidth = 2)
+  )
 ```
 
 ## Reference Lines
@@ -156,7 +184,8 @@ g2(df) |>
 g2(mtcars, x = 'mpg', y = 'hp') |>
   mark_point() |>
   mark_line_x(
-    data = list(list(x = 20)),
+    data = list(list(x = mean(mtcars$mpg))),
+    encode = list(x = 'x'),
     style = list(stroke = 'red', lineDash = c(4, 4))
   )
 ```
@@ -167,7 +196,8 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 g2(mtcars, x = 'mpg', y = 'hp') |>
   mark_point() |>
   mark_line_y(
-    data = list(list(y = 150)),
+    data = list(list(y = mean(mtcars$hp))),
+    encode = list(y = 'y'),
     style = list(stroke = 'red', lineDash = c(4, 4))
   )
 ```
@@ -234,8 +264,219 @@ g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
 ```{r}
 g2() |>
   mark_liquid(
-    data = list(list(value = 0.6)),
-    encode = list(y = 'value'),
-    style = list(textContent = '60%')
+    data = list(value = 0.6),
+    style = list(contentText = '60%', contentFill = 'white',
+      contentFontSize = 40)
+  )
+```
+
+## Heatmap Mark
+
+```{r}
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Petal.Length') |>
+  mark_heatmap()
+```
+
+## Image Mark
+
+The `image` mark places images at data coordinates.
+
+```{r}
+df = data.frame(
+  x = c(1, 2, 3), y = c(3, 5, 2),
+  url = rep(
+    'https://cdn.jsdelivr.net/npm/@browser-logos/chrome/chrome_64x64.png', 3
+  )
+)
+g2(df, x = 'x', y = 'y') |>
+  mark_image(encode = list(src = 'url'), style = list(width = 30, height = 30))
+```
+
+## Word Cloud Mark
+
+```{r}
+df = data.frame(
+  text = c('Hello', 'Data', 'Science', 'R', 'G2', 'Chart', 'Vis', 'Stats'),
+  value = c(30, 25, 20, 18, 15, 12, 10, 8)
+)
+g2(df) |>
+  mark_word_cloud(
+    encode = list(text = 'text', value = 'value', color = 'text')
+  )
+```
+
+## Sankey Mark
+
+```{r}
+df = data.frame(
+  source = c('Coal', 'Coal', 'Oil', 'Oil', 'Gas', 'Gas', 'Solar'),
+  target = c('Electricity', 'Heat', 'Electricity', 'Transport',
+    'Electricity', 'Heat', 'Electricity'),
+  value = c(25, 10, 15, 20, 20, 5, 10)
+)
+g2(df) |>
+  mark_sankey(
+    encode = list(source = 'source', target = 'target', value = 'value'),
+    layout = list(nodeAlign = 'center', nodePadding = 0.03)
+  )
+```
+
+## Chord Mark
+
+```{r}
+df = data.frame(
+  source = c('A', 'A', 'A', 'B', 'B', 'C'),
+  target = c('B', 'C', 'D', 'C', 'D', 'D'),
+  value = c(5, 3, 2, 4, 1, 3)
+)
+g2(df) |>
+  mark_chord(
+    encode = list(source = 'source', target = 'target', value = 'value')
+  )
+```
+
+## Treemap Mark
+
+```{r}
+tree_data = list(
+  name = 'root', children = list(
+    list(name = 'Frontend', children = list(
+      list(name = 'React', value = 180),
+      list(name = 'Vue', value = 120),
+      list(name = 'Angular', value = 80)
+    )),
+    list(name = 'Backend', children = list(
+      list(name = 'Node.js', value = 150),
+      list(name = 'Python', value = 130),
+      list(name = 'Go', value = 90)
+    )),
+    list(name = 'Data', children = list(
+      list(name = 'R', value = 100),
+      list(name = 'Julia', value = 40)
+    ))
+  )
+)
+g2() |>
+  mark_treemap(
+    data = list(type = 'inline', value = tree_data),
+    encode = list(value = 'value')
+  )
+```
+
+## Pack (Circle Packing) Mark
+
+```{r}
+g2() |>
+  mark_pack(
+    data = list(type = 'inline', value = tree_data),
+    encode = list(value = 'value'),
+    labels = list(list(text = 'value'))
+  )
+```
+
+## Gauge Mark
+
+```{r}
+g2() |>
+  mark_gauge(
+    data = list(
+      type = 'inline',
+      value = list(target = 120, total = 400, name = 'score')
+    )
+  )
+```
+
+## Force Graph Mark
+
+```{r}
+g2() |>
+  mark_force_graph(
+    data = list(type = 'inline', value = list(
+      nodes = list(
+        list(id = 'CEO'), list(id = 'CTO'), list(id = 'CFO'),
+        list(id = 'VP Eng'), list(id = 'VP Sales'),
+        list(id = 'Dev Lead'), list(id = 'Backend'),
+        list(id = 'Frontend'), list(id = 'Accounting'),
+        list(id = 'Payroll'), list(id = 'Sales Rep 1'),
+        list(id = 'Sales Rep 2')
+      ),
+      links = list(
+        list(source = 'CEO', target = 'CTO'),
+        list(source = 'CEO', target = 'CFO'),
+        list(source = 'CEO', target = 'VP Sales'),
+        list(source = 'CTO', target = 'VP Eng'),
+        list(source = 'VP Eng', target = 'Dev Lead'),
+        list(source = 'Dev Lead', target = 'Backend'),
+        list(source = 'Dev Lead', target = 'Frontend'),
+        list(source = 'CFO', target = 'Accounting'),
+        list(source = 'CFO', target = 'Payroll'),
+        list(source = 'VP Sales', target = 'Sales Rep 1'),
+        list(source = 'VP Sales', target = 'Sales Rep 2'),
+        list(source = 'Backend', target = 'Frontend')
+      )
+    )),
+    nodeLabels = list(list(text = 'id', fontSize = 10))
+  )
+```
+
+## Tree Mark
+
+```{r}
+g2() |>
+  mark_tree(
+    data = list(type = 'inline', value = list(
+      name = 'Company', children = list(
+        list(name = 'Engineering', children = list(
+          list(name = 'Frontend'),
+          list(name = 'Backend'),
+          list(name = 'DevOps')
+        )),
+        list(name = 'Marketing', children = list(
+          list(name = 'SEO'),
+          list(name = 'Content')
+        )),
+        list(name = 'Finance', children = list(
+          list(name = 'Accounting'),
+          list(name = 'Payroll')
+        ))
+      )
+    )),
+    nodeLabels = list(list(text = 'name', fontSize = 10))
+  )
+```
+
+## Density Mark
+
+The `density` mark requires a KDE transform that is not available in
+G2 v5. Use `mark_heatmap()` as an alternative for 2-D density
+visualizations.
+
+```{r, eval=FALSE}
+g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
+  mark_density(
+    transform = list(list(type = 'kde')),
+    style = list(fill = 'steelblue', fillOpacity = 0.5)
+  )
+```
+
+## Partition (Sunburst) Mark
+
+The `partition` mark does not work correctly in G2 v5. Use
+`mark_treemap()` or `mark_pack()` as alternatives for hierarchical data.
+
+```{r, eval=FALSE}
+tree_data = list(
+  name = 'root', children = list(
+    list(name = 'A', value = 10, children = list(
+      list(name = 'A1', value = 5), list(name = 'A2', value = 5)
+    )),
+    list(name = 'B', value = 20)
+  )
+)
+g2() |>
+  mark_partition(
+    data = list(value = tree_data),
+    encode = list(value = 'value'),
+    coordinate = list(type = 'theta', innerRadius = 0.3)
   )
 ```

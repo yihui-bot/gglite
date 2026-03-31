@@ -13,12 +13,7 @@ mark_density(chart, ...)
 \code{transform}, \code{style}, \code{animate}, \code{labels}, \code{tooltip}, \code{axis}, \code{legend}.}
 }
 \description{
-A composite mark for kernel density estimation visualization.
-}
-\examples{
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
-  mark_density(
-    transform = list(list(type = 'kde')),
-    style = list(fill = 'steelblue', fillOpacity = 0.5)
-  )
+A composite mark for kernel density estimation visualization. Note that
+G2 v5 does not support the \code{kde} transform; use \code{\link[=mark_heatmap]{mark_heatmap()}} as an
+alternative for 2-D density visualizations.
 }

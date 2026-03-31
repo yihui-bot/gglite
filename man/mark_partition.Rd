@@ -13,21 +13,6 @@ mark_partition(chart, ...)
 \code{transform}, \code{style}, \code{animate}, \code{labels}, \code{tooltip}, \code{axis}, \code{legend}.}
 }
 \description{
-Add a Partition (Sunburst) Mark
-}
-\examples{
-tree_data = list(
-  name = 'root', children = list(
-    list(name = 'A', value = 10, children = list(
-      list(name = 'A1', value = 5), list(name = 'A2', value = 5)
-    )),
-    list(name = 'B', value = 20)
-  )
-)
-g2() |>
-  mark_partition(
-    data = list(value = tree_data),
-    encode = list(value = 'value'),
-    coordinate = list(type = 'theta', innerRadius = 0.3)
-  )
+Note: the \code{partition} mark may not work correctly in G2 v5. Consider using
+\code{\link[=mark_treemap]{mark_treemap()}} as an alternative for hierarchical data visualization.
 }
