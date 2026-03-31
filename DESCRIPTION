@@ -13,8 +13,10 @@ Depends: R (>= 4.1.0)
 Imports:
     xfun
 Suggests:
+    htmltools,
     litedown,
     knitr,
+    shiny,
     testit
 VignetteBuilder: litedown
 Encoding: UTF-8
