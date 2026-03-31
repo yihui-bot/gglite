@@ -3,61 +3,27 @@ title: Shiny
 ---
 
 gglite charts can be embedded in [Shiny](https://shiny.posit.co/) applications
-using `render_shiny()`. Unlike `htmlwidgets`-based packages, gglite uses
-Shiny's custom message passing to send chart specs to the browser, where the G2
-library renders them.
-
-## Setup
-
-Every Shiny app using gglite needs three script tags in the `<head>` of the UI:
-
-1. The G2 JavaScript library from a CDN.
-2. The gglite column-major data helper.
-3. The gglite Shiny message handler (`g2-handler.js`), bundled with the package.
-
-```r
-tags$head(
-  tags$script(src = 'https://unpkg.com/@antv/g2@5/dist/g2.min.js'),
-  tags$script(
-    src = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
-  ),
-  includeScript(system.file('www/g2-handler.js', package = 'gglite'))
-)
-```
-
-The container `<div>` must have an explicit height (G2 charts will not appear
-in a zero-height container) and an `id` that matches the `output_id` argument
-you pass to `render_shiny()`:
-
-```r
-div(id = 'my-chart', style = 'height:480px')
-```
+using `g2output()` and `renderG2()`. These follow the familiar Shiny output/
+render pattern: `g2output()` creates the placeholder in the UI and
+automatically injects the required JavaScript dependencies, while `renderG2()`
+creates the reactive chart in the server.
 
 ## Basic Example
 
-The simplest app renders a static chart when the session starts. Call
-`render_shiny()` directly in the server function:
+The simplest app renders a static scatter plot:
 
 ```r
 library(shiny)
 library(gglite)
 
 ui = fluidPage(
-  tags$head(
-    tags$script(src = 'https://unpkg.com/@antv/g2@5/dist/g2.min.js'),
-    tags$script(
-      src = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
-    ),
-    includeScript(system.file('www/g2-handler.js', package = 'gglite'))
-  ),
-  div(id = 'chart1', style = 'height:480px')
+  g2output('chart1')
 )
 
 server = function(input, output, session) {
-  render_shiny(
-    g2(mtcars, x = 'mpg', y = 'hp') |> mark_point(),
-    session, 'chart1'
-  )
+  output$chart1 = renderG2({
+    g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+  })
 }
 
 shinyApp(ui, server)
@@ -65,77 +31,55 @@ shinyApp(ui, server)
 
 ## Reactive Example
 
-Wrap `render_shiny()` in `observeEvent()` (or `observe()`) to re-render the
-chart whenever an input changes. Pass `ignoreNULL = FALSE` so the chart also
-renders on startup. The following app lets the user pick the y-axis variable
-from a dropdown:
+Wrap the chart in `renderG2({})` and reference reactive inputs directly. The
+chart re-renders automatically whenever an input changes. The following app
+lets the user pick the y-axis variable:
 
 ```r
 library(shiny)
 library(gglite)
 
 ui = fluidPage(
-  tags$head(
-    tags$script(src = 'https://unpkg.com/@antv/g2@5/dist/g2.min.js'),
-    tags$script(
-      src = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
-    ),
-    includeScript(system.file('www/g2-handler.js', package = 'gglite'))
-  ),
-  selectInput('yvar', 'Y variable', choices = c('hp', 'wt', 'qsec', 'drat')),
-  div(id = 'chart1', style = 'height:480px')
+  selectInput('yvar', 'Y variable',
+              choices = c('hp', 'wt', 'qsec', 'drat')),
+  g2output('chart1')
 )
 
 server = function(input, output, session) {
-  observeEvent(input$yvar, {
-    render_shiny(
-      g2(mtcars, x = 'mpg', y = input$yvar) |>
-        mark_point() |>
-        title_of(input$yvar),
-      session, 'chart1'
-    )
-  }, ignoreNULL = FALSE)
+  output$chart1 = renderG2({
+    g2(mtcars, x = 'mpg', y = input$yvar) |>
+      mark_point() |>
+      title_of(input$yvar)
+  })
 }
 
 shinyApp(ui, server)
 ```
 
-Each time the user picks a different variable, `render_shiny()` sends the
-updated spec to the browser and G2 re-renders the chart in place.
-
 ## Multiple Charts
 
-You can render several charts independently by giving each container a distinct
-`id` and calling `render_shiny()` once per chart:
+Use a distinct `outputId` for each chart and assign a separate `renderG2()`
+for each one:
 
 ```r
 library(shiny)
 library(gglite)
 
 ui = fluidPage(
-  tags$head(
-    tags$script(src = 'https://unpkg.com/@antv/g2@5/dist/g2.min.js'),
-    tags$script(
-      src = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
-    ),
-    includeScript(system.file('www/g2-handler.js', package = 'gglite'))
-  ),
   fluidRow(
-    column(6, div(id = 'scatter', style = 'height:400px')),
-    column(6, div(id = 'bars',    style = 'height:400px'))
+    column(6, g2output('scatter')),
+    column(6, g2output('bars'))
   )
 )
 
 server = function(input, output, session) {
-  render_shiny(
-    g2(mtcars, x = 'mpg', y = 'hp') |> mark_point(),
-    session, 'scatter'
-  )
-  freq = as.data.frame(table(cyl = mtcars$cyl))
-  render_shiny(
-    g2(freq, x = 'cyl', y = 'Freq') |> mark_interval(),
-    session, 'bars'
-  )
+  output$scatter = renderG2({
+    g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+  })
+  output$bars = renderG2({
+    freq = as.data.frame(table(cyl = mtcars$cyl))
+    g2(freq, x = 'cyl', y = 'Freq') |> mark_interval()
+  })
 }
 
 shinyApp(ui, server)
