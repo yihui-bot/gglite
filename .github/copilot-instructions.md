@@ -56,6 +56,9 @@ you're testing with the most recent R version that users will have.
 - Always wrap test conditions in `{}`: `assert('message', {})`
 - Use `has_error()` instead of `tryCatch()` for error testing
 - Load the package with `library(gglite)` before testing
+- Use `%==%` (from testit) instead of `==` to test for strict equality
+- Never use `:::` to access internal functions in tests; testit exposes
+  internal functions automatically, so call them directly
 
 ### Rendering Example Rmd Files
 
