@@ -20,6 +20,20 @@ The modified \code{g2} object.
 G2 built-in themes: \code{'classic'} (default), \code{'classicDark'}, \code{'light'},
 \code{'dark'}, \code{'academy'}.
 }
+\details{
+To set global theme options for all charts, use \code{options(gglite.theme = list(...))}. This is useful for changing default font sizes, grid line
+visibility, and other theme properties without modifying each chart
+individually. For example:
+
+\if{html}{\out{<div class="sourceCode r">}}\preformatted{options(gglite.theme = list(
+  title = list(titleFontSize = 20),
+  axis = list(labelFontSize = 16, gridStrokeOpacity = 0.3),
+  legendCategory = list(itemLabelFontSize = 14)
+))
+}\if{html}{\out{</div>}}
+
+Per-chart \code{theme_()} settings are merged on top of the global option.
+}
 \examples{
 # Dark theme
 g2(mtcars, x = 'mpg', y = 'hp') |>

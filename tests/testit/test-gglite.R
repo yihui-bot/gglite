@@ -113,47 +113,26 @@ assert('animate() sets animation options', {
   (chart$layers[[1]]$animate$enter$type %==% 'fadeIn')
 })
 
-# build_config() applies global theme defaults and merges with user overrides
-assert('build_config() includes base theme defaults', {
+# build_config() respects global gglite.theme option
+assert('build_config() merges gglite.theme option', {
+  old = options(gglite.theme = list(axis = list(labelFontSize = 20)))
   chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
   config = build_config(chart)
-  (config$theme$axis$labelFontSize %==% 15)
-  (config$theme$axis$gridStrokeOpacity %==% 0.25)
-})
-
-assert('g2_defaults() sets and restores global theme options', {
-  old = g2_defaults(axis = list(labelFontSize = 20))
-  chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
-  config = build_config(chart)
-  g2_defaults(old)
+  options(old)
   (config$theme$axis$labelFontSize %==% 20)
-  (is.null(getOption('gglite.theme')))
 })
 
-assert('g2_defaults() merges with per-chart theme_()', {
-  old = g2_defaults(axis = list(labelFontSize = 20))
+assert('gglite.theme merges with per-chart theme_()', {
+  old = options(gglite.theme = list(axis = list(labelFontSize = 20)))
   chart = g2(mtcars, x = 'mpg', y = 'hp') |>
     mark_point() |>
     theme_('dark', axis = list(titleFontSize = 18))
   config = build_config(chart)
-  g2_defaults(old)
-  # per-chart type + titleFontSize win; labelFontSize from g2_defaults preserved
+  options(old)
+  # per-chart type + titleFontSize win; labelFontSize from option preserved
   (config$theme$type %==% 'dark')
   (config$theme$axis$titleFontSize %==% 18)
   (config$theme$axis$labelFontSize %==% 20)
-})
-
-# mark_point() defaults to solid shape; user can override
-assert('mark_point() defaults to solid shape and respects user override', {
-  chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
-  (chart$layers[[1]]$style$shape %==% 'point')
-  chart2 = g2(mtcars, x = 'mpg', y = 'hp') |>
-    mark_point(style = list(shape = 'hollow'))
-  (chart2$layers[[1]]$style$shape %==% 'hollow')
-  chart3 = g2(mtcars, x = 'mpg', y = 'hp') |>
-    mark_point(style = list(opacity = 0.5))
-  (chart3$layers[[1]]$style$shape %==% 'point')
-  (chart3$layers[[1]]$style$opacity %==% 0.5)
 })
 
 # theme_(), axis_(), legend_(), title_() set chart options

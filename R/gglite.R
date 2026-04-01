@@ -18,34 +18,7 @@ g2_cdn = function() {
   getOption('gglite.g2_cdn', 'https://unpkg.com/@antv/g2@5/dist/g2.min.js')
 }
 
-g2_col_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-column.min.js'
-
-#' Set or Get Global Chart Defaults
-#'
-#' Similar to [par()], get or set default theme options applied to all charts.
-#' When set, these options are merged with per-chart [theme_()] settings and
-#' passed to G2.
-#'
-#' @param ... Named theme options in the same structure accepted by [theme_()],
-#'   e.g., `axis = list(labelFontSize = 16)`. Pass a single list (e.g., the
-#'   return value of a previous `g2_defaults()` call) to restore saved settings.
-#'   Pass `NULL` to clear all R-level defaults.
-#' @return The previous defaults, invisibly (like [par()]).
-#' @export
-#' @examples
-#' # Increase axis label size for all subsequent charts
-#' old = g2_defaults(axis = list(labelFontSize = 18))
-#' g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
-#' g2_defaults(old)  # restore previous defaults
-g2_defaults = function(...) {
-  prev = getOption('gglite.theme')
-  args = list(...)
-  if (!length(args)) return(invisible(prev))
-  # A single unnamed arg is a saved value to restore (or NULL to clear)
-  val = if (length(args) == 1 && is.null(names(args))) args[[1]] else args
-  options(gglite.theme = val)
-  invisible(prev)
-}
+g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils/js/g2-patches.min.js'
 
 #' Process a layout argument (padding, margin, or inset)
 #'

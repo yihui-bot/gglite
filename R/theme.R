@@ -3,6 +3,21 @@
 #' G2 built-in themes: `'classic'` (default), `'classicDark'`, `'light'`,
 #' `'dark'`, `'academy'`.
 #'
+#' To set global theme options for all charts, use `options(gglite.theme =
+#' list(...))`. This is useful for changing default font sizes, grid line
+#' visibility, and other theme properties without modifying each chart
+#' individually. For example:
+#'
+#' ```r
+#' options(gglite.theme = list(
+#'   title = list(titleFontSize = 20),
+#'   axis = list(labelFontSize = 16, gridStrokeOpacity = 0.3),
+#'   legendCategory = list(itemLabelFontSize = 14)
+#' ))
+#' ```
+#'
+#' Per-chart `theme_()` settings are merged on top of the global option.
+#'
 #' @param chart A `g2` object.
 #' @param type Theme name string, or a list of custom theme options.
 #' @param ... Additional theme options merged with the type.

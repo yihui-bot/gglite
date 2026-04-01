@@ -55,12 +55,7 @@ mark_line = function(chart, ...) mark_(chart, 'line', ...)
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl') |> mark_point()
 mark_point = function(chart, ...) {
-  opts = list(...)
-  if (is.null(opts$style)) {
-    opts$style = list(shape = 'point')
-  } else if (is.null(opts$style$shape)) {
-    opts$style = modifyList(list(shape = 'point'), opts$style)
-  }
+  opts = modifyList(list(style = list(shape = 'point')), list(...))
   do.call(mark_, c(list(chart, 'point'), opts))
 }
 
