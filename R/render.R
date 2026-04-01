@@ -33,7 +33,6 @@ build_config = function(chart) {
   if (length(chart$scales)) config$scale = chart$scales
   if (!is.null(chart$coords)) config$coordinate = chart$coords
   if (length(chart$interactions)) config$interaction = chart$interactions
-  if (!is.null(chart$theme)) config$theme = chart$theme
   if (length(chart$axes)) config$axis = chart$axes
   if (length(chart$legends)) config$legend = chart$legends
   if (!is.null(chart$chart_title)) config$title = chart$chart_title
@@ -41,6 +40,10 @@ build_config = function(chart) {
   if (!is.null(chart$sliders)) config$slider = chart$sliders
   if (!is.null(chart$scrollbars)) config$scrollbar = chart$scrollbars
   if (length(chart$layout)) config = modifyList(config, chart$layout)
+
+  # Theme: merge global option with per-chart theme
+  theme = modifyList(as.list(getOption('gglite.theme')), as.list(chart$theme))
+  if (length(theme)) config$theme = theme
 
   # Faceting wraps the spec as a facet view
   if (!is.null(chart$facet)) {
@@ -129,7 +132,7 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
 }
 
 cdn_scripts = function() {
-  sprintf('<script src="%s" defer></script>', c(g2_cdn(), g2_col_cdn))
+  sprintf('<script src="%s" defer></script>', c(g2_cdn(), g2_patches_cdn))
 }
 
 #' Preview a Chart in the Viewer or Browser

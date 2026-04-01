@@ -31,6 +31,19 @@ assert('mark_point() and mark_line() add layers', {
   (chart$layers[[2]]$type %==% 'line')
 })
 
+# mark_point() defaults to solid shape; user can override
+assert('mark_point() defaults to solid shape and respects user override', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+  (chart$layers[[1]]$style$shape %==% 'point')
+  chart2 = g2(mtcars, x = 'mpg', y = 'hp') |>
+    mark_point(style = list(shape = 'hollow'))
+  (chart2$layers[[1]]$style$shape %==% 'hollow')
+  chart3 = g2(mtcars, x = 'mpg', y = 'hp') |>
+    mark_point(style = list(opacity = 0.5))
+  (chart3$layers[[1]]$style$shape %==% 'point')
+  (chart3$layers[[1]]$style$opacity %==% 0.5)
+})
+
 # build_config() produces correct spec with column-major data
 assert('build_config() produces correct spec', {
   df = data.frame(x = c('A', 'B'), y = c(3, 7))
@@ -98,6 +111,28 @@ assert('animate() sets animation options', {
   chart = g2() |> mark_interval() |>
     animate(enter = list(type = 'fadeIn'))
   (chart$layers[[1]]$animate$enter$type %==% 'fadeIn')
+})
+
+# build_config() respects global gglite.theme option
+assert('build_config() merges gglite.theme option', {
+  old = options(gglite.theme = list(axis = list(labelFontSize = 20)))
+  chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+  config = build_config(chart)
+  options(old)
+  (config$theme$axis$labelFontSize %==% 20)
+})
+
+assert('gglite.theme merges with per-chart theme_()', {
+  old = options(gglite.theme = list(axis = list(labelFontSize = 20)))
+  chart = g2(mtcars, x = 'mpg', y = 'hp') |>
+    mark_point() |>
+    theme_('dark', axis = list(titleFontSize = 18))
+  config = build_config(chart)
+  options(old)
+  # per-chart type + titleFontSize win; labelFontSize from option preserved
+  (config$theme$type %==% 'dark')
+  (config$theme$axis$titleFontSize %==% 18)
+  (config$theme$axis$labelFontSize %==% 20)
 })
 
 # theme_(), axis_(), legend_(), title_() set chart options
