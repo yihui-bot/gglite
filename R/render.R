@@ -151,7 +151,8 @@ print.g2 = function(x, ...) {
     body,
     '</body>', '</html>'
   )
-  xfun::html_view(html)
+  #TODO: xfun >= 0.57.3 no longer needs paste()
+  xfun::html_view(paste(html, collapse = '\n'))
   invisible(x)
 }
 
