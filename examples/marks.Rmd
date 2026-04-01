@@ -15,7 +15,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
 ### Color by a variable
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', color = 'wt', size = 5) |>
+g2(mtcars, x = 'mpg', y = 'hp', color = 'wt') |>
   mark_point(style = list(shape = 'point'))
 ```
 
@@ -373,8 +373,7 @@ g2() |>
     style = list(
       labelText = xfun::js(
         '(d) => d.r >= 10 && d.height === 0 ? d.data.name : ""'
-      ),
-      labelFontSize = 8
+      )
     ),
     legend = FALSE
   )
@@ -421,7 +420,7 @@ g2() |>
         list(source = 'Backend', target = 'Frontend')
       )
     )),
-    nodeLabels = list(list(text = 'id', fontSize = 10))
+    nodeLabels = list(list(text = 'id'))
   )
 ```
 
@@ -447,7 +446,7 @@ g2() |>
         ))
       )
     )),
-    nodeLabels = list(list(text = 'name', fontSize = 10))
+    nodeLabels = list(list(text = 'name'))
   )
 ```
 
