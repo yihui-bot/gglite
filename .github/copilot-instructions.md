@@ -155,7 +155,7 @@ Before submitting changes:
 2. Run `R CMD check gglite_*.tar.gz --no-manual` to validate
 3. Ensure all tests pass: `Rscript tests/test-all.R`
 4. Check GitHub Actions status for multi-platform validation
-5. Update `NEWS.md` to document your changes
+5. Update `NEWS.md` to document your changes (except for v0.1)
 
 ## Important Conventions
 
