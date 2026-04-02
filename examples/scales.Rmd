@@ -38,13 +38,17 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
   scale_y(type = 'sqrt')
 ```
 
-## Ordinal Scale
+## Point Scale (for categorical axes)
+
+The `'point'` scale positions discrete values with even spacing suitable for
+point marks. (The `'ordinal'` scale is meant for non-positional channels
+such as color or shape.)
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
 g2(df, x = 'x', y = 'y') |>
   mark_point() |>
-  scale_x(type = 'ordinal')
+  scale_x(type = 'point')
 ```
 
 ## Band Scale
@@ -59,7 +63,7 @@ g2(df, x = 'x', y = 'y') |>
 
 ```{r}
 df = data.frame(
-  date = as.character(seq(as.Date('2024-01-01'), by = 'month', length.out = 6)),
+  date = seq(as.Date('2024-01-01'), by = 'month', length.out = 6),
   value = c(10, 20, 15, 30, 25, 35)
 )
 g2(df, x = 'date', y = 'value') |>
