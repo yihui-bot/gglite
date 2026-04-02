@@ -60,6 +60,14 @@ legend_ = function(chart, channel, ...) {
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$legends[[channel]] = args[[1]]
   } else {
+    # G2's default theme hides legend title (title: false). When the user
+    # provides a title string, translate it into the underlying component
+    # props so the title becomes visible.
+    if (is.character(args$title)) {
+      args$titleText = args$title
+      args$title = NULL
+      args$showTitle = TRUE
+    }
     chart$legends[[channel]] = args
   }
   chart

@@ -99,6 +99,17 @@ build_config = function(chart) {
 
   # Chart-wide config
   if (length(chart$scales)) config$scale = chart$scales
+
+  # Auto-detect time scale for Date/POSIXt columns
+  if (is.data.frame(chart$data)) for (ch in c('x', 'y')) {
+    col = chart$aesthetics[[ch]]
+    if (!is.null(col) && col %in% names(chart$data) &&
+        (inherits(chart$data[[col]], 'Date') ||
+         inherits(chart$data[[col]], 'POSIXt')) &&
+        is.null(config$scale[[ch]]$type))
+      config$scale[[ch]]$type = 'time'
+  }
+
   if (!is.null(chart$coords)) config$coordinate = chart$coords
   if (length(chart$interactions)) config$interaction = chart$interactions
   if (length(chart$axes)) config$axis = chart$axes

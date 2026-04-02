@@ -85,6 +85,13 @@ annotate_df = function(x) {
   nms = names(x)
   if ('data' %in% nms) {
     if (is.data.frame(d <- x$data)) {
+      # Convert Date/POSIXt columns to millisecond timestamps for G2
+      for (col in names(d)) {
+        if (inherits(d[[col]], 'Date'))
+          d[[col]] = as.numeric(d[[col]]) * 86400000
+        else if (inherits(d[[col]], 'POSIXt'))
+          d[[col]] = as.numeric(d[[col]]) * 1000
+      }
       x$data = list(type = 'column', value = d)
     } else if (is.null(d)) x$data = NULL
   }
