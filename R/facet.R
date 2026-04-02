@@ -12,7 +12,11 @@
 #' @examples
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
 #'   facet_rect(x = 'Species')
-facet_rect = function(chart, ...) {
+facet_rect = function(chart = NULL, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(if (!is.null(chart)) list(chart), list(...))
+    return(g2_mod(facet_rect, args))
+  }
   chart$facet = list(type = 'facetRect')
   enc = list(...)
   if (length(enc)) chart$facet$encode = enc
@@ -29,7 +33,11 @@ facet_rect = function(chart, ...) {
 #' @examples
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
 #'   facet_circle(position = 'Species')
-facet_circle = function(chart, ...) {
+facet_circle = function(chart = NULL, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(if (!is.null(chart)) list(chart), list(...))
+    return(g2_mod(facet_circle, args))
+  }
   chart$facet = list(type = 'facetCircle')
   enc = list(...)
   if (length(enc)) chart$facet$encode = enc

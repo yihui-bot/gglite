@@ -24,7 +24,11 @@
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   mark_point() |>
 #'   animate(FALSE)
-animate = function(chart, ...) {
+animate = function(chart = NULL, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(if (!is.null(chart)) list(chart), list(...))
+    return(g2_mod(animate, args))
+  }
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting animation')
   args = list(...)

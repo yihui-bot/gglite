@@ -31,7 +31,14 @@
 #' # Academy theme
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   theme_('academy')
-theme_ = function(chart, type, ...) {
+theme_ = function(chart = NULL, type, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(type)) list(type), list(...)
+    )
+    return(g2_mod(theme_, args))
+  }
   if (is.character(type)) {
     chart$theme = c(list(type = type), list(...))
   } else {
@@ -48,7 +55,7 @@ theme_ = function(chart, type, ...) {
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> theme_classic()
-theme_classic = function(chart, ...) theme_(chart, 'classic', ...)
+theme_classic = function(chart = NULL, ...) theme_(chart, 'classic', ...)
 
 #' Classic Dark Theme
 #'
@@ -58,7 +65,7 @@ theme_classic = function(chart, ...) theme_(chart, 'classic', ...)
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> theme_classicDark()
-theme_classicDark = function(chart, ...) theme_(chart, 'classicDark', ...)
+theme_classicDark = function(chart = NULL, ...) theme_(chart, 'classicDark', ...)
 
 #' Light Theme
 #'
@@ -68,7 +75,7 @@ theme_classicDark = function(chart, ...) theme_(chart, 'classicDark', ...)
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> theme_light()
-theme_light = function(chart, ...) theme_(chart, 'light', ...)
+theme_light = function(chart = NULL, ...) theme_(chart, 'light', ...)
 
 #' Dark Theme
 #'
@@ -78,7 +85,7 @@ theme_light = function(chart, ...) theme_(chart, 'light', ...)
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> theme_dark()
-theme_dark = function(chart, ...) theme_(chart, 'dark', ...)
+theme_dark = function(chart = NULL, ...) theme_(chart, 'dark', ...)
 
 #' Academy Theme
 #'
@@ -88,4 +95,4 @@ theme_dark = function(chart, ...) theme_(chart, 'dark', ...)
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> theme_academy()
-theme_academy = function(chart, ...) theme_(chart, 'academy', ...)
+theme_academy = function(chart = NULL, ...) theme_(chart, 'academy', ...)

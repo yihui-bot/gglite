@@ -49,7 +49,14 @@
 #' g2(mtcars, x = 'mpg') |>
 #'   mark_interval(encode = list(y = 'count')) |>
 #'   transform_('binX', thresholds = 15)
-transform_ = function(chart, type, ...) {
+transform_ = function(chart = NULL, type, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(type)) list(type), list(...)
+    )
+    return(g2_mod(transform_, args))
+  }
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting transforms')
   t = c(list(type = type), list(...))

@@ -13,7 +13,14 @@
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   axis_('x', title = 'Miles per Gallon') |>
 #'   axis_('y', title = 'Horsepower')
-axis_ = function(chart, channel, ...) {
+axis_ = function(chart = NULL, channel, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(channel)) list(channel), list(...)
+    )
+    return(g2_mod(axis_, args))
+  }
   args = list(...)
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$axes[[channel]] = args[[1]]
@@ -30,7 +37,7 @@ axis_ = function(chart, channel, ...) {
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   axis_x(title = 'Miles per Gallon')
-axis_x = function(chart, ...) axis_(chart, 'x', ...)
+axis_x = function(chart = NULL, ...) axis_(chart, 'x', ...)
 
 #' Configure the Y Axis
 #'
@@ -39,7 +46,7 @@ axis_x = function(chart, ...) axis_(chart, 'x', ...)
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   axis_y(title = 'Horsepower')
-axis_y = function(chart, ...) axis_(chart, 'y', ...)
+axis_y = function(chart = NULL, ...) axis_(chart, 'y', ...)
 
 #' Configure a Legend
 #'
@@ -55,7 +62,14 @@ axis_y = function(chart, ...) axis_(chart, 'y', ...)
 #' @examples
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
 #'   legend_('color', position = 'right')
-legend_ = function(chart, channel, ...) {
+legend_ = function(chart = NULL, channel, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(channel)) list(channel), list(...)
+    )
+    return(g2_mod(legend_, args))
+  }
   args = list(...)
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$legends[[channel]] = args[[1]]
@@ -80,7 +94,7 @@ legend_ = function(chart, channel, ...) {
 #' @examples
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
 #'   legend_color(position = 'right')
-legend_color = function(chart, ...) legend_(chart, 'color', ...)
+legend_color = function(chart = NULL, ...) legend_(chart, 'color', ...)
 
 #' Configure the Size Legend
 #'
@@ -89,7 +103,7 @@ legend_color = function(chart, ...) legend_(chart, 'color', ...)
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp', size = 'wt') |>
 #'   legend_size(position = 'bottom')
-legend_size = function(chart, ...) legend_(chart, 'size', ...)
+legend_size = function(chart = NULL, ...) legend_(chart, 'size', ...)
 
 #' Configure the Shape Legend
 #'
@@ -98,7 +112,7 @@ legend_size = function(chart, ...) legend_(chart, 'size', ...)
 #' @examples
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', shape = 'Species') |>
 #'   legend_shape(position = 'bottom')
-legend_shape = function(chart, ...) legend_(chart, 'shape', ...)
+legend_shape = function(chart = NULL, ...) legend_(chart, 'shape', ...)
 
 #' Configure the Opacity Legend
 #'
@@ -107,7 +121,7 @@ legend_shape = function(chart, ...) legend_(chart, 'shape', ...)
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp', opacity = 'wt') |>
 #'   legend_opacity(position = 'bottom')
-legend_opacity = function(chart, ...) legend_(chart, 'opacity', ...)
+legend_opacity = function(chart = NULL, ...) legend_(chart, 'opacity', ...)
 
 #' Set the Chart Title
 #'
@@ -119,7 +133,14 @@ legend_opacity = function(chart, ...) legend_(chart, 'opacity', ...)
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   title_('Motor Trend Cars', subtitle = 'mpg vs hp')
-title_ = function(chart, text, ...) {
+title_ = function(chart = NULL, text, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(text)) list(text), list(...)
+    )
+    return(g2_mod(title_, args))
+  }
   dots = list(...)
   if (length(dots)) {
     chart$chart_title = c(list(title = text), dots)
@@ -142,7 +163,11 @@ title_ = function(chart, text, ...) {
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   tooltip_(crosshairs = TRUE)
-tooltip_ = function(chart, ...) {
+tooltip_ = function(chart = NULL, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(if (!is.null(chart)) list(chart), list(...))
+    return(g2_mod(tooltip_, args))
+  }
   args = list(...)
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$tooltip_config = args[[1]]
@@ -167,7 +192,11 @@ tooltip_ = function(chart, ...) {
 #' g2(df, x = 'x', y = 'y') |>
 #'   mark_interval() |>
 #'   labels_(text = 'y', position = 'inside')
-labels_ = function(chart, ...) {
+labels_ = function(chart = NULL, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(if (!is.null(chart)) list(chart), list(...))
+    return(g2_mod(labels_, args))
+  }
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting labels')
   chart$layers[[n]]$labels = c(chart$layers[[n]]$labels, list(list(...)))
@@ -185,7 +214,11 @@ labels_ = function(chart, ...) {
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   mark_point() |>
 #'   style_mark(fill = 'steelblue', stroke = 'white', lineWidth = 1)
-style_mark = function(chart, ...) {
+style_mark = function(chart = NULL, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(if (!is.null(chart)) list(chart), list(...))
+    return(g2_mod(style_mark, args))
+  }
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting style')
   chart$layers[[n]]$style = list(...)
@@ -204,7 +237,14 @@ style_mark = function(chart, ...) {
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   slider_('x')
-slider_ = function(chart, channel, ...) {
+slider_ = function(chart = NULL, channel, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(channel)) list(channel), list(...)
+    )
+    return(g2_mod(slider_, args))
+  }
   if (is.null(chart$sliders)) chart$sliders = list()
   args = list(...)
   chart$sliders[[channel]] = if (length(args)) args else TRUE
@@ -218,7 +258,7 @@ slider_ = function(chart, channel, ...) {
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   slider_x()
-slider_x = function(chart, ...) slider_(chart, 'x', ...)
+slider_x = function(chart = NULL, ...) slider_(chart, 'x', ...)
 
 #' Add a Y Slider
 #'
@@ -227,7 +267,7 @@ slider_x = function(chart, ...) slider_(chart, 'x', ...)
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   slider_y()
-slider_y = function(chart, ...) slider_(chart, 'y', ...)
+slider_y = function(chart = NULL, ...) slider_(chart, 'y', ...)
 
 #' Add a Scrollbar
 #'
@@ -241,7 +281,14 @@ slider_y = function(chart, ...) slider_(chart, 'y', ...)
 #' g2(df, x = 'x', y = 'y') |>
 #'   mark_line() |>
 #'   scrollbar_('x')
-scrollbar_ = function(chart, channel, ...) {
+scrollbar_ = function(chart = NULL, channel, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(channel)) list(channel), list(...)
+    )
+    return(g2_mod(scrollbar_, args))
+  }
   if (is.null(chart$scrollbars)) chart$scrollbars = list()
   args = list(...)
   chart$scrollbars[[channel]] = if (length(args)) args else TRUE
@@ -257,7 +304,7 @@ scrollbar_ = function(chart, channel, ...) {
 #' g2(df, x = 'x', y = 'y') |>
 #'   mark_line() |>
 #'   scrollbar_x()
-scrollbar_x = function(chart, ...) scrollbar_(chart, 'x', ...)
+scrollbar_x = function(chart = NULL, ...) scrollbar_(chart, 'x', ...)
 
 #' Add a Y Scrollbar
 #'
@@ -268,4 +315,4 @@ scrollbar_x = function(chart, ...) scrollbar_(chart, 'x', ...)
 #' g2(df, x = 'x', y = 'y') |>
 #'   mark_line() |>
 #'   scrollbar_y()
-scrollbar_y = function(chart, ...) scrollbar_(chart, 'y', ...)
+scrollbar_y = function(chart = NULL, ...) scrollbar_(chart, 'y', ...)

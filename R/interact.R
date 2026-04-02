@@ -30,7 +30,14 @@
 #' # Legend filter
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
 #'   interact('legendFilter')
-interact = function(chart, type, ...) {
+interact = function(chart = NULL, type, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(type)) list(type), list(...)
+    )
+    return(g2_mod(interact, args))
+  }
   args = list(...)
   chart$interactions[[type]] = if (length(args)) args else TRUE
   chart

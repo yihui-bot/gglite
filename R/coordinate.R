@@ -54,7 +54,14 @@
 #'   scale_x(padding = 0.5, align = 0) |>
 #'   scale_y(domainMin = 0, domainMax = 100) |>
 #'   axis_x(grid = TRUE)
-coord_ = function(chart, type, ...) {
+coord_ = function(chart = NULL, type, ...) {
+  if (is.null(chart) || !inherits(chart, 'g2')) {
+    args = c(
+      if (!is.null(chart)) list(chart),
+      if (!missing(type)) list(type), list(...)
+    )
+    return(g2_mod(coord_, args))
+  }
   chart$coords = c(list(type = type), list(...))
   chart
 }
@@ -72,7 +79,8 @@ coord_ = function(chart, type, ...) {
 #' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), x = 'x', y = 'y') |>
 #'   mark_interval() |>
 #'   coord_transpose()
-coord_transpose = function(chart) {
+coord_transpose = function(chart = NULL) {
+  if (is.null(chart)) return(g2_mod(coord_transpose, list()))
   if (is.null(chart$coords)) chart$coords = list()
   chart$coords$transform = c(
     chart$coords$transform, list(list(type = 'transpose'))
@@ -90,7 +98,7 @@ coord_transpose = function(chart) {
 #' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)),
 #'   x = 'x', y = 'y', color = 'x') |>
 #'   mark_interval() |> coord_polar()
-coord_polar = function(chart, ...) coord_(chart, 'polar', ...)
+coord_polar = function(chart = NULL, ...) coord_(chart, 'polar', ...)
 
 #' Theta Coordinate System
 #'
@@ -104,7 +112,7 @@ coord_polar = function(chart, ...) coord_(chart, 'polar', ...)
 #'   x = 'x', y = 'y', color = 'x') |>
 #'   mark_interval() |> transform_('stackY') |>
 #'   coord_theta(innerRadius = 0.5)
-coord_theta = function(chart, ...) coord_(chart, 'theta', ...)
+coord_theta = function(chart = NULL, ...) coord_(chart, 'theta', ...)
 
 #' Radial Coordinate System
 #'
@@ -117,7 +125,7 @@ coord_theta = function(chart, ...) coord_(chart, 'theta', ...)
 #' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)),
 #'   x = 'x', y = 'y', color = 'x') |>
 #'   mark_interval() |> coord_radial()
-coord_radial = function(chart, ...) coord_(chart, 'radial', ...)
+coord_radial = function(chart = NULL, ...) coord_(chart, 'radial', ...)
 
 #' Radar Coordinate System
 #'
@@ -126,7 +134,7 @@ coord_radial = function(chart, ...) coord_(chart, 'radial', ...)
 #'
 #' @inheritParams coord_
 #' @export
-coord_radar = function(chart, ...) coord_(chart, 'radar', ...)
+coord_radar = function(chart = NULL, ...) coord_(chart, 'radar', ...)
 
 #' Helix Coordinate System
 #'
@@ -134,7 +142,7 @@ coord_radar = function(chart, ...) coord_(chart, 'radar', ...)
 #'
 #' @inheritParams coord_
 #' @export
-coord_helix = function(chart, ...) coord_(chart, 'helix', ...)
+coord_helix = function(chart = NULL, ...) coord_(chart, 'helix', ...)
 
 #' Parallel Coordinate System
 #'
@@ -143,4 +151,4 @@ coord_helix = function(chart, ...) coord_(chart, 'helix', ...)
 #'
 #' @inheritParams coord_
 #' @export
-coord_parallel = function(chart, ...) coord_(chart, 'parallel', ...)
+coord_parallel = function(chart = NULL, ...) coord_(chart, 'parallel', ...)
