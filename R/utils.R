@@ -151,13 +151,10 @@ parse_formula = function(f) {
   # Build facet: | var → column; | 0 + var → row; | var1 + var2 → both
   facet = NULL
   if (length(facet_terms)) {
-    enc = list()
-    row_only = facet_terms[1] == '0'
-    if (row_only) facet_terms = facet_terms[-1]
-    if (length(facet_terms) >= 1) {
-      if (row_only) enc$y = facet_terms[1] else enc$x = facet_terms[1]
-    }
-    if (!row_only && length(facet_terms) >= 2) enc$y = facet_terms[2]
+    # A leading 0 shifts terms to row (y) instead of column (x)
+    nms = if (facet_terms[1] == '0') 'y' else c('x', 'y')
+    facet_terms = facet_terms[facet_terms != '0']
+    enc = setNames(as.list(facet_terms), head(nms, length(facet_terms)))
     if (length(enc)) facet = list(type = 'facetRect', encode = enc)
   }
 
