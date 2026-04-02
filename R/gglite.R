@@ -52,6 +52,9 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'   (applied to all sides) or a length-4 vector `c(top, right, bottom, left)`;
 #'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
 #'   unset.
+#' @param main Chart title string, a convenient alternative to calling
+#'   [title_()] separately (inspired by base [plot()] and tinyplot).
+#' @param sub Chart subtitle string. Only used when `main` is also provided.
 #' @return A `g2` object (S3 class).
 #' @import stats utils
 #' @export
@@ -66,9 +69,13 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #' # Time series
 #' g2(sunspot.year)
 #' g2(EuStockMarkets)
+#'
+#' # Title and subtitle (like base plot's main/sub)
+#' g2(mtcars, hp ~ mpg, main = 'Motor Trend Cars', sub = 'mpg vs hp')
 g2 = function(
   data = NULL, ..., width = 640, height = 480,
-  padding = NULL, margin = NULL, inset = NULL
+  padding = NULL, margin = NULL, inset = NULL,
+  main = NULL, sub = NULL
 ) {
   dots = list(...)
   has_formula = length(dots) && inherits(dots[[1]], 'formula')
@@ -99,7 +106,9 @@ g2 = function(
     theme = NULL,
     axes = list(),
     legends = list(),
-    chart_title = NULL,
+    chart_title = if (!is.null(main)) {
+      if (!is.null(sub)) list(title = main, subtitle = sub) else main
+    },
     facet = facet_from_formula,
     layout = c(
       process_layout('padding', padding),

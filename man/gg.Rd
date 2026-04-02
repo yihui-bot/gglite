@@ -11,7 +11,9 @@ gg(
   height = 480,
   padding = NULL,
   margin = NULL,
-  inset = NULL
+  inset = NULL,
+  main = NULL,
+  sub = NULL
 )
 }
 \arguments{
@@ -30,6 +32,11 @@ or a formula followed by optional named aesthetics.}
 (applied to all sides) or a length-4 vector \code{c(top, right, bottom, left)};
 use \code{NA} to skip individual sides. \code{NULL} (the default) leaves the value
 unset.}
+
+\item{main}{Chart title string, a convenient alternative to calling
+\code{\link[=title_]{title_()}} separately (inspired by base \code{\link[=plot]{plot()}} and tinyplot).}
+
+\item{sub}{Chart subtitle string. Only used when \code{main} is also provided.}
 }
 \description{
 \code{gg()} is a convenient shorthand for \code{\link[=g2]{g2()}}, inspired by tinyplot's \code{plt()}

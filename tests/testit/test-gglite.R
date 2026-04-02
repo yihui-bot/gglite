@@ -110,3 +110,14 @@ assert('gg() is a shorthand alias for g2()', {
   (chart$aesthetics$x %==% 'mpg')
   (chart$aesthetics$y %==% 'hp')
 })
+
+assert('g2() main argument sets chart title', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp', main = 'My Title')
+  (chart$chart_title %==% 'My Title')
+})
+
+assert('g2() main and sub arguments set title and subtitle', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp', main = 'Title', sub = 'Subtitle')
+  (chart$chart_title$title %==% 'Title')
+  (chart$chart_title$subtitle %==% 'Subtitle')
+})
