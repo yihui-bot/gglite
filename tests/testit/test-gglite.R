@@ -223,6 +223,13 @@ assert('auto_mark: large groups produce beeswarm + boxplot', {
   (auto$marks[[2]]$type %==% 'boxplot')
 })
 
+assert('auto_mark: no boxplot when smallest group has fewer than 30', {
+  df = data.frame(x = c(rep('A', 29), rep('B', 40)), y = rnorm(69))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 1L)
+  (auto$marks[[1]]$type %==% 'beeswarm')
+})
+
 assert('auto_mark: numeric x categorical (transposed) unique -> interval', {
   df = data.frame(x = c(3, 7, 2), y = c('A', 'B', 'C'))
   auto = auto_mark(df, list(x = 'x', y = 'y'))
