@@ -129,10 +129,10 @@ parse_formula = function(f) {
   lhs = if (length(f) == 3) f[[2]]
   rhs = if (length(f) == 3) f[[3]] else f[[2]]
 
-  # Extract conditioning (by/color) variable from |
-  by_term = NULL
+  # Extract conditioning (facet) variables from |
+  facet_terms = NULL
   if (is.call(rhs) && identical(rhs[[1]], as.name('|'))) {
-    by_term = deparse(rhs[[3]])
+    facet_terms = extract_terms(rhs[[3]])
     rhs = rhs[[2]]
   }
 
@@ -147,5 +147,14 @@ parse_formula = function(f) {
     aesthetics$position = rhs_terms
   }
 
-  list(aesthetics = aesthetics, by = by_term)
+  # Build facet
+  facet = NULL
+  if (length(facet_terms)) {
+    enc = list()
+    if (length(facet_terms) >= 1) enc$x = facet_terms[1]
+    if (length(facet_terms) >= 2) enc$y = facet_terms[2]
+    facet = list(type = 'facetRect', encode = enc)
+  }
+
+  list(aesthetics = aesthetics, facet = facet)
 }

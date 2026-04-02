@@ -34,8 +34,8 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'   \item{`~ x`}{Maps only `x` (e.g., for histograms or bar counts).}
 #'   \item{`~ x1 + x2 + x3`}{Creates a `position` encoding with multiple
 #'     fields (for parallel coordinates).}
-#'   \item{`y ~ x | z`}{Groups by `z` (maps to color), inspired by
-#'     tinyplot's formula convention.}
+#'   \item{`y ~ x | z`}{Facets the chart by `z` (column direction).}
+#'   \item{`y ~ x | z1 + z2`}{Facets by `z1` (columns) and `z2` (rows).}
 #' }
 #' Additional aesthetics (e.g., `color`, `size`) can still be passed as named
 #' arguments alongside the formula.
@@ -52,24 +52,10 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'   (applied to all sides) or a length-4 vector `c(top, right, bottom, left)`;
 #'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
 #'   unset.
-#' @param main Chart title string, a convenient alternative to calling
-#'   [title_()] separately (inspired by base [plot()] and tinyplot).
-#' @param sub Chart subtitle string. Only used when `main` is also provided.
-#' @param by Column name (character string) to group the data by color,
-#'   inspired by tinyplot's `by` argument. Equivalent to passing
-#'   `color = 'column'`.
-#' @param facet Faceting specification: a one-sided formula (`~ z` for
-#'   column faceting, `y ~ x` for grid faceting), or a character string
-#'   naming the faceting variable. Inspired by tinyplot's `facet` argument.
-#'   For more control, use [facet_rect()] or [facet_circle()] instead.
-#' @param alpha Numeric in `[0, 1]` controlling the fill and stroke opacity
-#'   of marks. A convenient alternative to calling
-#'   `style_mark(fillOpacity = ..., strokeOpacity = ...)`. Inspired by
-#'   tinyplot's `alpha` argument.
-#' @param palette Character string naming a color palette (e.g.,
-#'   `'category10'`, `'tableau10'`, `'set2'`). A convenient alternative to
-#'   calling `scale_color(palette = ...)`. Inspired by tinyplot's `palette`
-#'   argument.
+#' @param title Chart title string, a convenient alternative to piping into
+#'   [title_()] separately.
+#' @param subtitle Chart subtitle string. Only used when `title` is also
+#'   provided.
 #' @return A `g2` object (S3 class).
 #' @import stats utils
 #' @export
@@ -85,48 +71,19 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #' g2(sunspot.year)
 #' g2(EuStockMarkets)
 #'
-#' # Title and subtitle (like base plot's main/sub)
-#' g2(mtcars, hp ~ mpg, main = 'Motor Trend Cars', sub = 'mpg vs hp')
-#'
-#' # Grouping by color (like tinyplot's by argument)
-#' g2(iris, Sepal.Length ~ Sepal.Width, by = 'Species')
-#'
-#' # Formula | for color grouping (tinyplot convention)
-#' g2(iris, Sepal.Length ~ Sepal.Width | Species)
-#'
-#' # Faceting via the facet argument (like tinyplot)
-#' g2(iris, Sepal.Length ~ Sepal.Width, facet = ~Species)
-#' g2(mtcars, hp ~ mpg, facet = gear ~ cyl)
-#'
-#' # Adjust opacity (like tinyplot's alpha)
-#' g2(iris, Sepal.Length ~ Sepal.Width | Species, alpha = 0.5)
-#'
-#' # Set color palette (like tinyplot's palette)
-#' g2(iris, Sepal.Length ~ Sepal.Width | Species, palette = 'set2')
+#' # Title and subtitle
+#' g2(mtcars, hp ~ mpg, title = 'Motor Trend Cars', subtitle = 'mpg vs hp')
 g2 = function(
   data = NULL, ..., width = 640, height = 480,
   padding = NULL, margin = NULL, inset = NULL,
-  main = NULL, sub = NULL, by = NULL, facet = NULL, alpha = NULL,
-  palette = NULL
+  title = NULL, subtitle = NULL
 ) {
   dots = list(...)
-  by_from_formula = NULL
   has_formula = length(dots) && inherits(dots[[1]], 'formula')
-  if (has_formula) {
+  facet_from_formula = if (has_formula) {
     parsed = parse_formula(dots[[1]])
     dots = c(parsed$aesthetics, dots[-1])
-    by_from_formula = parsed$by
-  }
-  # Build facet from the facet argument (formula or character)
-  facet_config = if (inherits(facet, 'formula')) {
-    fterms = if (length(facet) == 3) {
-      list(y = deparse(facet[[2]]), x = deparse(facet[[3]]))
-    } else {
-      list(x = deparse(facet[[2]]))
-    }
-    list(type = 'facetRect', encode = fterms)
-  } else if (is.character(facet)) {
-    list(type = 'facetRect', encode = list(x = facet))
+    parsed$facet
   }
   # Convert time series to data frame with default aesthetics
   ts_aes = NULL
@@ -150,11 +107,10 @@ g2 = function(
     theme = NULL,
     axes = list(),
     legends = list(),
-    chart_title = if (!is.null(main)) {
-      if (!is.null(sub)) list(title = main, subtitle = sub) else main
+    chart_title = if (!is.null(title)) {
+      if (!is.null(subtitle)) list(title = title, subtitle = subtitle) else title
     },
-    facet = facet_config,
-    alpha = alpha,
+    facet = facet_from_formula,
     layout = c(
       process_layout('padding', padding),
       process_layout('margin', margin),
@@ -162,10 +118,6 @@ g2 = function(
     )
   ), class = 'g2')
   if (length(dots)) chart$aesthetics = modifyList(chart$aesthetics, dots)
-  # by argument (explicit or from formula |) sets color grouping
-  if (is.null(by)) by = by_from_formula
-  if (!is.null(by)) chart$aesthetics$color = by
-  if (!is.null(palette)) chart$scales$color = list(palette = palette)
   chart
 }
 
@@ -186,14 +138,4 @@ encode = function(chart, ...) {
   chart
 }
 
-#' Shorthand Alias for [g2()]
-#'
-#' `gg()` is a convenient shorthand for [g2()], inspired by tinyplot's `plt()`
-#' alias. All arguments are passed through to [g2()].
-#'
-#' @inheritParams g2
-#' @export
-#' @examples
-#' gg(mtcars, x = 'mpg', y = 'hp')
-gg = g2
 

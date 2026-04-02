@@ -82,31 +82,19 @@ assert('g2() formula with extra aesthetics', {
   (chart$aesthetics$color %==% 'Species')
 })
 
-assert('g2() formula with | sets color grouping (tinyplot convention)', {
+assert('g2() formula with faceting y ~ x | z', {
   chart = g2(iris, Sepal.Length ~ Sepal.Width | Species)
   (chart$aesthetics$x %==% 'Sepal.Width')
   (chart$aesthetics$y %==% 'Sepal.Length')
-  (chart$aesthetics$color %==% 'Species')
-  (is.null(chart$facet))
-})
-
-assert('g2() facet argument with one-sided formula', {
-  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', facet = ~Species)
   (chart$facet$type %==% 'facetRect')
   (chart$facet$encode$x %==% 'Species')
 })
 
-assert('g2() facet argument with two-sided formula', {
-  chart = g2(mtcars, x = 'mpg', y = 'hp', facet = gear ~ cyl)
-  (chart$facet$type %==% 'facetRect')
-  (chart$facet$encode$x %==% 'cyl')
-  (chart$facet$encode$y %==% 'gear')
-})
-
-assert('g2() facet argument with character string', {
-  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', facet = 'Species')
-  (chart$facet$type %==% 'facetRect')
-  (chart$facet$encode$x %==% 'Species')
+assert('g2() formula with two facet variables', {
+  df = data.frame(x = 1, y = 2, a = 'A', b = 'B')
+  chart = g2(df, y ~ x | a + b)
+  (chart$facet$encode$x %==% 'a')
+  (chart$facet$encode$y %==% 'b')
 })
 
 assert('g2() formula ~ x1 + x2 + x3 sets position encoding', {
@@ -116,36 +104,14 @@ assert('g2() formula ~ x1 + x2 + x3 sets position encoding', {
   (is.null(chart$aesthetics$x))
 })
 
-assert('gg() is a shorthand alias for g2()', {
-  chart = gg(mtcars, x = 'mpg', y = 'hp')
-  (inherits(chart, 'g2'))
-  (chart$aesthetics$x %==% 'mpg')
-  (chart$aesthetics$y %==% 'hp')
-  # gg() passes through all parameters
-  chart2 = gg(iris, Sepal.Length ~ Sepal.Width, by = 'Species',
-    main = 'Test', alpha = 0.5)
-  (chart2$aesthetics$color %==% 'Species')
-  (chart2$chart_title %==% 'Test')
-  (chart2$alpha %==% 0.5)
-})
-
-assert('g2() main argument sets chart title', {
-  chart = g2(mtcars, x = 'mpg', y = 'hp', main = 'My Title')
+assert('g2() title argument sets chart title', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp', title = 'My Title')
   (chart$chart_title %==% 'My Title')
 })
 
-assert('g2() main and sub arguments set title and subtitle', {
-  chart = g2(mtcars, x = 'mpg', y = 'hp', main = 'Title', sub = 'Subtitle')
+assert('g2() title and subtitle arguments set title and subtitle', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp',
+    title = 'Title', subtitle = 'Subtitle')
   (chart$chart_title$title %==% 'Title')
   (chart$chart_title$subtitle %==% 'Subtitle')
-})
-
-assert('g2() by argument sets color aesthetic', {
-  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', by = 'Species')
-  (chart$aesthetics$color %==% 'Species')
-})
-
-assert('g2() palette argument sets color scale palette', {
-  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', palette = 'set2')
-  (chart$scales$color$palette %==% 'set2')
 })
