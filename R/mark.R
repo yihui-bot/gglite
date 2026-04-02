@@ -253,6 +253,18 @@ mark_box = function(chart = NULL, ...) mark_(chart, 'box', ...)
 #' g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
 mark_boxplot = function(chart = NULL, ...) mark_(chart, 'boxplot', ...)
 
+#' Add a Beeswarm Mark
+#'
+#' Displays individual data points using force simulation to avoid overlapping,
+#' creating a beeswarm layout. Particularly useful for visualizing distributions
+#' within categories.
+#'
+#' @inheritParams mark_
+#' @export
+#' @examples
+#' g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_beeswarm()
+mark_beeswarm = function(chart, ...) mark_(chart, 'beeswarm', ...)
+
 #' Add a Density Mark
 #'
 #' A composite mark for kernel density estimation visualization. Note that

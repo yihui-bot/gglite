@@ -199,6 +199,62 @@ assert('build_config auto-sets time scale for Date columns', {
   (config$scale$x$type %==% 'time')
 })
 
+# ---- Auto mark inference for categorical vs numeric ----
+
+assert('auto_mark: unique categories produce bar chart (interval)', {
+  df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 1L)
+  (auto$marks[[1]]$type %==% 'interval')
+})
+
+assert('auto_mark: repeated categories produce beeswarm', {
+  df = data.frame(x = rep(c('A', 'B'), each = 5), y = rnorm(10))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 1L)
+  (auto$marks[[1]]$type %==% 'beeswarm')
+})
+
+assert('auto_mark: large groups produce beeswarm + boxplot', {
+  df = data.frame(x = rep(c('A', 'B'), each = 30), y = rnorm(60))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 2L)
+  (auto$marks[[1]]$type %==% 'beeswarm')
+  (auto$marks[[2]]$type %==% 'boxplot')
+})
+
+assert('auto_mark: no boxplot when smallest group has fewer than 30', {
+  df = data.frame(x = c(rep('A', 29), rep('B', 40)), y = rnorm(69))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 1L)
+  (auto$marks[[1]]$type %==% 'beeswarm')
+})
+
+assert('auto_mark: numeric x categorical (transposed) unique -> interval', {
+  df = data.frame(x = c(3, 7, 2), y = c('A', 'B', 'C'))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 1L)
+  (auto$marks[[1]]$type %==% 'interval')
+  (!is.null(auto$coord))
+})
+
+assert('auto_mark: numeric x categorical (transposed) repeated -> beeswarm', {
+  df = data.frame(x = rnorm(10), y = rep(c('A', 'B'), each = 5))
+  auto = auto_mark(df, list(x = 'x', y = 'y'))
+  (length(auto$marks) %==% 1L)
+  (auto$marks[[1]]$type %==% 'beeswarm')
+  (!is.null(auto$coord))
+})
+
+assert('build_config generates multiple children for beeswarm + boxplot', {
+  df = data.frame(x = rep(c('A', 'B'), each = 30), y = rnorm(60))
+  chart = g2(df, x = 'x', y = 'y')
+  config = build_config(chart)
+  (length(config$children) %==% 2L)
+  (config$children[[1]]$type %==% 'beeswarm')
+  (config$children[[2]]$type %==% 'boxplot')
+})
+
 # ---- + operator (ggplot2-style syntax) ----
 
 assert('+ operator works with mark_point()', {
