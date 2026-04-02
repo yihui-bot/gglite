@@ -26,10 +26,10 @@ auto_mark = function(data, aesthetics) {
   mark = if (xt == 'numeric' && yt == 'numeric') {
     list(type = 'point', style = list(shape = 'point'))
   } else if (xt == 'categorical' && yt == 'numeric') {
-    list(type = 'interval')
+    list(type = 'boxplot')
   } else if (xt == 'numeric' && yt == 'categorical') {
     coord = list(transform = list(list(type = 'transpose')))
-    list(type = 'interval', encode = list(x = y_col, y = x_col))
+    list(type = 'boxplot', encode = list(x = y_col, y = x_col))
   } else if (xt == 'categorical' && yt == 'categorical') {
     if (is.null(aesthetics$color)) list(
       type = 'cell', encode = list(color = 'count'),

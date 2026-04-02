@@ -141,8 +141,8 @@ mark based on the types of the `x` and `y` variables:
 | `x` type | `y` type | Mark | Chart type |
 |-----------|----------|------|------------|
 | numeric | numeric | `point` | Scatter plot |
-| categorical | numeric | `interval` | Bar chart |
-| numeric | categorical | `interval` (transposed) | Horizontal bar |
+| categorical | numeric | `boxplot` | Box plot |
+| numeric | categorical | `boxplot` (transposed) | Horizontal box plot |
 | categorical | categorical | `cell` + `group` | Contingency table |
 | Date | numeric | `line` | Line chart |
 | numeric | _(none)_ | `interval` + `binX` | Histogram |
@@ -157,17 +157,16 @@ This means you can often skip the mark entirely:
 g2(mtcars, hp ~ mpg, color = 'cyl')
 ```
 
-### Bar chart (categorical × numeric)
+### Box plot (categorical × numeric)
 
 ```{r}
-df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, y ~ x)
+g2(iris, Sepal.Width ~ Species)
 ```
 
-### Horizontal bar (numeric × categorical)
+### Horizontal box plot (numeric × categorical)
 
 ```{r}
-g2(df, y ~ x, x = 'y', y = 'x')
+g2(iris, x = 'Sepal.Width', y = 'Species')
 ```
 
 ### Contingency table (categorical × categorical)

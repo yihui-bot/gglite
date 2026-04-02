@@ -75,15 +75,15 @@ assert('auto_mark: numeric x + numeric y -> point', {
   (is.null(res$coord))
 })
 
-assert('auto_mark: categorical x + numeric y -> interval', {
+assert('auto_mark: categorical x + numeric y -> boxplot', {
   res = auto_mark(iris, list(x = 'Species', y = 'Sepal.Width'))
-  (res$mark$type %==% 'interval')
+  (res$mark$type %==% 'boxplot')
   (is.null(res$coord))
 })
 
-assert('auto_mark: numeric x + categorical y -> interval + transpose', {
+assert('auto_mark: numeric x + categorical y -> boxplot + transpose', {
   res = auto_mark(iris, list(x = 'Sepal.Width', y = 'Species'))
-  (res$mark$type %==% 'interval')
+  (res$mark$type %==% 'boxplot')
   (res$coord$transform[[1]]$type %==% 'transpose')
 })
 
@@ -145,7 +145,7 @@ assert('build_config auto mark does not override explicit layers', {
 assert('build_config auto mark adds transpose for numeric x + cat y', {
   chart = g2(iris, x = 'Sepal.Width', y = 'Species')
   config = build_config(chart)
-  (config$children[[1]]$type %==% 'interval')
+  (config$children[[1]]$type %==% 'boxplot')
   (config$coordinate$transform[[1]]$type %==% 'transpose')
   (config$children[[1]]$encode$x %==% 'Species')
   (config$children[[1]]$encode$y %==% 'Sepal.Width')
