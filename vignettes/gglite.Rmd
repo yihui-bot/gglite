@@ -154,19 +154,19 @@ This means you can often skip the mark entirely:
 ### Scatter plot (numeric × numeric)
 
 ```{r}
-g2(mtcars, hp ~ mpg, color = 'cyl')
+g2(penguins, bill_len ~ bill_dep, color = 'species')
 ```
 
 ### Box plot (categorical × numeric)
 
 ```{r}
-g2(iris, Sepal.Width ~ Species)
+g2(penguins, bill_len ~ species)
 ```
 
 ### Horizontal box plot (numeric × categorical)
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Species')
+g2(penguins, species ~ bill_len)
 ```
 
 ### Contingency table (categorical × categorical)
@@ -174,7 +174,7 @@ g2(iris, x = 'Sepal.Width', y = 'Species')
 Cells are automatically colored by the count of each combination:
 
 ```{r}
-g2(mtcars, x = 'gear', y = 'cyl')
+g2(penguins, island ~ species)
 ```
 
 ### Line chart (Date × numeric)
@@ -187,20 +187,19 @@ g2(df, value ~ date)
 ### Histogram (numeric only)
 
 ```{r}
-g2(mtcars, ~ mpg)
+g2(penguins, ~ bill_len)
 ```
 
 ### Count bar chart (categorical only)
 
 ```{r}
-g2(iris, ~ Species)
+g2(penguins, ~ species)
 ```
 
 ### Parallel coordinates (multiple position fields)
 
 ```{r}
-g2(iris, ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
-  color = 'Species')
+g2(penguins, ~ bill_len + bill_dep + flipper_len + body_mass, color = 'species')
 ```
 
 You can still add scales, themes, titles, and other components as usual:
