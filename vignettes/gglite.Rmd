@@ -1,11 +1,14 @@
 ---
 title: "Introduction to gglite"
+output:
+  html:
+    meta:
+      css: ['@default', '@article', '@copy-button', '@heading-anchor', '@pages']
+      js: ['@sidenotes', '@appendix', '@toc-highlight', '@copy-button', '@heading-anchor', '@pages']
 vignette: >
   %\VignetteIndexEntry{Introduction to gglite}
   %\VignetteEngine{litedown::vignette}
   %\VignetteEncoding{UTF-8}
-css: ['@default', '@article', '@copy-button', '@heading-anchor', '@pages']
-js: ['@sidenotes', '@appendix', '@toc-highlight', '@copy-button', '@heading-anchor', '@pages']
 ---
 
 ```{r, setup, include = FALSE}
