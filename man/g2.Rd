@@ -36,8 +36,7 @@ unset.}
 \item{title}{Chart title string, a convenient alternative to piping into
 \code{\link[=title_]{title_()}} separately.}
 
-\item{subtitle}{Chart subtitle string. Only used when \code{title} is also
-provided.}
+\item{subtitle}{Chart subtitle string.}
 }
 \value{
 A \code{g2} object (S3 class).

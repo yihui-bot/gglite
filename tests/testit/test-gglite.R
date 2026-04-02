@@ -106,7 +106,7 @@ assert('g2() formula ~ x1 + x2 + x3 sets position encoding', {
 
 assert('g2() title argument sets chart title', {
   chart = g2(mtcars, x = 'mpg', y = 'hp', title = 'My Title')
-  (chart$chart_title %==% 'My Title')
+  (chart$chart_title$title %==% 'My Title')
 })
 
 assert('g2() title and subtitle arguments set title and subtitle', {

@@ -54,8 +54,7 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'   unset.
 #' @param title Chart title string, a convenient alternative to piping into
 #'   [title_()] separately.
-#' @param subtitle Chart subtitle string. Only used when `title` is also
-#'   provided.
+#' @param subtitle Chart subtitle string.
 #' @return A `g2` object (S3 class).
 #' @import stats utils
 #' @export
@@ -107,9 +106,7 @@ g2 = function(
     theme = NULL,
     axes = list(),
     legends = list(),
-    chart_title = if (!is.null(title)) {
-      if (!is.null(subtitle)) list(title = title, subtitle = subtitle) else title
-    },
+    chart_title = dropNulls(list(title = title, subtitle = subtitle)),
     facet = facet_from_formula,
     layout = c(
       process_layout('padding', padding),
