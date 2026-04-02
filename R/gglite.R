@@ -34,8 +34,8 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'   \item{`~ x`}{Maps only `x` (e.g., for histograms or bar counts).}
 #'   \item{`~ x1 + x2 + x3`}{Creates a `position` encoding with multiple
 #'     fields (for parallel coordinates).}
-#'   \item{`y ~ x | z`}{Facets the chart by `z` (column direction).}
-#'   \item{`y ~ x | z1 + z2`}{Facets by `z1` (columns) and `z2` (rows).}
+#'   \item{`y ~ x | z`}{Groups by `z` (maps to color), inspired by
+#'     tinyplot's formula convention.}
 #' }
 #' Additional aesthetics (e.g., `color`, `size`) can still be passed as named
 #' arguments alongside the formula.
@@ -58,6 +58,10 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #' @param by Column name (character string) to group the data by color,
 #'   inspired by tinyplot's `by` argument. Equivalent to passing
 #'   `color = 'column'`.
+#' @param facet Faceting specification: a one-sided formula (`~ z` for
+#'   column faceting, `y ~ x` for grid faceting), or a character string
+#'   naming the faceting variable. Inspired by tinyplot's `facet` argument.
+#'   For more control, use [facet_rect()] or [facet_circle()] instead.
 #' @return A `g2` object (S3 class).
 #' @import stats utils
 #' @export
@@ -78,17 +82,36 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'
 #' # Grouping by color (like tinyplot's by argument)
 #' g2(iris, Sepal.Length ~ Sepal.Width, by = 'Species')
+#'
+#' # Formula | for color grouping (tinyplot convention)
+#' g2(iris, Sepal.Length ~ Sepal.Width | Species)
+#'
+#' # Faceting via the facet argument (like tinyplot)
+#' g2(iris, Sepal.Length ~ Sepal.Width, facet = ~Species)
+#' g2(mtcars, hp ~ mpg, facet = gear ~ cyl)
 g2 = function(
   data = NULL, ..., width = 640, height = 480,
   padding = NULL, margin = NULL, inset = NULL,
-  main = NULL, sub = NULL, by = NULL
+  main = NULL, sub = NULL, by = NULL, facet = NULL
 ) {
   dots = list(...)
+  by_from_formula = NULL
   has_formula = length(dots) && inherits(dots[[1]], 'formula')
-  facet_from_formula = if (has_formula) {
+  if (has_formula) {
     parsed = parse_formula(dots[[1]])
     dots = c(parsed$aesthetics, dots[-1])
-    parsed$facet
+    by_from_formula = parsed$by
+  }
+  # Build facet from the facet argument (formula or character)
+  facet_config = if (inherits(facet, 'formula')) {
+    fterms = if (length(facet) == 3) {
+      list(y = deparse(facet[[2]]), x = deparse(facet[[3]]))
+    } else {
+      list(x = deparse(facet[[2]]))
+    }
+    list(type = 'facetRect', encode = fterms)
+  } else if (is.character(facet)) {
+    list(type = 'facetRect', encode = list(x = facet))
   }
   # Convert time series to data frame with default aesthetics
   ts_aes = NULL
@@ -115,7 +138,7 @@ g2 = function(
     chart_title = if (!is.null(main)) {
       if (!is.null(sub)) list(title = main, subtitle = sub) else main
     },
-    facet = facet_from_formula,
+    facet = facet_config,
     layout = c(
       process_layout('padding', padding),
       process_layout('margin', margin),
@@ -123,6 +146,8 @@ g2 = function(
     )
   ), class = 'g2')
   if (length(dots)) chart$aesthetics = modifyList(chart$aesthetics, dots)
+  # by argument (explicit or from formula |) sets color grouping
+  if (is.null(by) && !is.null(by_from_formula)) by = by_from_formula
   if (!is.null(by)) chart$aesthetics$color = by
   chart
 }

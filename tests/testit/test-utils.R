@@ -54,18 +54,16 @@ assert('parse_formula: ~ x1 + x2 + x3', {
   (is.null(res$aesthetics$x))
 })
 
-assert('parse_formula: y ~ x | z', {
+assert('parse_formula: y ~ x | z sets color grouping (not facet)', {
   res = parse_formula(hp ~ mpg | cyl)
   (res$aesthetics$x %==% 'mpg')
   (res$aesthetics$y %==% 'hp')
-  (res$facet$type %==% 'facetRect')
-  (res$facet$encode$x %==% 'cyl')
+  (res$by %==% 'cyl')
 })
 
-assert('parse_formula: y ~ x | z1 + z2', {
-  res = parse_formula(y ~ x | a + b)
-  (res$facet$encode$x %==% 'a')
-  (res$facet$encode$y %==% 'b')
+assert('parse_formula: no | returns NULL by', {
+  res = parse_formula(y ~ x)
+  (is.null(res$by))
 })
 
 assert('ts_to_df converts univariate ts', {

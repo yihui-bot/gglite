@@ -14,7 +14,8 @@ gg(
   inset = NULL,
   main = NULL,
   sub = NULL,
-  by = NULL
+  by = NULL,
+  facet = NULL
 )
 }
 \arguments{
@@ -42,6 +43,11 @@ unset.}
 \item{by}{Column name (character string) to group the data by color,
 inspired by tinyplot's \code{by} argument. Equivalent to passing
 \code{color = 'column'}.}
+
+\item{facet}{Faceting specification: a one-sided formula (\code{~ z} for
+column faceting, \code{y ~ x} for grid faceting), or a character string
+naming the faceting variable. Inspired by tinyplot's \code{facet} argument.
+For more control, use \code{\link[=facet_rect]{facet_rect()}} or \code{\link[=facet_circle]{facet_circle()}} instead.}
 }
 \description{
 \code{gg()} is a convenient shorthand for \code{\link[=g2]{g2()}}, inspired by tinyplot's \code{plt()}

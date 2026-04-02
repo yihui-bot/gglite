@@ -82,19 +82,31 @@ assert('g2() formula with extra aesthetics', {
   (chart$aesthetics$color %==% 'Species')
 })
 
-assert('g2() formula with faceting y ~ x | z', {
+assert('g2() formula with | sets color grouping (tinyplot convention)', {
   chart = g2(iris, Sepal.Length ~ Sepal.Width | Species)
   (chart$aesthetics$x %==% 'Sepal.Width')
   (chart$aesthetics$y %==% 'Sepal.Length')
+  (chart$aesthetics$color %==% 'Species')
+  (is.null(chart$facet))
+})
+
+assert('g2() facet argument with one-sided formula', {
+  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', facet = ~Species)
   (chart$facet$type %==% 'facetRect')
   (chart$facet$encode$x %==% 'Species')
 })
 
-assert('g2() formula with two facet variables', {
-  df = data.frame(x = 1, y = 2, a = 'A', b = 'B')
-  chart = g2(df, y ~ x | a + b)
-  (chart$facet$encode$x %==% 'a')
-  (chart$facet$encode$y %==% 'b')
+assert('g2() facet argument with two-sided formula', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp', facet = gear ~ cyl)
+  (chart$facet$type %==% 'facetRect')
+  (chart$facet$encode$x %==% 'cyl')
+  (chart$facet$encode$y %==% 'gear')
+})
+
+assert('g2() facet argument with character string', {
+  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', facet = 'Species')
+  (chart$facet$type %==% 'facetRect')
+  (chart$facet$encode$x %==% 'Species')
 })
 
 assert('g2() formula ~ x1 + x2 + x3 sets position encoding', {

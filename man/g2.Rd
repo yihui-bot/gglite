@@ -14,7 +14,8 @@ g2(
   inset = NULL,
   main = NULL,
   sub = NULL,
-  by = NULL
+  by = NULL,
+  facet = NULL
 )
 }
 \arguments{
@@ -42,6 +43,11 @@ unset.}
 \item{by}{Column name (character string) to group the data by color,
 inspired by tinyplot's \code{by} argument. Equivalent to passing
 \code{color = 'column'}.}
+
+\item{facet}{Faceting specification: a one-sided formula (\code{~ z} for
+column faceting, \code{y ~ x} for grid faceting), or a character string
+naming the faceting variable. Inspired by tinyplot's \code{facet} argument.
+For more control, use \code{\link[=facet_rect]{facet_rect()}} or \code{\link[=facet_circle]{facet_circle()}} instead.}
 }
 \value{
 A \code{g2} object (S3 class).
@@ -60,8 +66,8 @@ argument after \code{data}:
 \item{\code{~ x}}{Maps only \code{x} (e.g., for histograms or bar counts).}
 \item{\code{~ x1 + x2 + x3}}{Creates a \code{position} encoding with multiple
 fields (for parallel coordinates).}
-\item{\code{y ~ x | z}}{Facets the chart by \code{z} (column direction).}
-\item{\code{y ~ x | z1 + z2}}{Facets by \code{z1} (columns) and \code{z2} (rows).}
+\item{\code{y ~ x | z}}{Groups by \code{z} (maps to color), inspired by
+tinyplot's formula convention.}
 }
 Additional aesthetics (e.g., \code{color}, \code{size}) can still be passed as named
 arguments alongside the formula.
@@ -84,4 +90,11 @@ g2(mtcars, hp ~ mpg, main = 'Motor Trend Cars', sub = 'mpg vs hp')
 
 # Grouping by color (like tinyplot's by argument)
 g2(iris, Sepal.Length ~ Sepal.Width, by = 'Species')
+
+# Formula | for color grouping (tinyplot convention)
+g2(iris, Sepal.Length ~ Sepal.Width | Species)
+
+# Faceting via the facet argument (like tinyplot)
+g2(iris, Sepal.Length ~ Sepal.Width, facet = ~Species)
+g2(mtcars, hp ~ mpg, facet = gear ~ cyl)
 }

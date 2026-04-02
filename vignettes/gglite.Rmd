@@ -67,10 +67,16 @@ Additional aesthetics like `color` can be passed alongside the formula:
 g2(iris, Sepal.Length ~ Sepal.Width, color = 'Species')
 ```
 
-Use `|` for faceting:
+Use `|` for color grouping (inspired by tinyplot):
 
 ```{r}
 g2(iris, Sepal.Length ~ Sepal.Width | Species)
+```
+
+Use the `facet` argument for faceting (also inspired by tinyplot):
+
+```{r}
+g2(iris, Sepal.Length ~ Sepal.Width, facet = ~Species)
 ```
 
 A one-sided formula maps only `x` (useful for histograms or counts):
