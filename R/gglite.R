@@ -41,7 +41,7 @@ g2_mod = function(fn, args = list()) {
 #' If `chart` is a `g2` object, return `NULL` so the caller proceeds normally.
 #' If `chart` is a `g2_mod` (from a piped modifier), compose the two modifiers
 #' so that mixing `|>` and `+` operators works correctly. Otherwise, capture
-#' the arguments into a [g2_mod()] closure for later application via `+`.
+#' the arguments into a `g2_mod()` closure for later application via `+`.
 #'
 #' @param fn The modifier function to defer to.
 #' @param chart The `chart` argument from the modifier.
