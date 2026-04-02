@@ -1,3 +1,64 @@
+# ---- Auto mark helpers ----
+
+#' Classify a Variable's Type
+#'
+#' Returns `'date'`, `'categorical'`, or `'numeric'` for a given vector, or
+#' `'none'` when `NULL`.
+#'
+#' @param x A vector (or `NULL`).
+#' @return A single character string.
+#' @noRd
+var_type = function(x) {
+  if (is.null(x)) return('none')
+  if (inherits(x, 'Date') || inherits(x, 'POSIXt')) return('date')
+  if (is.character(x) || is.factor(x) || is.logical(x)) return('categorical')
+  'numeric'
+}
+
+#' Choose a Mark Automatically
+#'
+#' Inspect the types of the `x` and `y` columns referenced in `aesthetics` and
+#' return a suitable mark definition (and optional coordinate override). Returns
+#' `NULL` when automatic detection is not possible.
+#'
+#' @param data A data frame.
+#' @param aesthetics A named list of aesthetic mappings (column names).
+#' @return A list with elements `mark` (a layer list) and `coord` (a coordinate
+#'   list or `NULL`), or `NULL`.
+#' @noRd
+auto_mark = function(data, aesthetics) {
+  if (is.null(data) || !is.data.frame(data)) return(NULL)
+  x_col = aesthetics$x
+  y_col = aesthetics$y
+  x = if (!is.null(x_col) && x_col %in% names(data)) data[[x_col]]
+  y = if (!is.null(y_col) && y_col %in% names(data)) data[[y_col]]
+  xt = var_type(x)
+  yt = var_type(y)
+  mark = NULL
+  coord = NULL
+  if (xt == 'numeric' && yt == 'numeric') {
+    mark = list(type = 'point', style = list(shape = 'point'))
+  } else if (xt == 'categorical' && yt == 'numeric') {
+    mark = list(type = 'interval')
+  } else if (xt == 'numeric' && yt == 'categorical') {
+    mark = list(type = 'interval',
+      encode = list(x = y_col, y = x_col))
+    coord = list(type = 'transpose')
+  } else if (xt == 'categorical' && yt == 'categorical') {
+    mark = list(type = 'cell')
+  } else if (xt == 'date' && yt == 'numeric') {
+    mark = list(type = 'line')
+  } else if (xt == 'numeric' && yt == 'none') {
+    mark = list(type = 'interval',
+      transform = list(list(type = 'binX', y = 'count')))
+  } else if (xt == 'categorical' && yt == 'none') {
+    mark = list(type = 'interval',
+      transform = list(list(type = 'groupX', y = 'count')))
+  }
+  if (is.null(mark)) return(NULL)
+  list(mark = mark, coord = coord)
+}
+
 # ---- Configuration builder ----
 
 #' Build G2 Spec
@@ -27,6 +88,22 @@ build_config = function(chart) {
     if (length(extra)) m = modifyList(m, extra)
     m
   })
+
+  # Auto-detect mark type when no layers are configured
+  if (!length(marks) && !is.null(chart$data)) {
+    auto = auto_mark(chart$data, chart$aesthetics)
+    if (!is.null(auto)) {
+      m = list(type = auto$mark$type)
+      enc = chart$aesthetics
+      if (length(enc)) m$encode = enc
+      extra = auto$mark[setdiff(names(auto$mark), 'type')]
+      if (length(extra)) m = modifyList(m, extra)
+      marks = list(m)
+      if (!is.null(auto$coord) && is.null(chart$coords))
+        config$coordinate = auto$coord
+    }
+  }
+
   if (length(marks)) config$children = marks
 
   # Chart-wide config

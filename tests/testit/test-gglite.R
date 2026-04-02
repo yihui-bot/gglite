@@ -275,3 +275,88 @@ assert('build_config includes layout options', {
   (config$insetBottom %==% 5)
   (is.null(config$insetRight))
 })
+
+# ---- Auto mark detection ----
+
+assert('var_type classifies correctly', {
+  (var_type(NULL) %==% 'none')
+  (var_type(1:5) %==% 'numeric')
+  (var_type(c(1.0, 2.0)) %==% 'numeric')
+  (var_type(c('a', 'b')) %==% 'categorical')
+  (var_type(factor(c('x', 'y'))) %==% 'categorical')
+  (var_type(c(TRUE, FALSE)) %==% 'categorical')
+  (var_type(Sys.Date()) %==% 'date')
+  (var_type(Sys.time()) %==% 'date')
+})
+
+assert('auto_mark returns NULL for non-data-frame or missing aesthetics', {
+  (is.null(auto_mark(NULL, list(x = 'a'))))
+  (is.null(auto_mark(mtcars, list())))
+})
+
+assert('auto_mark: numeric x + numeric y -> point', {
+  res = auto_mark(mtcars, list(x = 'mpg', y = 'hp'))
+  (res$mark$type %==% 'point')
+  (is.null(res$coord))
+})
+
+assert('auto_mark: categorical x + numeric y -> interval', {
+  res = auto_mark(iris, list(x = 'Species', y = 'Sepal.Width'))
+  (res$mark$type %==% 'interval')
+  (is.null(res$coord))
+})
+
+assert('auto_mark: numeric x + categorical y -> interval + transpose', {
+  res = auto_mark(iris, list(x = 'Sepal.Width', y = 'Species'))
+  (res$mark$type %==% 'interval')
+  (res$coord$type %==% 'transpose')
+})
+
+assert('auto_mark: categorical x + categorical y -> cell', {
+  df = data.frame(a = c('x', 'y'), b = c('m', 'n'))
+  res = auto_mark(df, list(x = 'a', y = 'b'))
+  (res$mark$type %==% 'cell')
+})
+
+assert('auto_mark: date x + numeric y -> line', {
+  df = data.frame(d = Sys.Date() + 1:5, v = 1:5)
+  res = auto_mark(df, list(x = 'd', y = 'v'))
+  (res$mark$type %==% 'line')
+})
+
+assert('auto_mark: numeric x + no y -> interval with binX', {
+  res = auto_mark(mtcars, list(x = 'mpg'))
+  (res$mark$type %==% 'interval')
+  (res$mark$transform[[1]]$type %==% 'binX')
+})
+
+assert('auto_mark: categorical x + no y -> interval with groupX', {
+  res = auto_mark(iris, list(x = 'Species'))
+  (res$mark$type %==% 'interval')
+  (res$mark$transform[[1]]$type %==% 'groupX')
+})
+
+assert('build_config uses auto mark when no layers are set', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp')
+  config = build_config(chart)
+  (length(config$children) %==% 1L)
+  (config$children[[1]]$type %==% 'point')
+  (config$children[[1]]$encode$x %==% 'mpg')
+})
+
+assert('build_config auto mark does not override explicit layers', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_line()
+  config = build_config(chart)
+  (length(config$children) %==% 1L)
+  (config$children[[1]]$type %==% 'line')
+})
+
+assert('build_config auto mark adds transpose for numeric x + cat y', {
+  chart = g2(iris, x = 'Sepal.Width', y = 'Species')
+  config = build_config(chart)
+  (config$children[[1]]$type %==% 'interval')
+  (config$coordinate$type %==% 'transpose')
+  # Encodings are swapped so x = 'Species', y = 'Sepal.Width'
+  (config$children[[1]]$encode$x %==% 'Species')
+  (config$children[[1]]$encode$y %==% 'Sepal.Width')
+})
