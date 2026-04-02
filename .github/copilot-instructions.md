@@ -175,6 +175,8 @@ Before submitting changes:
    consistent formatting and line length.
 9. **JavaScript in R**: Use `const` and arrow functions (`=>`) in JS,
    `type="module"` for inline scripts, `defer` for external scripts.
+10. **Implicit NULL**: Don't write `if (cond) foo else NULL`; the `else NULL`
+    is unnecessary since R's `if` without `else` already returns `NULL`.
 
 ### Variables Are Character Strings
 
