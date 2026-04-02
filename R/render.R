@@ -30,7 +30,8 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
   cat_num_marks = function(cat_var) {
     if (!anyDuplicated(cat_var)) return(list(list(type = 'interval')))
     bee = list(type = 'beeswarm')
-    if (min(table(cat_var)) >= 30) list(bee, list(type = 'boxplot'))
+    freq = table(cat_var)
+    if (length(freq) && min(freq) >= 30) list(bee, list(type = 'boxplot'))
     else list(bee)
   }
 
