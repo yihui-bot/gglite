@@ -2,7 +2,7 @@
 % Please edit documentation in R/mark.R
 \name{mark_partition}
 \alias{mark_partition}
-\title{Add a Partition (Sunburst) Mark}
+\title{Add a Partition (Icicle) Mark}
 \usage{
 mark_partition(chart = NULL, ...)
 }
@@ -13,6 +13,8 @@ mark_partition(chart = NULL, ...)
 \code{transform}, \code{style}, \code{animate}, \code{labels}, \code{tooltip}, \code{axis}, \code{legend}.}
 }
 \description{
-Note: the \code{partition} mark may not work correctly in G2 v5. Consider using
-\code{\link[=mark_treemap]{mark_treemap()}} as an alternative for hierarchical data visualization.
+A composite mark for hierarchical icicle chart visualization. For a radial
+(sunburst) layout, use \code{\link[=mark_sunburst]{mark_sunburst()}} instead. The data should be a
+nested tree structure wrapped in a list, e.g.,
+\code{data = list(type = 'inline', value = list(tree))}.
 }

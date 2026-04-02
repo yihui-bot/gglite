@@ -13,7 +13,12 @@ mark_density(chart = NULL, ...)
 \code{transform}, \code{style}, \code{animate}, \code{labels}, \code{tooltip}, \code{axis}, \code{legend}.}
 }
 \description{
-A composite mark for kernel density estimation visualization. Note that
-G2 v5 does not support the \code{kde} transform; use \code{\link[=mark_heatmap]{mark_heatmap()}} as an
-alternative for 2-D density visualizations.
+Visualize probability density distribution using kernel density estimation
+(KDE). When the chart has a numeric \code{x} aesthetic, the KDE transform and
+encodings are configured automatically: the density is computed for the \code{x}
+column, and if \code{color} is also mapped, separate density curves are drawn for
+each group. Explicit \code{data}/\code{encode} in \code{...} bypass this auto-configuration.
+}
+\examples{
+g2(iris, x = 'Sepal.Width', color = 'Species') |> mark_density()
 }
