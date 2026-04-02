@@ -6,6 +6,13 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+```{r, setup, include = FALSE}
+if (!exists('penguins')) {
+  load(con <- url('https://cdn.jsdelivr.net/gh/r-devel/r-svn/src/library/datasets/data/penguins.rda'))
+  close(con)
+}
+```
+
 The **gglite** package provides a lightweight R interface to the
 [AntV G2](https://g2.antv.antgroup.com/) JavaScript visualization library. It
 follows the _Grammar of Graphics_ framework---the same theoretical foundation
