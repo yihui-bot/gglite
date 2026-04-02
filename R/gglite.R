@@ -41,7 +41,7 @@ g2_mod = function(fn, args = list()) {
 #' If `chart` is a `g2` object, return `NULL` so the caller proceeds normally.
 #' If `chart` is a `g2_mod` (from a piped modifier), compose the two modifiers
 #' so that mixing `|>` and `+` operators works correctly. Otherwise, capture
-#' the arguments into a [g2_mod()] closure for later application via `+`.
+#' the arguments into a `g2_mod()` closure for later application via `+`.
 #'
 #' @param fn The modifier function to defer to.
 #' @param chart The `chart` argument from the modifier.
@@ -135,7 +135,7 @@ check_chart = function(fn, chart, args) {
 #' # Title and subtitle
 #' g2(mtcars, hp ~ mpg, title = 'Motor Trend Cars', subtitle = 'mpg vs hp')
 g2 = function(
-  data = NULL, ..., width = 640, height = 480,
+  data = NULL, ..., width = NULL, height = 480,
   padding = NULL, margin = NULL, inset = NULL,
   title = NULL, subtitle = NULL
 ) {
@@ -157,7 +157,7 @@ g2 = function(
   }
   chart = structure(list(
     data = data,
-    options = list(width = width, height = height, autoFit = TRUE),
+    options = list(width = width, height = height, autoFit = if (is.null(width)) TRUE),
     layers = list(),
     scales = list(),
     coords = NULL,
