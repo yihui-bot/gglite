@@ -55,6 +55,9 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #' @param main Chart title string, a convenient alternative to calling
 #'   [title_()] separately (inspired by base [plot()] and tinyplot).
 #' @param sub Chart subtitle string. Only used when `main` is also provided.
+#' @param by Column name (character string) to group the data by color,
+#'   inspired by tinyplot's `by` argument. Equivalent to passing
+#'   `color = 'column'`.
 #' @return A `g2` object (S3 class).
 #' @import stats utils
 #' @export
@@ -72,10 +75,13 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'
 #' # Title and subtitle (like base plot's main/sub)
 #' g2(mtcars, hp ~ mpg, main = 'Motor Trend Cars', sub = 'mpg vs hp')
+#'
+#' # Grouping by color (like tinyplot's by argument)
+#' g2(iris, Sepal.Length ~ Sepal.Width, by = 'Species')
 g2 = function(
   data = NULL, ..., width = 640, height = 480,
   padding = NULL, margin = NULL, inset = NULL,
-  main = NULL, sub = NULL
+  main = NULL, sub = NULL, by = NULL
 ) {
   dots = list(...)
   has_formula = length(dots) && inherits(dots[[1]], 'formula')
@@ -117,6 +123,7 @@ g2 = function(
     )
   ), class = 'g2')
   if (length(dots)) chart$aesthetics = modifyList(chart$aesthetics, dots)
+  if (!is.null(by)) chart$aesthetics$color = by
   chart
 }
 

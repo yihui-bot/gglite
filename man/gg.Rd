@@ -13,7 +13,8 @@ gg(
   margin = NULL,
   inset = NULL,
   main = NULL,
-  sub = NULL
+  sub = NULL,
+  by = NULL
 )
 }
 \arguments{
@@ -37,6 +38,10 @@ unset.}
 \code{\link[=title_]{title_()}} separately (inspired by base \code{\link[=plot]{plot()}} and tinyplot).}
 
 \item{sub}{Chart subtitle string. Only used when \code{main} is also provided.}
+
+\item{by}{Column name (character string) to group the data by color,
+inspired by tinyplot's \code{by} argument. Equivalent to passing
+\code{color = 'column'}.}
 }
 \description{
 \code{gg()} is a convenient shorthand for \code{\link[=g2]{g2()}}, inspired by tinyplot's \code{plt()}

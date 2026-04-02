@@ -13,7 +13,8 @@ g2(
   margin = NULL,
   inset = NULL,
   main = NULL,
-  sub = NULL
+  sub = NULL,
+  by = NULL
 )
 }
 \arguments{
@@ -37,6 +38,10 @@ unset.}
 \code{\link[=title_]{title_()}} separately (inspired by base \code{\link[=plot]{plot()}} and tinyplot).}
 
 \item{sub}{Chart subtitle string. Only used when \code{main} is also provided.}
+
+\item{by}{Column name (character string) to group the data by color,
+inspired by tinyplot's \code{by} argument. Equivalent to passing
+\code{color = 'column'}.}
 }
 \value{
 A \code{g2} object (S3 class).
@@ -76,4 +81,7 @@ g2(EuStockMarkets)
 
 # Title and subtitle (like base plot's main/sub)
 g2(mtcars, hp ~ mpg, main = 'Motor Trend Cars', sub = 'mpg vs hp')
+
+# Grouping by color (like tinyplot's by argument)
+g2(iris, Sepal.Length ~ Sepal.Width, by = 'Species')
 }

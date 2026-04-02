@@ -121,3 +121,8 @@ assert('g2() main and sub arguments set title and subtitle', {
   (chart$chart_title$title %==% 'Title')
   (chart$chart_title$subtitle %==% 'Subtitle')
 })
+
+assert('g2() by argument sets color aesthetic', {
+  chart = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', by = 'Species')
+  (chart$aesthetics$color %==% 'Species')
+})
