@@ -103,3 +103,10 @@ assert('g2() formula ~ x1 + x2 + x3 sets position encoding', {
     c('Sepal.Length', 'Sepal.Width', 'Petal.Length'))
   (is.null(chart$aesthetics$x))
 })
+
+assert('gg() is a shorthand alias for g2()', {
+  chart = gg(mtcars, x = 'mpg', y = 'hp')
+  (inherits(chart, 'g2'))
+  (chart$aesthetics$x %==% 'mpg')
+  (chart$aesthetics$y %==% 'hp')
+})

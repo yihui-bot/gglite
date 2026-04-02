@@ -128,4 +128,14 @@ encode = function(chart, ...) {
   chart
 }
 
+#' Shorthand Alias for [g2()]
+#'
+#' `gg()` is a convenient shorthand for [g2()], inspired by tinyplot's `plt()`
+#' alias. All arguments are passed through to [g2()].
+#'
+#' @inheritParams g2
+#' @export
+#' @examples
+#' gg(mtcars, x = 'mpg', y = 'hp')
+gg = g2
 
