@@ -12,13 +12,8 @@
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> mark_('point')
 mark_ = function(chart = NULL, type, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(type)) list(type), list(...)
-    )
-    return(g2_mod(mark_, args))
-  }
+  mod = check_chart(mark_, chart, c(if (!missing(type)) list(type), list(...)))
+  if (!is.null(mod)) return(mod)
   layer = list(type = type)
   opts = list(...)
   if (length(opts)) layer = modifyList(layer, opts)

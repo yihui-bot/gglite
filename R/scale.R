@@ -26,13 +26,8 @@
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
 #'   scale_('color', palette = 'category10')
 scale_ = function(chart = NULL, field, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(field)) list(field), list(...)
-    )
-    return(g2_mod(scale_, args))
-  }
+  mod = check_chart(scale_, chart, c(if (!missing(field)) list(field), list(...)))
+  if (!is.null(mod)) return(mod)
   chart$scales[[field]] = list(...)
   chart
 }

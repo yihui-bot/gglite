@@ -25,10 +25,8 @@
 #'   mark_point() |>
 #'   animate(FALSE)
 animate = function(chart = NULL, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(if (!is.null(chart)) list(chart), list(...))
-    return(g2_mod(animate, args))
-  }
+  mod = check_chart(animate, chart, list(...))
+  if (!is.null(mod)) return(mod)
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting animation')
   args = list(...)

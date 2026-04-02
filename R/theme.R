@@ -32,13 +32,8 @@
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   theme_('academy')
 theme_ = function(chart = NULL, type, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(type)) list(type), list(...)
-    )
-    return(g2_mod(theme_, args))
-  }
+  mod = check_chart(theme_, chart, c(if (!missing(type)) list(type), list(...)))
+  if (!is.null(mod)) return(mod)
   if (is.character(type)) {
     chart$theme = c(list(type = type), list(...))
   } else {

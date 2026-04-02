@@ -14,13 +14,8 @@
 #'   axis_('x', title = 'Miles per Gallon') |>
 #'   axis_('y', title = 'Horsepower')
 axis_ = function(chart = NULL, channel, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(channel)) list(channel), list(...)
-    )
-    return(g2_mod(axis_, args))
-  }
+  mod = check_chart(axis_, chart, c(if (!missing(channel)) list(channel), list(...)))
+  if (!is.null(mod)) return(mod)
   args = list(...)
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$axes[[channel]] = args[[1]]
@@ -63,13 +58,8 @@ axis_y = function(chart = NULL, ...) axis_(chart, 'y', ...)
 #' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
 #'   legend_('color', position = 'right')
 legend_ = function(chart = NULL, channel, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(channel)) list(channel), list(...)
-    )
-    return(g2_mod(legend_, args))
-  }
+  mod = check_chart(legend_, chart, c(if (!missing(channel)) list(channel), list(...)))
+  if (!is.null(mod)) return(mod)
   args = list(...)
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$legends[[channel]] = args[[1]]
@@ -134,13 +124,8 @@ legend_opacity = function(chart = NULL, ...) legend_(chart, 'opacity', ...)
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   title_('Motor Trend Cars', subtitle = 'mpg vs hp')
 title_ = function(chart = NULL, text, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(text)) list(text), list(...)
-    )
-    return(g2_mod(title_, args))
-  }
+  mod = check_chart(title_, chart, c(if (!missing(text)) list(text), list(...)))
+  if (!is.null(mod)) return(mod)
   dots = list(...)
   if (length(dots)) {
     chart$chart_title = c(list(title = text), dots)
@@ -164,10 +149,8 @@ title_ = function(chart = NULL, text, ...) {
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   tooltip_(crosshairs = TRUE)
 tooltip_ = function(chart = NULL, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(if (!is.null(chart)) list(chart), list(...))
-    return(g2_mod(tooltip_, args))
-  }
+  mod = check_chart(tooltip_, chart, list(...))
+  if (!is.null(mod)) return(mod)
   args = list(...)
   if (length(args) == 1 && is.logical(args[[1]])) {
     chart$tooltip_config = args[[1]]
@@ -193,10 +176,8 @@ tooltip_ = function(chart = NULL, ...) {
 #'   mark_interval() |>
 #'   labels_(text = 'y', position = 'inside')
 labels_ = function(chart = NULL, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(if (!is.null(chart)) list(chart), list(...))
-    return(g2_mod(labels_, args))
-  }
+  mod = check_chart(labels_, chart, list(...))
+  if (!is.null(mod)) return(mod)
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting labels')
   chart$layers[[n]]$labels = c(chart$layers[[n]]$labels, list(list(...)))
@@ -215,10 +196,8 @@ labels_ = function(chart = NULL, ...) {
 #'   mark_point() |>
 #'   style_mark(fill = 'steelblue', stroke = 'white', lineWidth = 1)
 style_mark = function(chart = NULL, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(if (!is.null(chart)) list(chart), list(...))
-    return(g2_mod(style_mark, args))
-  }
+  mod = check_chart(style_mark, chart, list(...))
+  if (!is.null(mod)) return(mod)
   n = length(chart$layers)
   if (n == 0) stop('add a mark before setting style')
   chart$layers[[n]]$style = list(...)
@@ -238,13 +217,8 @@ style_mark = function(chart = NULL, ...) {
 #' g2(mtcars, x = 'mpg', y = 'hp') |>
 #'   slider_('x')
 slider_ = function(chart = NULL, channel, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(channel)) list(channel), list(...)
-    )
-    return(g2_mod(slider_, args))
-  }
+  mod = check_chart(slider_, chart, c(if (!missing(channel)) list(channel), list(...)))
+  if (!is.null(mod)) return(mod)
   if (is.null(chart$sliders)) chart$sliders = list()
   args = list(...)
   chart$sliders[[channel]] = if (length(args)) args else TRUE
@@ -282,13 +256,8 @@ slider_y = function(chart = NULL, ...) slider_(chart, 'y', ...)
 #'   mark_line() |>
 #'   scrollbar_('x')
 scrollbar_ = function(chart = NULL, channel, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(channel)) list(channel), list(...)
-    )
-    return(g2_mod(scrollbar_, args))
-  }
+  mod = check_chart(scrollbar_, chart, c(if (!missing(channel)) list(channel), list(...)))
+  if (!is.null(mod)) return(mod)
   if (is.null(chart$scrollbars)) chart$scrollbars = list()
   args = list(...)
   chart$scrollbars[[channel]] = if (length(args)) args else TRUE

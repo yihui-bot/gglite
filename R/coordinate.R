@@ -55,13 +55,8 @@
 #'   scale_y(domainMin = 0, domainMax = 100) |>
 #'   axis_x(grid = TRUE)
 coord_ = function(chart = NULL, type, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(
-      if (!is.null(chart)) list(chart),
-      if (!missing(type)) list(type), list(...)
-    )
-    return(g2_mod(coord_, args))
-  }
+  mod = check_chart(coord_, chart, c(if (!missing(type)) list(type), list(...)))
+  if (!is.null(mod)) return(mod)
   chart$coords = c(list(type = type), list(...))
   chart
 }
@@ -80,7 +75,8 @@ coord_ = function(chart = NULL, type, ...) {
 #'   mark_interval() |>
 #'   coord_transpose()
 coord_transpose = function(chart = NULL) {
-  if (is.null(chart)) return(g2_mod(coord_transpose, list()))
+  mod = check_chart(coord_transpose, chart, list())
+  if (!is.null(mod)) return(mod)
   if (is.null(chart$coords)) chart$coords = list()
   chart$coords$transform = c(
     chart$coords$transform, list(list(type = 'transpose'))

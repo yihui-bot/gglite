@@ -36,6 +36,22 @@ g2_mod = function(fn, args = list()) {
   f
 }
 
+#' Check Chart and Defer if Needed
+#'
+#' If `chart` is a `g2` object, return `NULL` so the caller proceeds normally.
+#' Otherwise, capture the arguments into a [g2_mod()] closure for later
+#' application via `+`.
+#'
+#' @param fn The modifier function to defer to.
+#' @param chart The `chart` argument from the modifier.
+#' @param args A list of remaining arguments (excluding `chart`).
+#' @return `NULL` if `chart` is a `g2` object, or a `g2_mod` closure.
+#' @noRd
+check_chart = function(fn, chart, args) {
+  if (inherits(chart, 'g2')) return()
+  g2_mod(fn, c(if (!is.null(chart)) list(chart), args))
+}
+
 #' Add a Modifier to a G2 Chart
 #'
 #' Enables ggplot2-style `+` syntax for building charts. The right-hand side
@@ -169,10 +185,8 @@ g2 = function(
 #' @examples
 #' g2(mtcars) |> encode(x = 'mpg', y = 'hp')
 encode = function(chart = NULL, ...) {
-  if (is.null(chart) || !inherits(chart, 'g2')) {
-    args = c(if (!is.null(chart)) list(chart), list(...))
-    return(g2_mod(encode, args))
-  }
+  mod = check_chart(encode, chart, list(...))
+  if (!is.null(mod)) return(mod)
   chart$aesthetics = modifyList(chart$aesthetics, list(...))
   chart
 }
