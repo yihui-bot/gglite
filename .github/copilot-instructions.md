@@ -97,7 +97,10 @@ in headless browsers (Playwright or Puppeteer) and attach them to the PR.
 
 ### G2 Reference
 
-When in doubt about G2 features, marks, or coordinate systems, always refer to:
+When dealing with issues that you cannot solve easily, you should dig into G2's
+source code and documentation, which have been checked out to the directory `G2`
+under the root directory for you. Use that as the source of truth.
+
 - **G2 source repository**: https://github.com/antvis/G2
 - **G2 documentation site**: https://g2.antv.antgroup.com
 
