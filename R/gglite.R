@@ -53,8 +53,7 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.30/js/g2-patche
 #'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
 #'   unset.
 #' @return A `g2` object (S3 class).
-#' @importFrom utils modifyList
-#' @importFrom stats is.ts time
+#' @import stats utils
 #' @export
 #' @examples
 #' g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
