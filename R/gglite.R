@@ -79,7 +79,9 @@ g2 = function(
   }
   # Convert time series to data frame with default aesthetics
   ts_aes = NULL
+  ts_name = NULL
   if (is.ts(data)) {
+    ts_name = deparse(substitute(data))
     converted = ts_to_df(data)
     data = converted$data
     ts_aes = converted$aesthetics
@@ -93,6 +95,7 @@ g2 = function(
     interactions = list(),
     aesthetics = if (!is.null(ts_aes) && !has_formula) ts_aes else list(),
     ts_origin = !is.null(ts_aes),
+    ts_name = ts_name,
     theme = NULL,
     axes = list(),
     legends = list(),

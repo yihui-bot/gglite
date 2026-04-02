@@ -197,3 +197,21 @@ assert('g2() ts aesthetics can be overridden', {
   (chart$aesthetics$y %==% 'value')
   (chart$aesthetics$size %==% 'value')
 })
+
+assert('build_config sets default y-axis title from ts name', {
+  chart = g2(sunspot.year)
+  config = build_config(chart)
+  (config$axis$y$title %==% 'sunspot.year')
+})
+
+assert('build_config ts y-axis title not set for non-ts data', {
+  chart = g2(mtcars, x = 'mpg', y = 'hp')
+  config = build_config(chart)
+  (is.null(config$axis$y$title))
+})
+
+assert('build_config ts y-axis title does not override user title', {
+  chart = g2(sunspot.year) |> axis_y(title = 'My Title')
+  config = build_config(chart)
+  (config$axis$y$title %==% 'My Title')
+})

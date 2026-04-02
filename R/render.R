@@ -102,6 +102,12 @@ build_config = function(chart) {
   if (!is.null(chart$coords)) config$coordinate = chart$coords
   if (length(chart$interactions)) config$interaction = chart$interactions
   if (length(chart$axes)) config$axis = chart$axes
+  # Default y-axis title for time series data (use data object name)
+  if (isTRUE(chart$ts_origin) && !is.null(chart$ts_name)) {
+    y_ax = config$axis$y
+    if (is.null(y_ax) || (is.list(y_ax) && is.null(y_ax$title)))
+      config$axis$y = modifyList(as.list(y_ax), list(title = chart$ts_name))
+  }
   if (length(chart$legends)) config$legend = chart$legends
   if (!is.null(chart$chart_title)) config$title = chart$chart_title
   if (!is.null(chart$tooltip_config)) config$tooltip = chart$tooltip_config
