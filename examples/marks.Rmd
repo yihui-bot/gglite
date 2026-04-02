@@ -254,6 +254,30 @@ g2(df, x = 'x', y = 'y') |>
 g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
 ```
 
+## Beeswarm Mark
+
+The `beeswarm` mark uses force simulation to arrange individual data points
+without overlap, creating a beeswarm layout useful for visualizing distributions
+within categories.
+
+```{r}
+g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_beeswarm()
+```
+
+### Beeswarm with color
+
+```{r}
+g2(iris, x = 'Species', y = 'Sepal.Width', color = 'Species') |>
+  mark_beeswarm()
+```
+
+### Beeswarm + box plot overlay
+
+```{r}
+g2(iris, x = 'Species', y = 'Sepal.Width') |>
+  mark_beeswarm() |> mark_boxplot()
+```
+
 ## Liquid Mark
 
 ```{r}
