@@ -148,14 +148,24 @@ mark based on the types of the `x` and `y` variables:
 | `x` type | `y` type | Mark | Chart type |
 |-----------|----------|------|------------|
 | numeric | numeric | `point` | Scatter plot |
-| categorical | numeric | `boxplot` | Box plot |
-| numeric | categorical | `boxplot` (transposed) | Horizontal box plot |
+| categorical (unique) | numeric | `interval` | Bar plot |
+| categorical (repeated) | numeric | `beeswarm` | Beeswarm plot |
+| categorical (repeated, n ≥ 30) | numeric | `beeswarm` + `boxplot` | Beeswarm + box plot |
+| numeric | categorical (unique) | `interval` (transposed) | Horizontal bar plot |
+| numeric | categorical (repeated) | `beeswarm` (transposed) | Horizontal beeswarm |
+| numeric | categorical (repeated, n ≥ 30) | `beeswarm` + `boxplot` (transposed) | Horizontal beeswarm + box plot |
 | categorical | categorical | `cell` + `group` | Contingency table |
 | Date | numeric | `line` | Line chart |
 | `ts`/`mts` | _(auto)_ | `line` | Time series line chart |
 | numeric | _(none)_ | `interval` + `binX` | Histogram |
 | categorical | _(none)_ | `interval` + `groupX` | Count bar chart |
 | _(position)_ | _(none)_ | `line` + parallel | Parallel coordinates |
+
+When `x` (or `y`) is categorical, the choice depends on whether the categories
+are unique in the data. If every category appears exactly once, a bar plot
+(`interval`) is drawn. If categories are repeated, a beeswarm plot shows
+individual data points. When the smallest group has at least 30 observations, a
+box plot is overlaid on the beeswarm for a summary view.
 
 This means you can often skip the mark entirely:
 
@@ -165,13 +175,33 @@ This means you can often skip the mark entirely:
 g2(penguins, bill_len ~ bill_dep, color = 'species')
 ```
 
-### Box plot (categorical × numeric)
+### Bar plot (categorical × numeric, unique categories)
+
+When each category appears once, a bar chart is drawn:
+
+```{r}
+df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
+g2(df, y ~ x)
+```
+
+### Beeswarm plot (categorical × numeric, repeated categories)
+
+When categories are repeated, individual points are shown in a beeswarm layout:
+
+```{r}
+g2(iris, Sepal.Width ~ Species)
+```
+
+### Beeswarm + box plot (categorical × numeric, large groups)
+
+When every group has at least 30 observations, a box plot is overlaid on the
+beeswarm:
 
 ```{r}
 g2(penguins, bill_len ~ species)
 ```
 
-### Horizontal box plot (numeric × categorical)
+### Horizontal beeswarm (numeric × categorical)
 
 ```{r}
 g2(penguins, species ~ bill_len)

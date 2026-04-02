@@ -15,7 +15,7 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
 
   # Multi-field position encoding → line mark + parallel coordinates
   if (length(aesthetics$position) > 1)
-    return(list(mark = list(type = 'line'), coord = list(type = 'parallel')))
+    return(list(marks = list(list(type = 'line')), coord = list(type = 'parallel')))
 
   x_col = aesthetics$x
   y_col = aesthetics$y
@@ -24,28 +24,43 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
   xt = var_type(x)
   yt = var_type(y)
   coord = NULL
-  mark = if (ts && xt == 'numeric' && yt == 'numeric') {
-    list(type = 'line')
+
+  # For categorical vs numeric: bar if categories are unique, beeswarm if
+  # repeated, and overlay boxplot when the smallest group has >= 30 values
+  cat_num_marks = function(cat_var) {
+    if (!anyDuplicated(cat_var)) return(list(list(type = 'interval')))
+    bee = list(type = 'beeswarm')
+    if (min(table(cat_var)) >= 30) list(bee, list(type = 'boxplot'))
+    else list(bee)
+  }
+
+  marks = if (ts && xt == 'numeric' && yt == 'numeric') {
+    list(list(type = 'line'))
   } else if (xt == 'numeric' && yt == 'numeric') {
-    list(type = 'point', style = list(shape = 'point'))
+    list(list(type = 'point', style = list(shape = 'point')))
   } else if (xt == 'categorical' && yt == 'numeric') {
-    list(type = 'boxplot')
+    cat_num_marks(x)
   } else if (xt == 'numeric' && yt == 'categorical') {
     coord = list(transform = list(list(type = 'transpose')))
-    list(type = 'boxplot', encode = list(x = y_col, y = x_col))
+    enc = list(x = y_col, y = x_col)
+    lapply(cat_num_marks(y), function(m) modifyList(m, list(encode = enc)))
   } else if (xt == 'categorical' && yt == 'categorical') {
-    if (is.null(aesthetics$color)) list(
+    if (is.null(aesthetics$color)) list(list(
       type = 'cell', encode = list(color = 'count'),
       transform = list(list(type = 'group', color = 'count'))
-    ) else list(type = 'cell')
+    )) else list(list(type = 'cell'))
   } else if (xt == 'date' && yt == 'numeric') {
-    list(type = 'line')
+    list(list(type = 'line'))
   } else if (xt == 'numeric' && yt == 'none') {
-    list(type = 'interval', transform = list(list(type = 'binX', y = 'count')))
+    list(list(
+      type = 'interval', transform = list(list(type = 'binX', y = 'count'))
+    ))
   } else if (xt == 'categorical' && yt == 'none') {
-    list(type = 'interval', transform = list(list(type = 'groupX', y = 'count')))
+    list(list(
+      type = 'interval', transform = list(list(type = 'groupX', y = 'count'))
+    ))
   }
-  if (!is.null(mark)) list(mark = mark, coord = coord)
+  if (length(marks)) list(marks = marks, coord = coord)
 }
 
 # ---- Configuration builder ----
@@ -82,14 +97,15 @@ build_config = function(chart) {
   if (!length(marks) && !is.null(chart$data)) {
     auto = auto_mark(chart$data, chart$aesthetics, ts = isTRUE(chart$ts_origin))
     if (!is.null(auto)) {
-      m = list(type = auto$mark$type)
-      enc = chart$aesthetics
-      if (!is.null(auto$mark$encode))
-        enc = modifyList(enc, auto$mark$encode)
-      if (length(enc)) m$encode = enc
-      extra = auto$mark[setdiff(names(auto$mark), c('type', 'encode'))]
-      if (length(extra)) m = modifyList(m, extra)
-      marks = list(m)
+      marks = lapply(auto$marks, function(am) {
+        m = list(type = am$type)
+        enc = chart$aesthetics
+        if (!is.null(am$encode)) enc = modifyList(enc, am$encode)
+        if (length(enc)) m$encode = enc
+        extra = am[setdiff(names(am), c('type', 'encode'))]
+        if (length(extra)) m = modifyList(m, extra)
+        m
+      })
       if (!is.null(auto$coord) && is.null(chart$coords))
         config$coordinate = auto$coord
     }
