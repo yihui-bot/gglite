@@ -105,7 +105,7 @@ build_config = function(chart) {
   # Default y-axis title for time series data (use data object name)
   if (isTRUE(chart$ts_origin) && !is.null(chart$ts_name)) {
     y_ax = config$axis$y
-    if (is.null(y_ax) || (is.list(y_ax) && is.null(y_ax$title)))
+    if (is.null(y_ax$title))
       config$axis$y = modifyList(as.list(y_ax), list(title = chart$ts_name))
   }
   if (length(chart$legends)) config$legend = chart$legends
