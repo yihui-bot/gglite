@@ -8,3 +8,4 @@ test-all.mjs
 examples/*.html
 G2/
 node_modules/
+vignettes/*.html
