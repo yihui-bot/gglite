@@ -30,6 +30,7 @@ tree = list(name = 'root', children = list(
 ))
 g2() |> mark_sunburst(
   data = list(type = 'inline', value = list(tree)),
-  encode = list(value = 'value')
+  encode = list(value = 'value', color = 'name'),
+  labels = list(list(text = 'name'))
 )
 }
