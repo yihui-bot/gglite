@@ -32,7 +32,7 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
     bee = list(type = 'beeswarm')
     freq = table(cat_var)
     if (length(freq) && min(freq) >= 30) list(
-      modifyList(bee, list(encode = list(size = 2L))),
+      modifyList(bee, list(encode = list(size = 2))),
       list(
       type = 'density',
       data = list(transform = list(list(
