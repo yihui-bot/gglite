@@ -31,7 +31,9 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
     if (!anyDuplicated(cat_var)) return(list(list(type = 'interval')))
     bee = list(type = 'beeswarm')
     freq = table(cat_var)
-    if (length(freq) && min(freq) >= 30) list(bee, list(
+    if (length(freq) && min(freq) >= 30) list(
+      modifyList(bee, list(encode = list(size = 2L))),
+      list(
       type = 'density',
       data = list(transform = list(list(
         type = 'kde', field = num_col,
@@ -54,7 +56,9 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
     coord = list(transform = list(list(type = 'transpose')))
     enc = list(x = y_col, y = x_col)
     lapply(cat_num_marks(y, y_col, x_col), function(m) {
-      if (is.null(m$encode)) modifyList(m, list(encode = enc)) else m
+      if (is.null(m$encode)) m$encode = enc
+      else if (is.null(m$encode$x)) m$encode = modifyList(enc, m$encode)
+      m
     })
   } else if (xt == 'categorical' && yt == 'categorical') {
     if (is.null(aesthetics$color)) list(list(
