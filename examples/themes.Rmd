@@ -50,7 +50,6 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
 g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
   theme_dark()
 ```
 

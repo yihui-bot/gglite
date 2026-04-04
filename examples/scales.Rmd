@@ -55,7 +55,6 @@ g2(df, x = 'x', y = 'y') |>
 
 ```{r}
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   scale_x(type = 'band')
 ```
 
@@ -67,7 +66,6 @@ df = data.frame(
   value = c(10, 20, 15, 30, 25, 35)
 )
 g2(df, x = 'date', y = 'value') |>
-  mark_line() |>
   scale_x(type = 'time')
 ```
 
@@ -113,7 +111,6 @@ g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2), col = c('red', 'green', 'blue'))
 g2(df, x = 'x', y = 'y', color = 'col') |>
-  mark_interval() |>
   scale_color(type = 'identity')
 ```
 

@@ -15,7 +15,6 @@ Labels add text annotations to marks. Use `labels_()` to configure them.
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   labels_(text = 'y')
 ```
 
@@ -23,7 +22,6 @@ g2(df, x = 'x', y = 'y') |>
 
 ```{r}
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   labels_(text = 'y', position = 'inside')
 ```
 
@@ -31,7 +29,6 @@ g2(df, x = 'x', y = 'y') |>
 
 ```{r}
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   labels_(text = 'y', position = 'top')
 ```
 
@@ -40,7 +37,6 @@ g2(df, x = 'x', y = 'y') |>
 ```{r}
 df = data.frame(x = 1:5, y = c(3, 7, 2, 9, 5), label = c('a', 'b', 'c', 'd', 'e'))
 g2(df, x = 'x', y = 'y') |>
-  mark_point() |>
   labels_(text = 'label')
 ```
 
@@ -49,7 +45,6 @@ g2(df, x = 'x', y = 'y') |>
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   labels_(text = 'x', position = 'inside') |>
   labels_(text = 'y', position = 'top')
 ```
@@ -62,7 +57,6 @@ Use `style_mark()` to set visual properties on the most recently added mark.
 
 ```{r}
 g2(mtcars, x = 'mpg', y = 'hp') |>
-  mark_point() |>
   style_mark(fill = 'steelblue', stroke = 'white', lineWidth = 1)
 ```
 
@@ -71,7 +65,6 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   style_mark(fill = 'coral', stroke = '#333', lineWidth = 0.5)
 ```
 

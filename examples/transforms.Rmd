@@ -66,7 +66,6 @@ Add random jitter to reduce overplotting.
 
 ```{r}
 g2(mtcars, x = 'cyl', y = 'hp') |>
-  mark_point() |>
   transform_('jitterX')
 ```
 
@@ -74,7 +73,6 @@ g2(mtcars, x = 'cyl', y = 'hp') |>
 
 ```{r}
 g2(mtcars, x = 'cyl', y = 'gear') |>
-  mark_point() |>
   transform_('jitterX') |>
   transform_('jitterY')
 ```
@@ -122,7 +120,6 @@ Sort data before rendering.
 ```{r}
 df = data.frame(x = c('C', 'A', 'B'), y = c(2, 5, 3))
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   transform_('sortX', reverse = TRUE)
 ```
 

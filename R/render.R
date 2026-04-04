@@ -79,10 +79,10 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
   if (length(marks)) list(marks = marks, coord = coord)
 }
 
-# Ensure at least one mark exists in the chart, auto-adding the inferred mark(s)
-# from data and aesthetics when none have been added explicitly. The primary
-# (first) mark is always added; secondary marks (e.g., density overlay) are
-# also included. Returns the modified chart. Stops if auto-detection fails.
+# Ensure at least one mark exists, auto-adding via auto_mark() when none have
+# been added explicitly. If auto_mark() returns multiple marks (e.g., beeswarm
+# plus a density overlay for large groups), all are added. Returns the modified
+# chart. Stops if auto-detection fails (no data or unrecognised types).
 ensure_mark = function(chart) {
   auto = auto_mark(chart$data, chart$aesthetics, ts = isTRUE(chart$ts_origin))
   if (is.null(auto)) stop('add a mark first')

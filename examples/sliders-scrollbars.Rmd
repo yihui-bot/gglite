@@ -62,6 +62,5 @@ g2(df, x = 'x', y = 'y') |>
 ```{r}
 df = data.frame(x = paste0('Item ', 1:50), y = sample(1:100, 50))
 g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
   slider_x()
 ```
