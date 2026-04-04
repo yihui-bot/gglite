@@ -18,9 +18,9 @@ explicitly, but you can do so for clarity.
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
-  coord_('cartesian')
+p  = g2(df, x = 'x', y = 'y')
+pc = g2(df, x = 'x', y = 'y', color = 'x')
+p |> coord_('cartesian')
 ```
 
 ## Polar
@@ -29,25 +29,19 @@ Maps x to angle and y to radius. Useful for rose charts and radar-like
 displays.
 
 ```{r}
-g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
-  coord_polar()
+p |> coord_polar()
 ```
 
 ### Polar with innerRadius (donut rose)
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
-  coord_polar(innerRadius = 0.4)
+pc |> coord_polar(innerRadius = 0.4)
 ```
 
 ### Polar with custom start/end angles
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
-  coord_polar(startAngle = -pi / 2, endAngle = pi / 2)
+pc |> coord_polar(startAngle = -pi / 2, endAngle = pi / 2)
 ```
 
 ## Theta
@@ -55,8 +49,7 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
 Maps data values to angular extent. Used for pie and donut charts.
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
+pc |>
   transform_('stackY') |>
   coord_theta()
 ```
@@ -64,8 +57,7 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
 ### Donut chart (theta with innerRadius)
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
+pc |>
   transform_('stackY') |>
   coord_theta(innerRadius = 0.5)
 ```
@@ -75,17 +67,13 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
 Maps y to the radial direction. Suitable for radial bar charts.
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
-  coord_radial()
+pc |> coord_radial()
 ```
 
 ### Radial with innerRadius
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
-  mark_interval() |>
-  coord_radial(innerRadius = 0.3)
+pc |> coord_radial(innerRadius = 0.3)
 ```
 
 ## Parallel
@@ -96,7 +84,6 @@ encoding (a character vector of column names) instead of `x`/`y`.
 ```{r}
 g2(iris, position = names(iris)[-5], color = 'Species',
     padding = 30) |>
-  mark_line() |>
   coord_parallel() |>
   legend_color(position = 'bottom')
 ```
@@ -131,7 +118,6 @@ Arranges data along a helix spiral. Works best with `mark_interval()`.
 ```{r}
 df_helix = data.frame(x = paste0('D', 1:50), y = abs(sin(1:50 / 5)))
 g2(df_helix, x = 'x', y = 'y', color = 'y') |>
-  mark_interval() |>
   coord_helix()
 ```
 
@@ -141,17 +127,13 @@ Swap x and y axes, equivalent to ggplot2's `coord_flip()`. This is a
 coordinate transform, not a type.
 
 ```{r}
-df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y') |>
-  mark_interval() |>
-  coord_transpose()
+p |> coord_transpose()
 ```
 
 ### Transpose with parallel
 
 ```{r}
 g2(iris, position = names(iris)[-5], color = 'Species') |>
-  mark_line() |>
   coord_parallel() |> 
   coord_transpose()
 ```

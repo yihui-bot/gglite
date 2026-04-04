@@ -79,6 +79,24 @@ auto_mark = function(data, aesthetics, ts = FALSE) {
   if (length(marks)) list(marks = marks, coord = coord)
 }
 
+# Ensure at least one mark exists, auto-adding via auto_mark() when none have
+# been added explicitly. If auto_mark() returns multiple marks (e.g., beeswarm
+# plus a density overlay for large groups), all are added. Returns the modified
+# chart. Stops if auto-detection fails (no data or unrecognized types).
+ensure_mark = function(chart) {
+  auto = auto_mark(chart$data, chart$aesthetics, ts = isTRUE(chart$ts_origin))
+  if (is.null(auto)) stop('add a mark first')
+  for (am in auto$marks) {
+    enc = chart$aesthetics
+    if (!is.null(am$encode)) enc = modifyList(enc, am$encode)
+    layer = modifyList(am, if (length(enc)) list(encode = enc) else list())
+    chart$layers = c(chart$layers, list(layer))
+  }
+  if (!is.null(auto$coord) && is.null(chart$coords))
+    chart$coords = auto$coord
+  chart
+}
+
 # ---- Configuration builder ----
 
 #' Build G2 Spec
