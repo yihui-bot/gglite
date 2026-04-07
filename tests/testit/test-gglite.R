@@ -382,3 +382,31 @@ assert('mixing + and |> produces same result as pure |>', {
   (c3$scales %==% ref$scales)
   (c3$theme %==% ref$theme)
 })
+
+# ---- knit_print.g2 ----
+
+assert('cdn_scripts returns two <script> tags', {
+  s = cdn_scripts()
+  (length(s) %==% 2L)
+  (all(grepl('^<script src=".+" defer></script>$', s)))
+})
+
+assert('knit_print.g2 returns a knit_asis object containing chart HTML', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width)
+  out = knit_print.g2(chart)
+  (inherits(out, 'knit_asis'))
+  (grepl('<div', out))
+})
+
+assert('knit_print.g2 does not pass knitr chunk options to chart_html', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width)
+  # knitr passes options = list(...) in ...; chart_html must not receive it
+  (!has_error(knit_print.g2(chart, options = list(echo = TRUE))))
+})
+
+assert('knitr dispatches knit_print to knit_print.g2', {
+  loadNamespace('knitr')
+  chart = g2(iris, Sepal.Length ~ Sepal.Width)
+  out = knitr::knit_print(chart)
+  (inherits(out, 'knit_asis'))
+})

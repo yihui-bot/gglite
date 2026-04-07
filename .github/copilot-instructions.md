@@ -187,6 +187,9 @@ Before submitting changes:
 12. **US spelling**: Use US spelling throughout all documentation, code
     comments, and example text (e.g., "color" not "colour", "center" not
     "centre", "summarize" not "summarise").
+13. **DRY (Don't Repeat Yourself)**: Never duplicate code. When the same logic
+    appears more than once, factor it into a shared helper function. This
+    applies to expressions, patterns, and multi-line blocks alike.
 
 ### Variables Are Character Strings
 
@@ -195,7 +198,11 @@ as character strings, e.g., `g2(mtcars, x = 'mpg', y = 'hp')`.
 
 ### Testing Conventions
 
-1. **Use testit properly**: Write all test conditions in `()`, use `%==%` to
+1. **Every change must have tests**: Every code change must come with
+   corresponding tests. If you add or fix a function, add assertions in the
+   test file that cover the new or fixed behavior. Tests are the first place
+   to catch regressions and errors.
+2. **Use testit properly**: Write all test conditions in `()`, use `%==%` to
    test for `identical()`, and test conditions can return vectors.
    ```r
    assert("test description", {

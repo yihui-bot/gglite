@@ -316,8 +316,18 @@ print.g2 = function(x, ...) {
 #' @param ... Ignored.
 #' @return A `knit_asis` character vector.
 knit_print.g2 = function(x, ...) {
-  out = paste(c(cdn_scripts(), chart_html(x, ...)), collapse = '\n')
-  structure(out, class = c('knit_asis', 'html'))
+  if (requireNamespace('htmltools', quietly = TRUE)) {
+    dep = htmltools::htmlDependency(
+      name = 'antv-g2', version = '5',
+      src = c(href = ''),
+      head = paste(cdn_scripts(), collapse = '\n')
+    )
+    knitr::knit_meta_add(list(dep))
+    structure(chart_html(x), class = c('knit_asis', 'html'))
+  } else {
+    out = paste(c(cdn_scripts(), chart_html(x)), collapse = '\n')
+    structure(out, class = c('knit_asis', 'html'))
+  }
 }
 
 #' @importFrom xfun record_print
@@ -326,8 +336,11 @@ record_print.g2 = function(x, ...) {
   xfun::new_record(c(cdn_scripts(), chart_html(x, ...)), 'asis')
 }
 
+register_knit_print = function() {
+  registerS3method('knit_print', 'g2', knit_print.g2, envir = asNamespace('knitr'))
+}
+
 .onLoad = function(...) {
-  setHook(packageEvent('knitr', 'onLoad'), function(...) {
-    registerS3method('knit_print', 'g2', knit_print.g2, envir = asNamespace('knitr'))
-  })
+  if (isNamespaceLoaded('knitr')) register_knit_print()
+  setHook(packageEvent('knitr', 'onLoad'), function(...) register_knit_print())
 }
