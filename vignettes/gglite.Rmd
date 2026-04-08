@@ -98,14 +98,15 @@ g2(iris, ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
 
 ### Character string interface
 
-Column names can also be passed as character strings using named `x` and `y`
-arguments:
+All aesthetic channels also accept plain character strings instead of formulas.
+This alternative syntax is equivalent---`color = 'species'` produces the same
+result as `color = ~ species`:
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp')
+g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl')
 ```
 
-Other aesthetics like `color`, `size`, and `shape` accept strings too:
+The `encode()` function also accepts character strings:
 
 ```{r}
 g2(mtcars) |> encode(x = 'mpg', y = 'hp', color = 'cyl')

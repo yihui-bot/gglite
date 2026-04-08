@@ -147,7 +147,8 @@ as_var = function(x) {
   if (!inherits(x, 'formula') || length(x) != 2) return(x)
   terms = extract_terms(x[[2]])
   if (length(terms) != 1) stop(
-    "Formula '", deparse(x), "' must contain exactly one variable name"
+    "Formula '", deparse(x), "' must contain exactly one variable name ",
+    "(e.g., `~ var`)"
   )
   terms
 }
