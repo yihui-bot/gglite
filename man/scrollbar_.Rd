@@ -2,9 +2,15 @@
 % Please edit documentation in R/component.R
 \name{scrollbar_}
 \alias{scrollbar_}
+\alias{scrollbar_x}
+\alias{scrollbar_y}
 \title{Add a Scrollbar}
 \usage{
 scrollbar_(chart = NULL, channel, ...)
+
+scrollbar_x(chart = NULL, ...)
+
+scrollbar_y(chart = NULL, ...)
 }
 \arguments{
 \item{chart}{A \code{g2} object.}
@@ -17,11 +23,19 @@ scrollbar_(chart = NULL, channel, ...)
 The modified \code{g2} object.
 }
 \description{
-Add a Scrollbar
+Add a scrollbar to a positional channel for zooming/panning.
+}
+\details{
+\code{scrollbar_x()}: Shortcut for \code{scrollbar_(chart, 'x', ...)}.
+
+\code{scrollbar_y()}: Shortcut for \code{scrollbar_(chart, 'y', ...)}.
 }
 \examples{
 df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-g2(df, y ~ x) |>
-  mark_line() |>
-  scrollbar_('x')
+p = g2(df, y ~ x) |> mark_line()
+p |> scrollbar_('x')
+
+# Scrollbar shortcuts
+p |> scrollbar_x()
+p |> scrollbar_y()
 }

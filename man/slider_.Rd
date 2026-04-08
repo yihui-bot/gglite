@@ -2,9 +2,15 @@
 % Please edit documentation in R/component.R
 \name{slider_}
 \alias{slider_}
+\alias{slider_x}
+\alias{slider_y}
 \title{Add a Slider}
 \usage{
 slider_(chart = NULL, channel, ...)
+
+slider_x(chart = NULL, ...)
+
+slider_y(chart = NULL, ...)
 }
 \arguments{
 \item{chart}{A \code{g2} object.}
@@ -19,7 +25,16 @@ The modified \code{g2} object.
 \description{
 Add a range slider to a positional channel for zooming/panning.
 }
+\details{
+\code{slider_x()}: Shortcut for \code{slider_(chart, 'x', ...)}.
+
+\code{slider_y()}: Shortcut for \code{slider_(chart, 'y', ...)}.
+}
 \examples{
-g2(mtcars, hp ~ mpg) |>
-  slider_('x')
+p = g2(mtcars, hp ~ mpg)
+p |> slider_('x')
+
+# Slider shortcuts
+p |> slider_x()
+p |> slider_y()
 }

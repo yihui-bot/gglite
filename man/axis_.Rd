@@ -2,9 +2,15 @@
 % Please edit documentation in R/component.R
 \name{axis_}
 \alias{axis_}
+\alias{axis_x}
+\alias{axis_y}
 \title{Configure an Axis}
 \usage{
 axis_(chart = NULL, channel, ...)
+
+axis_x(chart = NULL, ...)
+
+axis_y(chart = NULL, ...)
 }
 \arguments{
 \item{chart}{A \code{g2} object.}
@@ -23,6 +29,11 @@ Customise the axis for a positional channel (\code{'x'} or \code{'y'}). Set to
 function (or \code{style_mark()}, \code{labels_()}, etc.), the axis is applied to
 that mark only, enabling per-mark axis customization (e.g., a right-side
 y-axis for a dual-axis chart). Otherwise it applies at the chart level.
+}
+\details{
+\code{axis_x()}: Shortcut for \code{axis_(chart, 'x', ...)}.
+
+\code{axis_y()}: Shortcut for \code{axis_(chart, 'y', ...)}.
 }
 \examples{
 # Chart-level axis titles (no marks yet)

@@ -2,9 +2,24 @@
 % Please edit documentation in R/theme.R
 \name{theme_}
 \alias{theme_}
+\alias{theme_classic}
+\alias{theme_classicDark}
+\alias{theme_light}
+\alias{theme_dark}
+\alias{theme_academy}
 \title{Set the Chart Theme}
 \usage{
 theme_(chart = NULL, type, ...)
+
+theme_classic(chart = NULL, ...)
+
+theme_classicDark(chart = NULL, ...)
+
+theme_light(chart = NULL, ...)
+
+theme_dark(chart = NULL, ...)
+
+theme_academy(chart = NULL, ...)
 }
 \arguments{
 \item{chart}{A \code{g2} object.}
@@ -33,13 +48,35 @@ individually. For example:
 }\if{html}{\out{</div>}}
 
 Per-chart \code{theme_()} settings are merged on top of the global option.
+
+\code{theme_classic()}: The default theme. Shortcut for
+\code{theme_(chart, 'classic', ...)}.
+
+\code{theme_classicDark()}: Shortcut for \code{theme_(chart, 'classicDark', ...)}.
+
+\code{theme_light()}: Shortcut for \code{theme_(chart, 'light', ...)}.
+
+\code{theme_dark()}: Shortcut for \code{theme_(chart, 'dark', ...)}.
+
+\code{theme_academy()}: Shortcut for \code{theme_(chart, 'academy', ...)}.
 }
 \examples{
+p = g2(mtcars, hp ~ mpg)
+p |> theme_('dark')
+p |> theme_('academy')
+
+# Classic (default) theme
+p |> theme_classic()
+
+# Classic dark theme
+p |> theme_classicDark()
+
+# Light theme
+p |> theme_light()
+
 # Dark theme
-g2(mtcars, hp ~ mpg) |>
-  theme_('dark')
+p |> theme_dark()
 
 # Academy theme
-g2(mtcars, hp ~ mpg) |>
-  theme_('academy')
+p |> theme_academy()
 }

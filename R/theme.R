@@ -24,13 +24,9 @@
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' # Dark theme
-#' g2(mtcars, hp ~ mpg) |>
-#'   theme_('dark')
-#'
-#' # Academy theme
-#' g2(mtcars, hp ~ mpg) |>
-#'   theme_('academy')
+#' p = g2(mtcars, hp ~ mpg)
+#' p |> theme_('dark')
+#' p |> theme_('academy')
 theme_ = function(chart = NULL, type, ...) {
   mod = check_chart(theme_, chart, c(if (!missing(type)) list(type), list(...)))
   if (!is.null(mod)) return(mod)
@@ -42,52 +38,48 @@ theme_ = function(chart = NULL, type, ...) {
   chart
 }
 
-#' Classic Theme
-#'
-#' Shortcut for `theme_(chart, 'classic', ...)`. This is the default theme.
-#'
-#' @inheritParams theme_
+#' @details `theme_classic()`: The default theme. Shortcut for
+#'   `theme_(chart, 'classic', ...)`.
+#' @rdname theme_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |> theme_classic()
+#'
+#' # Classic (default) theme
+#' p |> theme_classic()
 theme_classic = function(chart = NULL, ...) theme_(chart, 'classic', ...)
 
-#' Classic Dark Theme
-#'
-#' Shortcut for `theme_(chart, 'classicDark', ...)`.
-#'
-#' @inheritParams theme_
+#' @details `theme_classicDark()`: Shortcut for `theme_(chart, 'classicDark', ...)`.
+#' @rdname theme_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |> theme_classicDark()
+#'
+#' # Classic dark theme
+#' p |> theme_classicDark()
 theme_classicDark = function(chart = NULL, ...) theme_(chart, 'classicDark', ...)
 
-#' Light Theme
-#'
-#' Shortcut for `theme_(chart, 'light', ...)`.
-#'
-#' @inheritParams theme_
+#' @details `theme_light()`: Shortcut for `theme_(chart, 'light', ...)`.
+#' @rdname theme_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |> theme_light()
+#'
+#' # Light theme
+#' p |> theme_light()
 theme_light = function(chart = NULL, ...) theme_(chart, 'light', ...)
 
-#' Dark Theme
-#'
-#' Shortcut for `theme_(chart, 'dark', ...)`.
-#'
-#' @inheritParams theme_
+#' @details `theme_dark()`: Shortcut for `theme_(chart, 'dark', ...)`.
+#' @rdname theme_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |> theme_dark()
+#'
+#' # Dark theme
+#' p |> theme_dark()
 theme_dark = function(chart = NULL, ...) theme_(chart, 'dark', ...)
 
-#' Academy Theme
-#'
-#' Shortcut for `theme_(chart, 'academy', ...)`.
-#'
-#' @inheritParams theme_
+#' @details `theme_academy()`: Shortcut for `theme_(chart, 'academy', ...)`.
+#' @rdname theme_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |> theme_academy()
+#'
+#' # Academy theme
+#' p |> theme_academy()
 theme_academy = function(chart = NULL, ...) theme_(chart, 'academy', ...)

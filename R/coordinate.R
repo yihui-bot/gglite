@@ -17,19 +17,17 @@
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' # Polar coordinate (rose chart)
 #' df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
-#' g2(df, y ~ x) |>
-#'   coord_polar()
+#' p = g2(df, y ~ x, color = ~ x)
+#' # Polar coordinate (rose chart)
+#' g2(df, y ~ x) |> coord_polar()
 #'
 #' # Theta coordinate (pie / donut chart)
-#' g2(df, y ~ x, color = ~ x) |>
-#'   transform_('stackY') |>
-#'   coord_theta()
+#' p |> transform_('stackY') |> coord_theta()
+#' p |> transform_('stackY') |> coord_theta(innerRadius = 0.5)
 #'
 #' # Radial coordinate (radial bar chart)
-#' g2(df, y ~ x, color = ~ x) |>
-#'   coord_radial()
+#' p |> coord_radial()
 #'
 #' # Parallel coordinate (uses position encoding)
 #' g2(iris, position = names(iris)[-5], color = ~ Species,
@@ -68,7 +66,8 @@ coord_ = function(chart = NULL, type, ...) {
 #' @export
 #' @examples
 #' # Horizontal bar chart (coord_flip equivalent)
-#' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x) |>
+#' df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
+#' g2(df, y ~ x) |>
 #'   coord_transpose()
 coord_transpose = function(chart = NULL) {
   mod = check_chart(coord_transpose, chart, list())
@@ -81,64 +80,36 @@ coord_transpose = function(chart = NULL) {
   chart
 }
 
-#' Polar Coordinate System
-#'
-#' Shortcut for `coord_(chart, 'polar', ...)`.
-#'
-#' @inheritParams coord_
+#' @details `coord_polar()`: Shortcut for `coord_(chart, 'polar', ...)`.
+#' @rdname coord_
 #' @export
-#' @examples
-#' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x, color = ~ x) |>
-#'   coord_polar()
 coord_polar = function(chart = NULL, ...) coord_(chart, 'polar', ...)
 
-#' Theta Coordinate System
-#'
-#' Shortcut for `coord_(chart, 'theta', ...)`. Used for pie and donut
-#' charts.
-#'
-#' @inheritParams coord_
+#' @details `coord_theta()`: Shortcut for `coord_(chart, 'theta', ...)`. Used for
+#'   pie and donut charts.
+#' @rdname coord_
 #' @export
-#' @examples
-#' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x, color = ~ x) |>
-#'   transform_('stackY') |>
-#'   coord_theta(innerRadius = 0.5)
 coord_theta = function(chart = NULL, ...) coord_(chart, 'theta', ...)
 
-#' Radial Coordinate System
-#'
-#' Shortcut for `coord_(chart, 'radial', ...)`. Suitable for radial bar
-#' charts.
-#'
-#' @inheritParams coord_
+#' @details `coord_radial()`: Shortcut for `coord_(chart, 'radial', ...)`. Suitable
+#'   for radial bar charts.
+#' @rdname coord_
 #' @export
-#' @examples
-#' g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x, color = ~ x) |>
-#'   coord_radial()
 coord_radial = function(chart = NULL, ...) coord_(chart, 'radial', ...)
 
-#' Radar Coordinate System
-#'
-#' Shortcut for `coord_(chart, 'radar', ...)`. Used with `position`
-#' encoding for radar (spider) charts.
-#'
-#' @inheritParams coord_
+#' @details `coord_radar()`: Shortcut for `coord_(chart, 'radar', ...)`. Used with
+#'   `position` encoding for radar (spider) charts.
+#' @rdname coord_
 #' @export
 coord_radar = function(chart = NULL, ...) coord_(chart, 'radar', ...)
 
-#' Helix Coordinate System
-#'
-#' Shortcut for `coord_(chart, 'helix', ...)`.
-#'
-#' @inheritParams coord_
+#' @details `coord_helix()`: Shortcut for `coord_(chart, 'helix', ...)`.
+#' @rdname coord_
 #' @export
 coord_helix = function(chart = NULL, ...) coord_(chart, 'helix', ...)
 
-#' Parallel Coordinate System
-#'
-#' Shortcut for `coord_(chart, 'parallel', ...)`. Used with `position`
-#' encoding for parallel coordinate plots.
-#'
-#' @inheritParams coord_
+#' @details `coord_parallel()`: Shortcut for `coord_(chart, 'parallel', ...)`. Used
+#'   with `position` encoding for parallel coordinate plots.
+#' @rdname coord_
 #' @export
 coord_parallel = function(chart = NULL, ...) coord_(chart, 'parallel', ...)

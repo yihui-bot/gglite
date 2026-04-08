@@ -39,22 +39,14 @@ axis_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' Configure the X Axis
-#'
-#' @inheritParams axis_
+#' @details `axis_x()`: Shortcut for `axis_(chart, 'x', ...)`.
+#' @rdname axis_
 #' @export
-#' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   axis_x(title = 'Miles per Gallon')
 axis_x = function(chart = NULL, ...) axis_(chart, 'x', ...)
 
-#' Configure the Y Axis
-#'
-#' @inheritParams axis_
+#' @details `axis_y()`: Shortcut for `axis_(chart, 'y', ...)`.
+#' @rdname axis_
 #' @export
-#' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   axis_y(title = 'Horsepower')
 axis_y = function(chart = NULL, ...) axis_(chart, 'y', ...)
 
 #' Configure a Legend
@@ -69,8 +61,8 @@ axis_y = function(chart = NULL, ...) axis_(chart, 'y', ...)
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
-#'   legend_('color', position = 'right')
+#' p = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
+#' p |> legend_('color', position = 'right')
 legend_ = function(chart = NULL, channel, ...) {
   mod = check_chart(legend_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
@@ -91,38 +83,41 @@ legend_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' Configure the Color Legend
-#'
-#' @inheritParams legend_
+#' @details `legend_color()`: Shortcut for `legend_(chart, 'color', ...)`.
+#' @rdname legend_
 #' @export
 #' @examples
-#' g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
-#'   legend_color(position = 'right')
+#'
+#' # Color legend via shortcut
+#' p |> legend_color(position = 'right')
 legend_color = function(chart = NULL, ...) legend_(chart, 'color', ...)
 
-#' Configure the Size Legend
-#'
-#' @inheritParams legend_
+#' @details `legend_size()`: Shortcut for `legend_(chart, 'size', ...)`.
+#' @rdname legend_
 #' @export
 #' @examples
+#'
+#' # Size legend
 #' g2(mtcars, hp ~ mpg, size = ~ wt) |>
 #'   legend_size(position = 'bottom')
 legend_size = function(chart = NULL, ...) legend_(chart, 'size', ...)
 
-#' Configure the Shape Legend
-#'
-#' @inheritParams legend_
+#' @details `legend_shape()`: Shortcut for `legend_(chart, 'shape', ...)`.
+#' @rdname legend_
 #' @export
 #' @examples
-#' g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species) |>
-#'   legend_shape(position = 'bottom')
+#'
+#' # Shape legend
+#' p = g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species)
+#' p |> legend_shape(position = 'bottom')
 legend_shape = function(chart = NULL, ...) legend_(chart, 'shape', ...)
 
-#' Configure the Opacity Legend
-#'
-#' @inheritParams legend_
+#' @details `legend_opacity()`: Shortcut for `legend_(chart, 'opacity', ...)`.
+#' @rdname legend_
 #' @export
 #' @examples
+#'
+#' # Opacity legend
 #' g2(mtcars, hp ~ mpg, opacity = ~ wt) |>
 #'   legend_opacity(position = 'bottom')
 legend_opacity = function(chart = NULL, ...) legend_(chart, 'opacity', ...)
@@ -228,8 +223,8 @@ style_mark = function(chart = NULL, ...) {
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   slider_('x')
+#' p = g2(mtcars, hp ~ mpg)
+#' p |> slider_('x')
 slider_ = function(chart = NULL, channel, ...) {
   mod = check_chart(slider_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
@@ -239,25 +234,25 @@ slider_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' Add an X Slider
-#'
-#' @inheritParams slider_
+#' @details `slider_x()`: Shortcut for `slider_(chart, 'x', ...)`.
+#' @rdname slider_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   slider_x()
+#'
+#' # Slider shortcuts
+#' p |> slider_x()
 slider_x = function(chart = NULL, ...) slider_(chart, 'x', ...)
 
-#' Add a Y Slider
-#'
-#' @inheritParams slider_
+#' @details `slider_y()`: Shortcut for `slider_(chart, 'y', ...)`.
+#' @rdname slider_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   slider_y()
+#' p |> slider_y()
 slider_y = function(chart = NULL, ...) slider_(chart, 'y', ...)
 
 #' Add a Scrollbar
+#'
+#' Add a scrollbar to a positional channel for zooming/panning.
 #'
 #' @param chart A `g2` object.
 #' @param channel Positional channel: `'x'` or `'y'`.
@@ -266,9 +261,8 @@ slider_y = function(chart = NULL, ...) slider_(chart, 'y', ...)
 #' @export
 #' @examples
 #' df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-#' g2(df, y ~ x) |>
-#'   mark_line() |>
-#'   scrollbar_('x')
+#' p = g2(df, y ~ x) |> mark_line()
+#' p |> scrollbar_('x')
 scrollbar_ = function(chart = NULL, channel, ...) {
   mod = check_chart(scrollbar_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
@@ -278,24 +272,18 @@ scrollbar_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' Add an X Scrollbar
-#'
-#' @inheritParams scrollbar_
+#' @details `scrollbar_x()`: Shortcut for `scrollbar_(chart, 'x', ...)`.
+#' @rdname scrollbar_
 #' @export
 #' @examples
-#' df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-#' g2(df, y ~ x) |>
-#'   mark_line() |>
-#'   scrollbar_x()
+#'
+#' # Scrollbar shortcuts
+#' p |> scrollbar_x()
 scrollbar_x = function(chart = NULL, ...) scrollbar_(chart, 'x', ...)
 
-#' Add a Y Scrollbar
-#'
-#' @inheritParams scrollbar_
+#' @details `scrollbar_y()`: Shortcut for `scrollbar_(chart, 'y', ...)`.
+#' @rdname scrollbar_
 #' @export
 #' @examples
-#' df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-#' g2(df, y ~ x) |>
-#'   mark_line() |>
-#'   scrollbar_y()
+#' p |> scrollbar_y()
 scrollbar_y = function(chart = NULL, ...) scrollbar_(chart, 'y', ...)

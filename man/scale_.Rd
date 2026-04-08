@@ -2,9 +2,27 @@
 % Please edit documentation in R/scale.R
 \name{scale_}
 \alias{scale_}
+\alias{scale_x}
+\alias{scale_y}
+\alias{scale_color}
+\alias{scale_size}
+\alias{scale_shape}
+\alias{scale_opacity}
 \title{Configure a Scale}
 \usage{
 scale_(chart = NULL, field, ...)
+
+scale_x(chart = NULL, ...)
+
+scale_y(chart = NULL, ...)
+
+scale_color(chart = NULL, ...)
+
+scale_size(chart = NULL, ...)
+
+scale_shape(chart = NULL, ...)
+
+scale_opacity(chart = NULL, ...)
 }
 \arguments{
 \item{chart}{A \code{g2} object.}
@@ -30,17 +48,28 @@ This context-sensitivity enables dual-axis charts: add marks and pipe
 G2 scale types: \code{'linear'}, \code{'ordinal'}, \code{'band'}, \code{'point'}, \code{'time'},
 \code{'log'}, \code{'pow'}, \code{'sqrt'}, \code{'threshold'}, \code{'quantize'}, \code{'quantile'},
 \code{'sequential'}, \code{'identity'}, \code{'constant'}.
+
+\code{scale_x()}: Shortcut for \code{scale_(chart, 'x', ...)}.
+
+\code{scale_y()}: Shortcut for \code{scale_(chart, 'y', ...)}.
+
+\code{scale_color()}: Shortcut for \code{scale_(chart, 'color', ...)}.
+
+\code{scale_size()}: Shortcut for \code{scale_(chart, 'size', ...)}.
+
+\code{scale_shape()}: Shortcut for \code{scale_(chart, 'shape', ...)}.
+
+\code{scale_opacity()}: Shortcut for \code{scale_(chart, 'opacity', ...)}.
 }
 \examples{
+p = g2(mtcars, hp ~ mpg)
 # Log-scaled x axis (chart-level, before marks)
-g2(mtcars, hp ~ mpg) |>
-  scale_('x', type = 'log')
+p |> scale_('x', type = 'log')
 
 # Square-root scale on y (chart-level)
-g2(mtcars, hp ~ mpg) |>
-  scale_('y', type = 'sqrt')
+p |> scale_('y', type = 'sqrt')
 
-# Ordinal colour palette (chart-level)
+# Ordinal color palette (chart-level)
 g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
   scale_('color', palette = 'category10')
 
@@ -51,4 +80,26 @@ g2(df, ~ x) |>
   mark_line(encode = list(y = 'b')) |>
   scale_y(independent = TRUE) |>
   axis_y(position = 'right', grid = FALSE)
+
+# Log-scaled x axis
+p |> scale_x(type = 'log')
+
+# Square-root y axis
+p |> scale_y(type = 'sqrt')
+
+# Ordinal color palette
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
+  scale_color(palette = 'category10')
+
+# Size scale with custom range
+g2(mtcars, hp ~ mpg, size = ~ wt) |>
+  scale_size(range = c(2, 10))
+
+# Custom shape range
+g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species) |>
+  scale_shape(range = c('circle', 'square', 'triangle'))
+
+# Opacity scale with custom range
+g2(mtcars, hp ~ mpg, opacity = ~ wt) |>
+  scale_opacity(range = c(0.2, 1))
 }
