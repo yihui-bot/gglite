@@ -133,68 +133,114 @@ The modified \code{g2} object.
 \description{
 Generic function to add a mark (geometry layer) to the chart. Use the
 specific \verb{mark_*()} wrappers for convenience.
+}
+\details{
+\code{mark_interval()}: Add an interval mark for bar and column charts.
 
-Draws rectangles. Commonly used with a \code{bin} transform for 2-D histograms.
+\code{mark_line()}: Add a line mark (connects points sorted by x).
 
-Draws rectangular cells, commonly used for heatmaps and calendar charts.
+\code{mark_point()}: Add a point mark (scatter plot).
 
-Connects points in data order (unlike line, which sorts by x).
+\code{mark_area()}: Add an area mark (filled region under the line).
 
-Places images at data coordinates. Requires an \code{src} encoding for image URLs.
+\code{mark_rect()}: Draws rectangles. Commonly used with a \code{bin}
+transform for 2-D histograms.
 
-Draws links (lines) between pairs of points.
+\code{mark_cell()}: Draws rectangular cells, commonly used for heatmaps
+and calendar charts.
 
-Draws a connector line with optional labels between two data points.
+\code{mark_text()}: Places text labels at data coordinates.
 
-Draws pre-computed box elements (for custom box plots).
+\code{mark_path()}: Connects points in data order (unlike line, which
+sorts by x).
 
-A composite mark that automatically computes box plot statistics (median,
-quartiles, whiskers) from raw data.
+\code{mark_polygon()}: Draws filled polygon shapes.
 
-Displays individual data points using force simulation to avoid overlapping,
-creating a beeswarm layout. Particularly useful for visualizing distributions
-within categories.
+\code{mark_image()}: Places images at data coordinates. Requires an
+\code{src} encoding for image URLs.
 
-Visualize probability density distribution using kernel density estimation
-(KDE). When the chart has a numeric \code{x} aesthetic, the KDE transform and
-encodings are configured automatically: the density is computed for the \code{x}
-column, and if \code{color} is also mapped, separate density curves are drawn for
-each group. Explicit \code{data}/\code{encode} in \code{...} bypass this auto-configuration.
+\code{mark_link()}: Draws links (lines) between pairs of points.
 
-A composite mark for rendering heatmaps from point data.
+\code{mark_line_x()}: Draws a vertical reference line at a given x
+position.
 
-Draws arrows or vectors. Useful for wind or flow field visualizations.
+\code{mark_line_y()}: Draws a horizontal reference line at a given y
+position.
 
-Used in graph visualizations together with \code{\link[=mark_edge]{mark_edge()}}.
+\code{mark_range()}: Shades a rectangular region defined by x and y
+intervals.
 
-Used in graph visualizations together with \code{\link[=mark_node]{mark_node()}}.
+\code{mark_range_x()}: Shades a vertical band defined by an x interval.
 
-Draws a Sankey diagram. Data should have \code{source}, \code{target}, and \code{value}
-columns.
+\code{mark_range_y()}: Shades a horizontal band defined by a y interval.
 
-Draws a chord diagram. Data should have \code{source}, \code{target}, and \code{value}
-columns.
+\code{mark_connector()}: Draws a connector line with optional labels
+between two data points.
 
-Draws a treemap layout. Data should be hierarchical (a nested list with
-\code{name}, \code{value}, and optionally \code{children} fields).
+\code{mark_box()}: Draws pre-computed box elements (for custom box
+plots).
 
-Draws a force-directed graph layout.
+\code{mark_boxplot()}: A composite mark that automatically computes box
+plot statistics (median, quartiles, whiskers) from raw data.
 
-Draws a tree layout.
+\code{mark_beeswarm()}: Displays individual data points using force
+simulation to avoid overlapping. Particularly useful for visualizing
+distributions within categories.
 
-Draws a liquid fill gauge.
+\code{mark_density()}: Visualizes probability density using kernel
+density estimation (KDE). When the chart has a numeric \code{x} aesthetic, the
+KDE transform and encodings are configured automatically: the density is
+computed for the \code{x} column, and if \code{color} is also mapped, separate
+density curves are drawn for each group. Explicit \code{data}/\code{encode} in \code{...}
+bypass this auto-configuration.
 
-A custom mark whose rendering is controlled by a JavaScript render function.
+\code{mark_heatmap()}: A composite mark for rendering heatmaps from
+point data.
 
-A composite mark for sunburst (radial partition) visualization of
-hierarchical data. This wraps the partition mark with polar coordinates.
-The data should be a nested tree structure wrapped in a list, e.g.,
-\code{data = list(type = 'inline', value = list(tree))}.
+\code{mark_vector()}: Draws arrows or vectors. Useful for wind or flow
+field visualizations.
 
-A composite mark for hierarchical icicle chart visualization. For a radial
-(sunburst) layout, use \code{\link[=mark_sunburst]{mark_sunburst()}} instead. The data should be a
-nested tree structure wrapped in a list, e.g.,
-\code{data = list(type = 'inline', value = list(tree))}.
+\code{mark_node()}: Used in graph visualizations together with
+\code{\link[=mark_edge]{mark_edge()}}.
+
+\code{mark_edge()}: Used in graph visualizations together with
+\code{\link[=mark_node]{mark_node()}}.
+
+\code{mark_sankey()}: Draws a Sankey diagram. Data should have
+\code{source}, \code{target}, and \code{value} columns.
+
+\code{mark_chord()}: Draws a chord diagram. Data should have \code{source},
+\code{target}, and \code{value} columns.
+
+\code{mark_treemap()}: Draws a treemap layout. Data should be
+hierarchical (a nested list with \code{name}, \code{value}, and optionally
+\code{children} fields).
+
+\code{mark_pack()}: Draws a circle packing layout. Data format is the
+same as \code{mark_treemap()}.
+
+\code{mark_force_graph()}: Draws a force-directed graph layout.
+
+\code{mark_tree()}: Draws a tree layout.
+
+\code{mark_word_cloud()}: Draws a word cloud.
+
+\code{mark_gauge()}: Draws a gauge (speedometer) chart.
+
+\code{mark_liquid()}: Draws a liquid fill gauge.
+
+\code{mark_shape()}: A custom mark whose rendering is controlled by a
+JavaScript render function.
+
+\code{mark_sunburst()}: A composite mark for sunburst (radial partition)
+visualization of hierarchical data. This wraps the partition mark with
+polar coordinates. The data should be a nested tree structure wrapped in a
+list, e.g., \code{data = list(type = 'inline', value = list(tree))}.
+
+\code{mark_partition()}: A composite mark for hierarchical icicle chart
+visualization. For a radial (sunburst) layout, use \code{\link[=mark_sunburst]{mark_sunburst()}}
+instead. The data should be a nested tree structure wrapped in a list,
+e.g., \code{data = list(type = 'inline', value = list(tree))}.
 }
 \examples{
 g2(mtcars, hp ~ mpg) |> mark_('point')
@@ -209,11 +255,10 @@ df = data.frame(
 )
 g2(df, y ~ x, color = ~ color) |>
   mark_interval() |> transform_('stackY')
-g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x) |>
-  mark_line()
+p = g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x)
+p |> mark_line()
 g2(mtcars, hp ~ mpg, color = ~ cyl) |> mark_point()
-g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x) |>
-  mark_area()
+p |> mark_area()
 # 2-D histogram using bin transform
 g2(mtcars, hp ~ mpg) |>
   mark_rect(
@@ -241,28 +286,19 @@ g2(df, y ~ x) |>
 df = data.frame(x = c(0, 1), y = c(0, 0), x1 = c(1, 2), y1 = c(1, 1))
 g2(df) |>
   mark_link(encode = list(x = c('x', 'x1'), y = c('y', 'y1')))
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  mark_line_x(data = list(list(x = 20)),
-    style = list(stroke = 'red', lineDash = c(4, 4)))
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  mark_line_y(data = list(list(y = 150)),
-    style = list(stroke = 'red', lineDash = c(4, 4)))
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  mark_range(
-    data = list(list(x = c(15, 25), y = c(100, 200))),
-    style = list(fill = 'steelblue', fillOpacity = 0.15)
-  )
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  mark_range_x(data = list(list(x = c(15, 25))),
-    style = list(fill = 'steelblue', fillOpacity = 0.15))
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  mark_range_y(data = list(list(y = c(100, 200))),
-    style = list(fill = 'orange', fillOpacity = 0.15))
+p = g2(mtcars, hp ~ mpg) |> mark_point()
+p |> mark_line_x(data = list(list(x = 20)),
+  style = list(stroke = 'red', lineDash = c(4, 4)))
+p |> mark_line_y(data = list(list(y = 150)),
+  style = list(stroke = 'red', lineDash = c(4, 4)))
+p |> mark_range(
+  data = list(list(x = c(15, 25), y = c(100, 200))),
+  style = list(fill = 'steelblue', fillOpacity = 0.15)
+)
+p |> mark_range_x(data = list(list(x = c(15, 25))),
+  style = list(fill = 'steelblue', fillOpacity = 0.15))
+p |> mark_range_y(data = list(list(y = c(100, 200))),
+  style = list(fill = 'orange', fillOpacity = 0.15))
 df = data.frame(x = c('A', 'B'), y = c(3, 7))
 g2(df, y ~ x) |>
   mark_interval() |>
@@ -271,8 +307,9 @@ g2(df, y ~ x) |>
     encode = list(x = 'x', x1 = 'x1'),
     labels = list(list(text = '+133\%'))
   )
-g2(iris, Sepal.Width ~ Species) |> mark_boxplot()
-g2(iris, Sepal.Width ~ Species) |> mark_beeswarm()
+p = g2(iris, Sepal.Width ~ Species)
+p |> mark_boxplot()
+p |> mark_beeswarm()
 g2(iris, ~ Sepal.Width, color = ~ Species) |> mark_density()
 g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Petal.Length) |>
   mark_heatmap()
@@ -285,10 +322,6 @@ g2(df) |>
     encode = list(source = 'source', target = 'target', value = 'value'),
     layout = list(nodeAlign = 'center')
   )
-df = data.frame(
-  source = c('A', 'A', 'B'), target = c('B', 'C', 'C'),
-  value = c(5, 3, 2)
-)
 g2(df) |>
   mark_chord(
     encode = list(source = 'source', target = 'target', value = 'value')
@@ -305,13 +338,6 @@ g2() |>
     data = list(value = tree_data),
     encode = list(value = 'value')
   )
-tree_data = list(
-  name = 'root', children = list(
-    list(name = 'A', value = 10),
-    list(name = 'B', value = 20),
-    list(name = 'C', value = 15)
-  )
-)
 g2() |>
   mark_pack(
     data = list(value = tree_data),

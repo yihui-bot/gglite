@@ -23,23 +23,17 @@ scrollbar_y(chart = NULL, ...)
 The modified \code{g2} object.
 }
 \description{
-Add a Scrollbar
+Add a scrollbar to a positional channel for zooming/panning.
+}
+\details{
+\code{scrollbar_x()}: Shortcut for \code{scrollbar_(chart, 'x', ...)}.
 
-Add an X Scrollbar
-
-Add a Y Scrollbar
+\code{scrollbar_y()}: Shortcut for \code{scrollbar_(chart, 'y', ...)}.
 }
 \examples{
 df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-g2(df, y ~ x) |>
-  mark_line() |>
-  scrollbar_('x')
-df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-g2(df, y ~ x) |>
-  mark_line() |>
-  scrollbar_x()
-df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-g2(df, y ~ x) |>
-  mark_line() |>
-  scrollbar_y()
+p = g2(df, y ~ x) |> mark_line()
+p |> scrollbar_('x')
+p |> scrollbar_x()
+p |> scrollbar_y()
 }

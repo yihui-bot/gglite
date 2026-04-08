@@ -26,8 +26,7 @@ mark_ = function(chart = NULL, type, ...) {
 
 # ---- Basic marks ----
 
-#' Add an Interval Mark (Bar / Column Chart)
-#'
+#' @details `mark_interval()`: Add an interval mark for bar and column charts.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -44,17 +43,15 @@ mark_ = function(chart = NULL, type, ...) {
 #'   mark_interval() |> transform_('stackY')
 mark_interval = function(chart = NULL, ...) mark_(chart, 'interval', ...)
 
-#' Add a Line Mark
-#'
+#' @details `mark_line()`: Add a line mark (connects points sorted by x).
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x) |>
-#'   mark_line()
+#' p = g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x)
+#' p |> mark_line()
 mark_line = function(chart = NULL, ...) mark_(chart, 'line', ...)
 
-#' Add a Point Mark (Scatter Plot)
-#'
+#' @details `mark_point()`: Add a point mark (scatter plot).
 #' @rdname mark_
 #' @export
 #' @examples
@@ -64,19 +61,15 @@ mark_point = function(chart = NULL, ...) {
   do.call(mark_, c(list(chart, 'point'), opts))
 }
 
-#' Add an Area Mark
-#'
+#' @details `mark_area()`: Add an area mark (filled region under the line).
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x) |>
-#'   mark_area()
+#' p |> mark_area()
 mark_area = function(chart = NULL, ...) mark_(chart, 'area', ...)
 
-#' Add a Rect Mark
-#'
-#' Draws rectangles. Commonly used with a `bin` transform for 2-D histograms.
-#'
+#' @details `mark_rect()`: Draws rectangles. Commonly used with a `bin`
+#'   transform for 2-D histograms.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -87,10 +80,8 @@ mark_area = function(chart = NULL, ...) mark_(chart, 'area', ...)
 #'   )
 mark_rect = function(chart = NULL, ...) mark_(chart, 'rect', ...)
 
-#' Add a Cell Mark
-#'
-#' Draws rectangular cells, commonly used for heatmaps and calendar charts.
-#'
+#' @details `mark_cell()`: Draws rectangular cells, commonly used for heatmaps
+#'   and calendar charts.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -99,8 +90,7 @@ mark_rect = function(chart = NULL, ...) mark_(chart, 'rect', ...)
 #' g2(df, y ~ x, color = ~ value) |> mark_cell()
 mark_cell = function(chart = NULL, ...) mark_(chart, 'cell', ...)
 
-#' Add a Text Mark
-#'
+#' @details `mark_text()`: Places text labels at data coordinates.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -110,10 +100,8 @@ mark_cell = function(chart = NULL, ...) mark_(chart, 'cell', ...)
 #'   mark_text(encode = list(text = 'y'))
 mark_text = function(chart = NULL, ...) mark_(chart, 'text', ...)
 
-#' Add a Path Mark
-#'
-#' Connects points in data order (unlike line, which sorts by x).
-#'
+#' @details `mark_path()`: Connects points in data order (unlike line, which
+#'   sorts by x).
 #' @rdname mark_
 #' @export
 #' @examples
@@ -124,8 +112,7 @@ mark_text = function(chart = NULL, ...) mark_(chart, 'text', ...)
 #' g2(df, y ~ x) |> mark_path()
 mark_path = function(chart = NULL, ...) mark_(chart, 'path', ...)
 
-#' Add a Polygon Mark
-#'
+#' @details `mark_polygon()`: Draws filled polygon shapes.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -133,10 +120,8 @@ mark_path = function(chart = NULL, ...) mark_(chart, 'path', ...)
 #' g2(df, y ~ x) |> mark_polygon()
 mark_polygon = function(chart = NULL, ...) mark_(chart, 'polygon', ...)
 
-#' Add an Image Mark
-#'
-#' Places images at data coordinates. Requires an `src` encoding for image URLs.
-#'
+#' @details `mark_image()`: Places images at data coordinates. Requires an
+#'   `src` encoding for image URLs.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -147,10 +132,7 @@ mark_polygon = function(chart = NULL, ...) mark_(chart, 'polygon', ...)
 #'   ))
 mark_image = function(chart = NULL, ...) mark_(chart, 'image', ...)
 
-#' Add a Link Mark
-#'
-#' Draws links (lines) between pairs of points.
-#'
+#' @details `mark_link()`: Draws links (lines) between pairs of points.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -161,67 +143,54 @@ mark_link = function(chart = NULL, ...) mark_(chart, 'link', ...)
 
 # ---- Reference / annotation marks ----
 
-#' Add a Vertical Reference Line (lineX)
-#'
+#' @details `mark_line_x()`: Draws a vertical reference line at a given x
+#'   position.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   mark_point() |>
-#'   mark_line_x(data = list(list(x = 20)),
-#'     style = list(stroke = 'red', lineDash = c(4, 4)))
+#' p = g2(mtcars, hp ~ mpg) |> mark_point()
+#' p |> mark_line_x(data = list(list(x = 20)),
+#'   style = list(stroke = 'red', lineDash = c(4, 4)))
 mark_line_x = function(chart = NULL, ...) mark_(chart, 'lineX', ...)
 
-#' Add a Horizontal Reference Line (lineY)
-#'
+#' @details `mark_line_y()`: Draws a horizontal reference line at a given y
+#'   position.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   mark_point() |>
-#'   mark_line_y(data = list(list(y = 150)),
-#'     style = list(stroke = 'red', lineDash = c(4, 4)))
+#' p |> mark_line_y(data = list(list(y = 150)),
+#'   style = list(stroke = 'red', lineDash = c(4, 4)))
 mark_line_y = function(chart = NULL, ...) mark_(chart, 'lineY', ...)
 
-#' Add a Range Mark
-#'
+#' @details `mark_range()`: Shades a rectangular region defined by x and y
+#'   intervals.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   mark_point() |>
-#'   mark_range(
-#'     data = list(list(x = c(15, 25), y = c(100, 200))),
-#'     style = list(fill = 'steelblue', fillOpacity = 0.15)
-#'   )
+#' p |> mark_range(
+#'   data = list(list(x = c(15, 25), y = c(100, 200))),
+#'   style = list(fill = 'steelblue', fillOpacity = 0.15)
+#' )
 mark_range = function(chart = NULL, ...) mark_(chart, 'range', ...)
 
-#' Add a Horizontal Range (rangeX)
-#'
+#' @details `mark_range_x()`: Shades a vertical band defined by an x interval.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   mark_point() |>
-#'   mark_range_x(data = list(list(x = c(15, 25))),
-#'     style = list(fill = 'steelblue', fillOpacity = 0.15))
+#' p |> mark_range_x(data = list(list(x = c(15, 25))),
+#'   style = list(fill = 'steelblue', fillOpacity = 0.15))
 mark_range_x = function(chart = NULL, ...) mark_(chart, 'rangeX', ...)
 
-#' Add a Vertical Range (rangeY)
-#'
+#' @details `mark_range_y()`: Shades a horizontal band defined by a y interval.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   mark_point() |>
-#'   mark_range_y(data = list(list(y = c(100, 200))),
-#'     style = list(fill = 'orange', fillOpacity = 0.15))
+#' p |> mark_range_y(data = list(list(y = c(100, 200))),
+#'   style = list(fill = 'orange', fillOpacity = 0.15))
 mark_range_y = function(chart = NULL, ...) mark_(chart, 'rangeY', ...)
 
-#' Add a Connector Mark
-#'
-#' Draws a connector line with optional labels between two data points.
-#'
+#' @details `mark_connector()`: Draws a connector line with optional labels
+#'   between two data points.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -237,45 +206,36 @@ mark_connector = function(chart = NULL, ...) mark_(chart, 'connector', ...)
 
 # ---- Statistical / composite marks ----
 
-#' Add a Box Mark
-#'
-#' Draws pre-computed box elements (for custom box plots).
-#'
+#' @details `mark_box()`: Draws pre-computed box elements (for custom box
+#'   plots).
 #' @rdname mark_
 #' @export
 mark_box = function(chart = NULL, ...) mark_(chart, 'box', ...)
 
-#' Add a Box Plot Mark
-#'
-#' A composite mark that automatically computes box plot statistics (median,
-#' quartiles, whiskers) from raw data.
-#'
+#' @details `mark_boxplot()`: A composite mark that automatically computes box
+#'   plot statistics (median, quartiles, whiskers) from raw data.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(iris, Sepal.Width ~ Species) |> mark_boxplot()
+#' p = g2(iris, Sepal.Width ~ Species)
+#' p |> mark_boxplot()
 mark_boxplot = function(chart = NULL, ...) mark_(chart, 'boxplot', ...)
 
-#' Add a Beeswarm Mark
-#'
-#' Displays individual data points using force simulation to avoid overlapping,
-#' creating a beeswarm layout. Particularly useful for visualizing distributions
-#' within categories.
-#'
+#' @details `mark_beeswarm()`: Displays individual data points using force
+#'   simulation to avoid overlapping. Particularly useful for visualizing
+#'   distributions within categories.
 #' @rdname mark_
 #' @export
 #' @examples
-#' g2(iris, Sepal.Width ~ Species) |> mark_beeswarm()
+#' p |> mark_beeswarm()
 mark_beeswarm = function(chart, ...) mark_(chart, 'beeswarm', ...)
 
-#' Add a Density Mark
-#'
-#' Visualize probability density distribution using kernel density estimation
-#' (KDE). When the chart has a numeric `x` aesthetic, the KDE transform and
-#' encodings are configured automatically: the density is computed for the `x`
-#' column, and if `color` is also mapped, separate density curves are drawn for
-#' each group. Explicit `data`/`encode` in `...` bypass this auto-configuration.
-#'
+#' @details `mark_density()`: Visualizes probability density using kernel
+#'   density estimation (KDE). When the chart has a numeric `x` aesthetic, the
+#'   KDE transform and encodings are configured automatically: the density is
+#'   computed for the `x` column, and if `color` is also mapped, separate
+#'   density curves are drawn for each group. Explicit `data`/`encode` in `...`
+#'   bypass this auto-configuration.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -319,10 +279,8 @@ mark_density = function(chart = NULL, ...) {
   mark_(chart, 'density', ...)
 }
 
-#' Add a Heatmap Mark
-#'
-#' A composite mark for rendering heatmaps from point data.
-#'
+#' @details `mark_heatmap()`: A composite mark for rendering heatmaps from
+#'   point data.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -330,39 +288,30 @@ mark_density = function(chart = NULL, ...) {
 #'   mark_heatmap()
 mark_heatmap = function(chart = NULL, ...) mark_(chart, 'heatmap', ...)
 
-#' Add a Vector Mark
-#'
-#' Draws arrows or vectors. Useful for wind or flow field visualizations.
-#'
+#' @details `mark_vector()`: Draws arrows or vectors. Useful for wind or flow
+#'   field visualizations.
 #' @rdname mark_
 #' @export
 mark_vector = function(chart = NULL, ...) mark_(chart, 'vector', ...)
 
 # ---- Graph marks ----
 
-#' Add a Node Mark
-#'
-#' Used in graph visualizations together with [mark_edge()].
-#'
+#' @details `mark_node()`: Used in graph visualizations together with
+#'   [mark_edge()].
 #' @rdname mark_
 #' @export
 mark_node = function(chart = NULL, ...) mark_(chart, 'node', ...)
 
-#' Add an Edge Mark
-#'
-#' Used in graph visualizations together with [mark_node()].
-#'
+#' @details `mark_edge()`: Used in graph visualizations together with
+#'   [mark_node()].
 #' @rdname mark_
 #' @export
 mark_edge = function(chart = NULL, ...) mark_(chart, 'edge', ...)
 
 # ---- Layout marks (complex / composite) ----
 
-#' Add a Sankey Mark
-#'
-#' Draws a Sankey diagram. Data should have `source`, `target`, and `value`
-#' columns.
-#'
+#' @details `mark_sankey()`: Draws a Sankey diagram. Data should have
+#'   `source`, `target`, and `value` columns.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -377,29 +326,20 @@ mark_edge = function(chart = NULL, ...) mark_(chart, 'edge', ...)
 #'   )
 mark_sankey = function(chart = NULL, ...) mark_(chart, 'sankey', ...)
 
-#' Add a Chord Mark
-#'
-#' Draws a chord diagram. Data should have `source`, `target`, and `value`
-#' columns.
-#'
+#' @details `mark_chord()`: Draws a chord diagram. Data should have `source`,
+#'   `target`, and `value` columns.
 #' @rdname mark_
 #' @export
 #' @examples
-#' df = data.frame(
-#'   source = c('A', 'A', 'B'), target = c('B', 'C', 'C'),
-#'   value = c(5, 3, 2)
-#' )
 #' g2(df) |>
 #'   mark_chord(
 #'     encode = list(source = 'source', target = 'target', value = 'value')
 #'   )
 mark_chord = function(chart = NULL, ...) mark_(chart, 'chord', ...)
 
-#' Add a Treemap Mark
-#'
-#' Draws a treemap layout. Data should be hierarchical (a nested list with
-#' `name`, `value`, and optionally `children` fields).
-#'
+#' @details `mark_treemap()`: Draws a treemap layout. Data should be
+#'   hierarchical (a nested list with `name`, `value`, and optionally
+#'   `children` fields).
 #' @rdname mark_
 #' @export
 #' @examples
@@ -417,18 +357,11 @@ mark_chord = function(chart = NULL, ...) mark_(chart, 'chord', ...)
 #'   )
 mark_treemap = function(chart = NULL, ...) mark_(chart, 'treemap', ...)
 
-#' Add a Pack (Circle Packing) Mark
-#'
+#' @details `mark_pack()`: Draws a circle packing layout. Data format is the
+#'   same as `mark_treemap()`.
 #' @rdname mark_
 #' @export
 #' @examples
-#' tree_data = list(
-#'   name = 'root', children = list(
-#'     list(name = 'A', value = 10),
-#'     list(name = 'B', value = 20),
-#'     list(name = 'C', value = 15)
-#'   )
-#' )
 #' g2() |>
 #'   mark_pack(
 #'     data = list(value = tree_data),
@@ -436,24 +369,17 @@ mark_treemap = function(chart = NULL, ...) mark_(chart, 'treemap', ...)
 #'   )
 mark_pack = function(chart = NULL, ...) mark_(chart, 'pack', ...)
 
-#' Add a Force Graph Mark
-#'
-#' Draws a force-directed graph layout.
-#'
+#' @details `mark_force_graph()`: Draws a force-directed graph layout.
 #' @rdname mark_
 #' @export
 mark_force_graph = function(chart = NULL, ...) mark_(chart, 'forceGraph', ...)
 
-#' Add a Tree Mark
-#'
-#' Draws a tree layout.
-#'
+#' @details `mark_tree()`: Draws a tree layout.
 #' @rdname mark_
 #' @export
 mark_tree = function(chart = NULL, ...) mark_(chart, 'tree', ...)
 
-#' Add a Word Cloud Mark
-#'
+#' @details `mark_word_cloud()`: Draws a word cloud.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -465,16 +391,12 @@ mark_tree = function(chart = NULL, ...) mark_(chart, 'tree', ...)
 #'   mark_word_cloud(encode = list(text = 'text', value = 'value', color = 'text'))
 mark_word_cloud = function(chart = NULL, ...) mark_(chart, 'wordCloud', ...)
 
-#' Add a Gauge Mark
-#'
+#' @details `mark_gauge()`: Draws a gauge (speedometer) chart.
 #' @rdname mark_
 #' @export
 mark_gauge = function(chart = NULL, ...) mark_(chart, 'gauge', ...)
 
-#' Add a Liquid Mark
-#'
-#' Draws a liquid fill gauge.
-#'
+#' @details `mark_liquid()`: Draws a liquid fill gauge.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -484,21 +406,16 @@ mark_gauge = function(chart = NULL, ...) mark_(chart, 'gauge', ...)
 #'     style = list(textContent = '30%'))
 mark_liquid = function(chart = NULL, ...) mark_(chart, 'liquid', ...)
 
-#' Add a Shape Mark
-#'
-#' A custom mark whose rendering is controlled by a JavaScript render function.
-#'
+#' @details `mark_shape()`: A custom mark whose rendering is controlled by a
+#'   JavaScript render function.
 #' @rdname mark_
 #' @export
 mark_shape = function(chart = NULL, ...) mark_(chart, 'shape', ...)
 
-#' Add a Sunburst Mark
-#'
-#' A composite mark for sunburst (radial partition) visualization of
-#' hierarchical data. This wraps the partition mark with polar coordinates.
-#' The data should be a nested tree structure wrapped in a list, e.g.,
-#' `data = list(type = 'inline', value = list(tree))`.
-#'
+#' @details `mark_sunburst()`: A composite mark for sunburst (radial partition)
+#'   visualization of hierarchical data. This wraps the partition mark with
+#'   polar coordinates. The data should be a nested tree structure wrapped in a
+#'   list, e.g., `data = list(type = 'inline', value = list(tree))`.
 #' @rdname mark_
 #' @export
 #' @examples
@@ -527,13 +444,10 @@ mark_sunburst = function(chart = NULL, ...) {
   chart
 }
 
-#' Add a Partition (Icicle) Mark
-#'
-#' A composite mark for hierarchical icicle chart visualization. For a radial
-#' (sunburst) layout, use [mark_sunburst()] instead. The data should be a
-#' nested tree structure wrapped in a list, e.g.,
-#' `data = list(type = 'inline', value = list(tree))`.
-#'
+#' @details `mark_partition()`: A composite mark for hierarchical icicle chart
+#'   visualization. For a radial (sunburst) layout, use [mark_sunburst()]
+#'   instead. The data should be a nested tree structure wrapped in a list,
+#'   e.g., `data = list(type = 'inline', value = list(tree))`.
 #' @rdname mark_
 #' @export
 mark_partition = function(chart = NULL, ...) mark_(chart, 'partition', ...)

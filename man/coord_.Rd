@@ -41,42 +41,39 @@ types: \code{'cartesian'} (default), \code{'polar'}, \code{'theta'}, \code{'radi
 \code{'helix'}, \code{'parallel'}. Use the \code{transform} argument to apply coordinate
 transforms such as \code{'transpose'} (equivalent to ggplot2's \code{coord_flip()}) or
 \code{'fisheye'}.
-
-Shortcut for \code{coord_(chart, 'polar', ...)}.
-
-Shortcut for \code{coord_(chart, 'theta', ...)}. Used for pie and donut
-charts.
-
-Shortcut for \code{coord_(chart, 'radial', ...)}. Suitable for radial bar
-charts.
-
-Shortcut for \code{coord_(chart, 'radar', ...)}. Used with \code{position}
-encoding for radar (spider) charts.
-
-Shortcut for \code{coord_(chart, 'helix', ...)}.
-
-Shortcut for \code{coord_(chart, 'parallel', ...)}. Used with \code{position}
-encoding for parallel coordinate plots.
 }
 \details{
 The \code{'parallel'} coordinate requires a \code{position} encoding (a character
 vector of column names) instead of separate \code{x}/\code{y} encodings. For radar
 charts, use the \code{'polar'} coordinate with long-format data (x/y/color).
+
+\code{coord_polar()}: Shortcut for \code{coord_(chart, 'polar', ...)}.
+
+\code{coord_theta()}: Shortcut for \code{coord_(chart, 'theta', ...)}. Used for
+pie and donut charts.
+
+\code{coord_radial()}: Shortcut for \code{coord_(chart, 'radial', ...)}. Suitable
+for radial bar charts.
+
+\code{coord_radar()}: Shortcut for \code{coord_(chart, 'radar', ...)}. Used with
+\code{position} encoding for radar (spider) charts.
+
+\code{coord_helix()}: Shortcut for \code{coord_(chart, 'helix', ...)}.
+
+\code{coord_parallel()}: Shortcut for \code{coord_(chart, 'parallel', ...)}. Used
+with \code{position} encoding for parallel coordinate plots.
 }
 \examples{
-# Polar coordinate (rose chart)
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
-g2(df, y ~ x) |>
-  coord_polar()
+p = g2(df, y ~ x, color = ~ x)
+# Polar coordinate (rose chart)
+g2(df, y ~ x) |> coord_polar()
 
 # Theta coordinate (pie / donut chart)
-g2(df, y ~ x, color = ~ x) |>
-  transform_('stackY') |>
-  coord_theta()
+p |> transform_('stackY') |> coord_theta()
 
 # Radial coordinate (radial bar chart)
-g2(df, y ~ x, color = ~ x) |>
-  coord_radial()
+p |> coord_radial()
 
 # Parallel coordinate (uses position encoding)
 g2(iris, position = names(iris)[-5], color = ~ Species,
@@ -97,11 +94,5 @@ g2(df2, score ~ item, color = ~ team) |>
   scale_x(padding = 0.5, align = 0) |>
   scale_y(domainMin = 0, domainMax = 100) |>
   axis_x(grid = TRUE)
-g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x, color = ~ x) |>
-  coord_polar()
-g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x, color = ~ x) |>
-  transform_('stackY') |>
-  coord_theta(innerRadius = 0.5)
-g2(data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2)), y ~ x, color = ~ x) |>
-  coord_radial()
+p |> transform_('stackY') |> coord_theta(innerRadius = 0.5)
 }

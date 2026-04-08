@@ -19,15 +19,14 @@
 #' @return The modified `g2` object.
 #' @export
 #' @examples
+#' p = g2(mtcars, hp ~ mpg)
 #' # Log-scaled x axis (chart-level, before marks)
-#' g2(mtcars, hp ~ mpg) |>
-#'   scale_('x', type = 'log')
+#' p |> scale_('x', type = 'log')
 #'
 #' # Square-root scale on y (chart-level)
-#' g2(mtcars, hp ~ mpg) |>
-#'   scale_('y', type = 'sqrt')
+#' p |> scale_('y', type = 'sqrt')
 #'
-#' # Ordinal colour palette (chart-level)
+#' # Ordinal color palette (chart-level)
 #' g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
 #'   scale_('color', palette = 'category10')
 #'
@@ -49,26 +48,21 @@ scale_ = function(chart = NULL, field, ...) {
   chart
 }
 
-#' Configure the X Scale
-#'
+#' @details `scale_x()`: Shortcut for `scale_(chart, 'x', ...)`.
 #' @rdname scale_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   scale_x(type = 'log')
+#' p |> scale_x(type = 'log')
 scale_x = function(chart = NULL, ...) scale_(chart, 'x', ...)
 
-#' Configure the Y Scale
-#'
+#' @details `scale_y()`: Shortcut for `scale_(chart, 'y', ...)`.
 #' @rdname scale_
 #' @export
 #' @examples
-#' g2(mtcars, hp ~ mpg) |>
-#'   scale_y(type = 'sqrt')
+#' p |> scale_y(type = 'sqrt')
 scale_y = function(chart = NULL, ...) scale_(chart, 'y', ...)
 
-#' Configure the Color Scale
-#'
+#' @details `scale_color()`: Shortcut for `scale_(chart, 'color', ...)`.
 #' @rdname scale_
 #' @export
 #' @examples
@@ -76,8 +70,7 @@ scale_y = function(chart = NULL, ...) scale_(chart, 'y', ...)
 #'   scale_color(palette = 'category10')
 scale_color = function(chart = NULL, ...) scale_(chart, 'color', ...)
 
-#' Configure the Size Scale
-#'
+#' @details `scale_size()`: Shortcut for `scale_(chart, 'size', ...)`.
 #' @rdname scale_
 #' @export
 #' @examples
@@ -85,8 +78,7 @@ scale_color = function(chart = NULL, ...) scale_(chart, 'color', ...)
 #'   scale_size(range = c(2, 10))
 scale_size = function(chart = NULL, ...) scale_(chart, 'size', ...)
 
-#' Configure the Shape Scale
-#'
+#' @details `scale_shape()`: Shortcut for `scale_(chart, 'shape', ...)`.
 #' @rdname scale_
 #' @export
 #' @examples
@@ -94,8 +86,7 @@ scale_size = function(chart = NULL, ...) scale_(chart, 'size', ...)
 #'   scale_shape(range = c('circle', 'square', 'triangle'))
 scale_shape = function(chart = NULL, ...) scale_(chart, 'shape', ...)
 
-#' Configure the Opacity Scale
-#'
+#' @details `scale_opacity()`: Shortcut for `scale_(chart, 'opacity', ...)`.
 #' @rdname scale_
 #' @export
 #' @examples

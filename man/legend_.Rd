@@ -33,15 +33,23 @@ The modified \code{g2} object.
 Customise the legend for a visual channel (\code{'color'}, \code{'size'}, \code{'shape'},
 \code{'opacity'}). Set to \code{FALSE} to hide.
 }
+\details{
+\code{legend_color()}: Shortcut for \code{legend_(chart, 'color', ...)}.
+
+\code{legend_size()}: Shortcut for \code{legend_(chart, 'size', ...)}.
+
+\code{legend_shape()}: Shortcut for \code{legend_(chart, 'shape', ...)}.
+
+\code{legend_opacity()}: Shortcut for \code{legend_(chart, 'opacity', ...)}.
+}
 \examples{
-g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
-  legend_('color', position = 'right')
-g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
-  legend_color(position = 'right')
+p = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
+p |> legend_('color', position = 'right')
+p |> legend_color(position = 'right')
 g2(mtcars, hp ~ mpg, size = ~ wt) |>
   legend_size(position = 'bottom')
-g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species) |>
-  legend_shape(position = 'bottom')
+p = g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species)
+p |> legend_shape(position = 'bottom')
 g2(mtcars, hp ~ mpg, opacity = ~ wt) |>
   legend_opacity(position = 'bottom')
 }

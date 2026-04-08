@@ -30,6 +30,11 @@ function (or \code{style_mark()}, \code{labels_()}, etc.), the axis is applied t
 that mark only, enabling per-mark axis customization (e.g., a right-side
 y-axis for a dual-axis chart). Otherwise it applies at the chart level.
 }
+\details{
+\code{axis_x()}: Shortcut for \code{axis_(chart, 'x', ...)}.
+
+\code{axis_y()}: Shortcut for \code{axis_(chart, 'y', ...)}.
+}
 \examples{
 # Chart-level axis titles (no marks yet)
 g2(mtcars, hp ~ mpg) |>
@@ -43,8 +48,4 @@ g2(df, ~ x) |>
   mark_line(encode = list(y = 'b')) |>
   scale_y(independent = TRUE) |>
   axis_y(position = 'right', grid = FALSE)
-g2(mtcars, hp ~ mpg) |>
-  axis_x(title = 'Miles per Gallon')
-g2(mtcars, hp ~ mpg) |>
-  axis_y(title = 'Horsepower')
 }

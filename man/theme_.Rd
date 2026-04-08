@@ -34,16 +34,6 @@ The modified \code{g2} object.
 \description{
 G2 built-in themes: \code{'classic'} (default), \code{'classicDark'}, \code{'light'},
 \code{'dark'}, \code{'academy'}.
-
-Shortcut for \code{theme_(chart, 'classic', ...)}. This is the default theme.
-
-Shortcut for \code{theme_(chart, 'classicDark', ...)}.
-
-Shortcut for \code{theme_(chart, 'light', ...)}.
-
-Shortcut for \code{theme_(chart, 'dark', ...)}.
-
-Shortcut for \code{theme_(chart, 'academy', ...)}.
 }
 \details{
 To set global theme options for all charts, use \code{options(gglite.theme = list(...))}. This is useful for changing default font sizes, grid line
@@ -58,18 +48,25 @@ individually. For example:
 }\if{html}{\out{</div>}}
 
 Per-chart \code{theme_()} settings are merged on top of the global option.
+
+\code{theme_classic()}: The default theme. Shortcut for
+\code{theme_(chart, 'classic', ...)}.
+
+\code{theme_classicDark()}: Shortcut for \code{theme_(chart, 'classicDark', ...)}.
+
+\code{theme_light()}: Shortcut for \code{theme_(chart, 'light', ...)}.
+
+\code{theme_dark()}: Shortcut for \code{theme_(chart, 'dark', ...)}.
+
+\code{theme_academy()}: Shortcut for \code{theme_(chart, 'academy', ...)}.
 }
 \examples{
-# Dark theme
-g2(mtcars, hp ~ mpg) |>
-  theme_('dark')
-
-# Academy theme
-g2(mtcars, hp ~ mpg) |>
-  theme_('academy')
-g2(mtcars, hp ~ mpg) |> theme_classic()
-g2(mtcars, hp ~ mpg) |> theme_classicDark()
-g2(mtcars, hp ~ mpg) |> theme_light()
-g2(mtcars, hp ~ mpg) |> theme_dark()
-g2(mtcars, hp ~ mpg) |> theme_academy()
+p = g2(mtcars, hp ~ mpg)
+p |> theme_('dark')
+p |> theme_('academy')
+p |> theme_classic()
+p |> theme_classicDark()
+p |> theme_light()
+p |> theme_dark()
+p |> theme_academy()
 }
