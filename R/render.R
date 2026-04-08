@@ -338,7 +338,7 @@ knit_print.g2 = function(x, ...) {
 #' @importFrom xfun record_print
 #' @export
 record_print.g2 = function(x, ...) {
-  xfun::new_record(c(cdn_scripts(), chart_html(x, ...)), 'asis')
+  xfun::new_record(c(cdn_scripts(), chart_html(x, ...), ''), 'asis')
 }
 
 register_knit_print = function() {
