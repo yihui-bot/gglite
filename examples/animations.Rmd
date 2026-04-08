@@ -20,7 +20,7 @@ may want to use shorter durations and omit `options(gglite.defer_render = TRUE)`
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
-p = g2(df, x = 'x', y = 'y')
+p = g2(df, y ~ x)
 p |> animate(enter = list(type = 'fadeIn', duration = 2000))
 ```
 
@@ -51,7 +51,7 @@ p |> animate(enter = list(type = 'scaleInY', duration = 1600))
 ## Zoom-in Animation
 
 ```{r}
-pm = g2(mtcars, x = 'mpg', y = 'hp')
+pm = g2(mtcars, hp ~ mpg)
 pm |> animate(enter = list(type = 'zoomIn', duration = 1200))
 ```
 
@@ -71,7 +71,7 @@ pm |> animate(FALSE)
 
 ```{r}
 df = data.frame(x = 1:10, y = c(3, 1, 4, 1, 5, 9, 2, 6, 5, 3))
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_line() |>
   animate(enter = list(type = 'fadeIn', duration = 2000))
 ```

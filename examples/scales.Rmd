@@ -4,7 +4,7 @@ title: Scales
 
 ```{r}
 library(gglite)
-p = g2(mtcars, x = 'mpg', y = 'hp')
+p = g2(mtcars, hp ~ mpg)
 ```
 
 Scales control how data values map to visual properties. Use helpers like
@@ -43,7 +43,7 @@ such as color or shape.)
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-p_cat = g2(df, x = 'x', y = 'y')
+p_cat = g2(df, y ~ x)
 p_cat |>
   mark_point() |>
   scale_x(type = 'point')
@@ -62,7 +62,7 @@ df = data.frame(
   date = seq(as.Date('2024-01-01'), by = 'month', length.out = 6),
   value = c(10, 20, 15, 30, 25, 35)
 )
-g2(df, x = 'date', y = 'value') |>
+g2(df, value ~ date) |>
   scale_x(type = 'time')
 ```
 
@@ -91,7 +91,7 @@ p |> scale_y(zero = TRUE)
 ## Color Palette
 
 ```{r}
-p_iris = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species')
+p_iris = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
 p_iris |> scale_color(palette = 'category10')
 ```
 
@@ -105,14 +105,14 @@ p_iris |> scale_color(range = c('#e41a1c', '#377eb8', '#4daf4a'))
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2), col = c('red', 'green', 'blue'))
-g2(df, x = 'x', y = 'y', color = 'col') |>
+g2(df, y ~ x, color = ~ col) |>
   scale_color(type = 'identity')
 ```
 
 ## Multiple Scales
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', color = 'wt', size = 'qsec') |>
+g2(mtcars, hp ~ mpg, color = ~ wt, size = ~ qsec) |>
   scale_x(nice = TRUE) |>
   scale_y(type = 'sqrt') |>
   scale_color(palette = 'viridis') |>

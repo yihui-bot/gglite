@@ -4,7 +4,7 @@ title: Interactions
 
 ```{r}
 library(gglite)
-p = g2(mtcars, x = 'mpg', y = 'hp')
+p = g2(mtcars, hp ~ mpg)
 ```
 
 Interactions enable user-driven behaviors such as tooltips, brushing, and
@@ -21,7 +21,7 @@ p |> interact('tooltip')
 Highlight individual elements on hover.
 
 ```{r}
-pc = g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl')
+pc = g2(mtcars, hp ~ mpg, color = ~ cyl)
 pc |> interact('elementHighlight')
 ```
 
@@ -34,7 +34,7 @@ df = data.frame(
   x = rep(c('A', 'B', 'C'), each = 2), y = c(3, 2, 5, 4, 1, 6),
   color = rep(c('a', 'b'), 3)
 )
-pd = g2(df, x = 'x', y = 'y', color = 'color') |>
+pd = g2(df, y ~ x, color = ~ color) |>
   mark_interval() |>
   transform_('dodgeX')
 pd |> interact('elementHighlightByX')
@@ -91,7 +91,7 @@ p |> interact('brushFilter')
 Click legend entries to filter data.
 
 ```{r}
-p_iris = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species')
+p_iris = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
 p_iris |> interact('legendFilter')
 ```
 

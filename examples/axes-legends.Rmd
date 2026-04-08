@@ -4,7 +4,7 @@ title: Axes and Legends
 
 ```{r}
 library(gglite)
-p = g2(mtcars, x = 'mpg', y = 'hp')
+p = g2(mtcars, hp ~ mpg)
 ```
 
 ## Axis Customization
@@ -50,7 +50,7 @@ p |>
 ## Legend Customization
 
 ```{r}
-p2 = g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species')
+p2 = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
 ```
 
 ### Legend position
@@ -102,7 +102,7 @@ axis; then configure the second mark's axis right after adding it.
 air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
 air$Month = month.abb[air$Month]
 
-g2(air, x = 'Month') |>
+g2(air, ~ Month) |>
   mark_interval(encode = list(y = 'Temp')) |>
   style_mark(fill = '#85C5A6', fillOpacity = 0.7) |>
   axis_y(title = 'Temperature (°F)', titleFill = '#85C5A6') |>

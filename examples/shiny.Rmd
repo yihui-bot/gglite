@@ -22,7 +22,7 @@ ui = fluidPage(
 
 server = function(input, output, session) {
   output$chart1 = renderG2({
-    g2(mtcars, x = 'mpg', y = 'hp')
+    g2(mtcars, hp ~ mpg)
   })
 }
 
@@ -73,11 +73,11 @@ ui = fluidPage(
 
 server = function(input, output, session) {
   output$scatter = renderG2({
-    g2(mtcars, x = 'mpg', y = 'hp')
+    g2(mtcars, hp ~ mpg)
   })
   output$bars = renderG2({
     freq = as.data.frame(table(cyl = mtcars$cyl))
-    g2(freq, x = 'cyl', y = 'Freq')
+    g2(freq, Freq ~ cyl)
   })
 }
 
