@@ -115,7 +115,10 @@ check_chart = function(fn, chart, args) {
 #'   series objects are automatically converted to data frames (with columns
 #'   `time` and `value` for univariate series, or `time`, `series`, and `value`
 #'   for multivariate series) and default aesthetic mappings are set
-#'   accordingly.
+#'   accordingly. By default, only the columns actually referenced by the chart
+#'   are included in the HTML output. Wrap `data` in [I()] to opt out of
+#'   trimming and preserve all columns — useful when extra columns are accessed
+#'   inside inline JavaScript functions that cannot be statically detected.
 #' @param ... Aesthetic mappings as `name = 'column'` pairs (character strings),
 #'   or a formula followed by optional named aesthetics.
 #' @param width,height Width and height of the chart in pixels.

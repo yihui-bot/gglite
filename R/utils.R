@@ -71,6 +71,49 @@ process_layout = function(name, value) {
   dropNulls(lapply(res, function(v) if (is.na(v)) NULL else v))
 }
 
+#' Collect Variable Names Used in a Chart
+#'
+#' Gathers all column names referenced by the chart's aesthetic mappings,
+#' facet encodings, and any mark-level encode overrides that do not supply
+#' their own data (since those references must resolve against the chart-level
+#' data).
+#'
+#' @param chart A `g2` object.
+#' @return A character vector of unique variable names.
+#' @noRd
+collect_vars = function(chart) {
+  vars = character(0)
+  if (length(chart$aesthetics)) vars = c(vars, unlist(chart$aesthetics))
+  if (!is.null(chart$facet$encode)) vars = c(vars, unlist(chart$facet$encode))
+  # Only include layer encode vars for layers that use the chart-level data
+  for (layer in chart$layers)
+    if (is.null(layer$data) && !is.null(layer$encode))
+      vars = c(vars, unlist(layer$encode))
+  unique(vars[nzchar(vars)])
+}
+
+#' Trim a Data Frame to Used Columns
+#'
+#' Restricts a data frame to only the columns listed in `vars`. If `data` is
+#' wrapped in [I()], the `AsIs` class is stripped and the data is returned
+#' untrimmed (all columns preserved) — this lets callers opt out of trimming
+#' when variables are referenced outside the visible spec, e.g. inside inline
+#' JavaScript functions.
+#'
+#' @param data A data frame (possibly with class `AsIs`), or any other value.
+#' @param vars Character vector of column names to keep.
+#' @return The (possibly trimmed) data frame, or `data` unchanged when it is
+#'   not a data frame or when trimming is not applicable.
+#' @noRd
+trim_data = function(data, vars) {
+  if (inherits(data, 'AsIs'))
+    return(structure(data, class = setdiff(class(data), 'AsIs')))
+  if (!is.data.frame(data) || !length(vars)) return(data)
+  keep = intersect(vars, names(data))
+  if (!length(keep) || length(keep) == ncol(data)) return(data)
+  data[, keep, drop = FALSE]
+}
+
 #' Annotate Data Frames for Column-Major JSON
 #'
 #' Recursively walks a nested list and wraps any data frame found in a `data`

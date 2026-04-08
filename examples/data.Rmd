@@ -1,0 +1,71 @@
+---
+title: Data
+---
+
+```{r}
+library(gglite)
+```
+
+gglite automatically trims dataset columns to only those referenced by the
+chart before serializing to JSON. This keeps the HTML output compact when
+working with wide data frames that have many unused columns.
+
+## Automatic Column Trimming
+
+The `iris` dataset has five columns: `Sepal.Length`, `Sepal.Width`,
+`Petal.Length`, `Petal.Width`, and `Species`. When only two columns are
+mapped, only those two columns end up in the generated HTML.
+
+```{r}
+# Only Sepal.Length and Sepal.Width are included in the output
+g2(iris, x = 'Sepal.Length', y = 'Sepal.Width') |> mark_point()
+```
+
+Additional aesthetic channels count as used columns too:
+
+```{r}
+# Sepal.Length, Sepal.Width, and Species are included; Petal.* are dropped
+g2(iris, x = 'Sepal.Length', y = 'Sepal.Width', color = 'Species') |>
+  mark_point()
+```
+
+Trimming also applies to data supplied at the mark level:
+
+```{r}
+df = data.frame(x = 1:5, y = c(2, 4, 3, 5, 1), z = letters[1:5])
+# z is not encoded, so it is excluded from the mark's data
+g2() |> mark_point(data = df, encode = list(x = 'x', y = 'y'))
+```
+
+## Opting Out with `I()`
+
+Some chart configurations reference columns inside inline JavaScript
+functions that gglite cannot detect statically. A common case is a custom
+`style` callback that reads a column from the data row `d` directly:
+
+```{r}
+# Species is used in the JS fill function but is not listed in the encode.
+# Without I(), Species would be trimmed and the colors would all fall back
+# to the else branch.
+g2(I(iris), x = 'Sepal.Length', y = 'Sepal.Width') |>
+  mark_point(style = list(
+    fill = js('(d) => d.Species === "setosa" ? "steelblue" : "tomato"')
+  ))
+```
+
+Wrapping the data in `I()` tells gglite to preserve all columns and skip
+trimming. The `AsIs` class is stripped before JSON serialization, so the
+chart works exactly as if the data were passed directly — but with all
+columns available to JavaScript.
+
+The same applies to mark-level data:
+
+```{r}
+df = data.frame(x = 1:5, y = c(2, 4, 3, 5, 1), label = c('a', 'b', 'c', 'd', 'e'))
+# label is referenced in a JS tooltip callback, not in encode
+g2() |> mark_point(
+  data = I(df),
+  encode = list(x = 'x', y = 'y'),
+  tooltip = list(items = list(js('(d) => ({ name: "label", value: d.label })')))
+)
+```
