@@ -82,14 +82,13 @@ process_layout = function(name, value) {
 #' @return A character vector of unique variable names.
 #' @noRd
 collect_vars = function(chart) {
-  vars = character(0)
-  if (length(chart$aesthetics)) vars = c(vars, unlist(chart$aesthetics))
-  if (!is.null(chart$facet$encode)) vars = c(vars, unlist(chart$facet$encode))
+  vars = NULL
+  vars = c(vars, chart$aesthetics)
+  vars = c(vars, chart$facet$encode)
   # Only include layer encode vars for layers that use the chart-level data
   for (layer in chart$layers)
-    if (is.null(layer$data) && !is.null(layer$encode))
-      vars = c(vars, unlist(layer$encode))
-  unique(vars[nzchar(vars)])
+    if (is.null(layer$data)) vars = c(vars, layer$encode)
+  unique(unlist(vars))
 }
 
 #' Trim a Data Frame to Used Columns

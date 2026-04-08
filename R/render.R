@@ -129,8 +129,7 @@ build_config = function(chart) {
     if (length(extra)) m = modifyList(m, extra)
     # Trim mark-level data frames (merge chart aesthetics + layer encode for vars)
     if (is.data.frame(m$data)) {
-      lv = unique(c(unlist(chart$aesthetics), unlist(layer$encode)))
-      lv = lv[nzchar(lv)]
+      lv = unlist(c(chart$aesthetics, layer$encode))
       m$data = trim_data(m$data, lv)
     }
     m
