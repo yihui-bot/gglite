@@ -76,6 +76,7 @@ g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_range_x(
     data = list(list(x = c(15, 25))),
+    encode = list(x = 'x'),
     style = list(fill = 'steelblue', fillOpacity = 0.15)
   )
 ```
