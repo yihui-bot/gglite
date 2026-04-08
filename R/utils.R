@@ -186,20 +186,6 @@ extract_terms = function(expr) {
   deparse(expr)
 }
 
-#' Parse a Formula into Aesthetic and Facet Mappings
-#'
-#' Interprets an R formula as chart aesthetic mappings:
-#' - `y ~ x` maps to `list(x = 'x', y = 'y')`
-#' - `~ x` maps to `list(x = 'x')`
-#' - `~ x1 + x2 + x3` maps to `list(position = c('x1', 'x2', 'x3'))`
-#' - `y ~ x | z` adds faceting by `z` (columns)
-#' - `y ~ x | 0 + z` adds faceting by `z` (rows)
-#' - `y ~ x | z1 + z2` adds faceting by `z1` (columns) and `z2` (rows)
-#'
-#' @param f A formula object.
-#' @return A list with `aesthetics` (named list) and `facet` (a facet list or
-#'   `NULL`).
-#' @noRd
 #' Convert a One-Sided Formula to a Variable Name
 #'
 #' Converts a one-sided formula of the form `~ var` to the character string
@@ -224,6 +210,20 @@ as_var = function(x) {
 #' @noRd
 as_vars = function(x) lapply(x, as_var)
 
+#' Parse a Formula into Aesthetic and Facet Mappings
+#'
+#' Interprets an R formula as chart aesthetic mappings:
+#' - `y ~ x` maps to `list(x = 'x', y = 'y')`
+#' - `~ x` maps to `list(x = 'x')`
+#' - `~ x1 + x2 + x3` maps to `list(position = c('x1', 'x2', 'x3'))`
+#' - `y ~ x | z` adds faceting by `z` (columns)
+#' - `y ~ x | 0 + z` adds faceting by `z` (rows)
+#' - `y ~ x | z1 + z2` adds faceting by `z1` (columns) and `z2` (rows)
+#'
+#' @param f A formula object.
+#' @return A list with `aesthetics` (named list) and `facet` (a facet list or
+#'   `NULL`).
+#' @noRd
 parse_formula = function(f) {
   lhs = if (length(f) == 3) f[[2]]
   rhs = if (length(f) == 3) f[[3]] else f[[2]]
