@@ -15,13 +15,13 @@ Pass a data frame to `g2()` and it becomes the default data source for all
 marks in the chart.
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+g2(mtcars, hp ~ mpg) |> mark_point()
 ```
 
 Multiple marks can share the same chart-level data frame:
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line()
 ```
@@ -34,7 +34,7 @@ or overlays that use a different data source.
 
 ```{r}
 # Mark-level data for an annotation line
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line_y(
     data = data.frame(y = 150),
@@ -61,7 +61,7 @@ a nested list structure.
 
 ```{r}
 # A single reference line at y = 150
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line_y(
     data = list(list(y = 150)),
@@ -71,7 +71,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 
 ```{r}
 # A shaded region between x = 15 and x = 25
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_range_x(
     data = list(list(x = c(15, 25))),
@@ -82,8 +82,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ## Fetching Remote Data
 
 G2 can fetch data directly from a URL. Pass `data = list(type = 'fetch',
-value = '<url>')` to any mark (or the chart's `data` slot via `mark_()`)
-to load JSON or CSV data client-side.
+value = '<url>')` to any mark to load JSON or CSV data client-side.
 
 ```{r}
 g2() |> mark_point(
@@ -107,18 +106,29 @@ mapped, only those two columns end up in the generated HTML.
 
 ```{r}
 # Only Sepal.Length and Sepal.Width are serialized
-g2(iris, x = 'Sepal.Length', y = 'Sepal.Width') |> mark_point()
+g2(iris, Sepal.Length ~ Sepal.Width) |> mark_point()
 ```
 
 Additional aesthetic channels count as used columns too:
 
 ```{r}
 # Sepal.Length, Sepal.Width, and Species are included; Petal.* are dropped
-g2(iris, x = 'Sepal.Length', y = 'Sepal.Width', color = 'Species') |>
-  mark_point()
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |> mark_point()
 ```
 
-Trimming also applies to data supplied at the mark level.
+Trimming also applies to labels: the `text` column referenced by `labels_()`
+is automatically preserved.
+
+```{r}
+df = data.frame(
+  x = c('A', 'B', 'C'), y = c(3, 7, 2),
+  label = c('low', 'high', 'mid'), extra = 1:3
+)
+# label is kept (used by labels_()); extra is trimmed
+g2(df, y ~ x) |>
+  mark_interval() |>
+  labels_(text = ~ label, position = 'inside')
+```
 
 ## Opting Out with `I()`
 
@@ -129,7 +139,7 @@ callback that reads a field from the data row directly:
 ```{r}
 # Species is used in the JS fill callback but is not listed in encode.
 # Without I(), Species would be trimmed and the callback would not work.
-g2(I(iris), x = 'Sepal.Length', y = 'Sepal.Width') |>
+g2(I(iris), Sepal.Length ~ Sepal.Width) |>
   mark_point(style = list(
     fill = js('(d) => d.Species === "setosa" ? "steelblue" : "tomato"')
   ))

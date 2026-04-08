@@ -18,6 +18,6 @@ mark-level encodings are kept. Wrap it in \code{\link[=I]{I()}} to preserve all 
 Add an Area Mark
 }
 \examples{
-g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), x = 'x', y = 'y') |>
+g2(data.frame(x = 1:5, y = c(3, 1, 4, 1, 5)), y ~ x) |>
   mark_area()
 }

@@ -20,6 +20,13 @@ assert('encode() maps column names to aesthetics', {
   (chart$aesthetics$color %==% 'baz')
 })
 
+assert('encode() accepts formula aesthetics', {
+  chart = g2() |> encode(x = ~ mpg, y = ~ hp, color = ~ cyl)
+  (chart$aesthetics$x %==% 'mpg')
+  (chart$aesthetics$y %==% 'hp')
+  (chart$aesthetics$color %==% 'cyl')
+})
+
 assert('pipe chaining works end-to-end', {
   chart = g2(mtcars, x = 'mpg', y = 'hp') |>
     mark_point() |>
@@ -82,6 +89,20 @@ assert('g2() formula with extra aesthetics', {
   (chart$aesthetics$color %==% 'Species')
 })
 
+assert('g2() formula aesthetics: color = ~ Species', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
+  (chart$aesthetics$x %==% 'Sepal.Width')
+  (chart$aesthetics$y %==% 'Sepal.Length')
+  (chart$aesthetics$color %==% 'Species')
+})
+
+assert('g2() all named formula aesthetics (no positional formula)', {
+  chart = g2(mtcars, x = ~ mpg, y = ~ hp, color = ~ cyl)
+  (chart$aesthetics$x %==% 'mpg')
+  (chart$aesthetics$y %==% 'hp')
+  (chart$aesthetics$color %==% 'cyl')
+})
+
 assert('g2() formula with faceting y ~ x | z', {
   chart = g2(iris, Sepal.Length ~ Sepal.Width | Species)
   (chart$aesthetics$x %==% 'Sepal.Width')
@@ -102,6 +123,10 @@ assert('g2() formula ~ x1 + x2 + x3 sets position encoding', {
   (chart$aesthetics$position %==%
     c('Sepal.Length', 'Sepal.Width', 'Petal.Length'))
   (is.null(chart$aesthetics$x))
+})
+
+assert('as_var() rejects multi-term one-sided formula', {
+  (has_error(g2(mtcars, hp ~ mpg, color = ~ a + b)))
 })
 
 assert('g2() title argument sets chart title', {
@@ -309,6 +334,28 @@ assert('+ works with coord, facet, axis, legend, title, tooltip', {
   (chart$legends$color$position %==% 'right')
   (chart$chart_title %==% 'Iris')
   (chart$tooltip_config %==% FALSE)
+})
+
+assert('facet_rect() accepts formula variables', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width) |>
+    facet_rect(x = ~ Species)
+  (chart$facet$type %==% 'facetRect')
+  (chart$facet$encode$x %==% 'Species')
+})
+
+assert('facet_circle() accepts formula variables', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width) |>
+    facet_circle(position = ~ Species)
+  (chart$facet$type %==% 'facetCircle')
+  (chart$facet$encode$position %==% 'Species')
+})
+
+assert('labels_() accepts formula for text', {
+  df = data.frame(x = c('A', 'B'), y = c(1, 2))
+  chart = g2(df, y ~ x) |>
+    mark_interval() |>
+    labels_(text = ~ y)
+  (chart$layers[[1]]$labels[[1]]$text %==% 'y')
 })
 
 assert('+ works with animate, labels_, style_mark', {
@@ -561,6 +608,37 @@ assert('collect_vars excludes layer encode vars when layer has own data', {
   (!('z' %in% vars))
 })
 
+assert('collect_vars includes layer encode vars when layer data is a transform spec', {
+  chart = g2(iris, ~ Sepal.Width, color = ~ Species) |> mark_density()
+  vars = collect_vars(chart)
+  # KDE field + groupBy come from the transform spec inside layer$data
+  ('Sepal.Width' %in% vars)
+  ('Species' %in% vars)
+  ('.x' %in% vars)
+})
+
+assert('collect_vars includes labels text vars for layers without own data', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width) |>
+    mark_point() |>
+    labels_(text = ~ Petal.Length)
+  vars = collect_vars(chart)
+  ('Sepal.Length' %in% vars)
+  ('Sepal.Width' %in% vars)
+  ('Petal.Length' %in% vars)
+  (!('Petal.Width' %in% vars))
+})
+
+assert('collect_vars excludes labels text vars when layer has own data', {
+  df2 = data.frame(x = 1:3, y = 4:6, label = c('a', 'b', 'c'))
+  chart = g2(mtcars, hp ~ mpg) |>
+    mark_point(data = df2, encode = list(x = 'x', y = 'y')) |>
+    labels_(text = ~ label)
+  vars = collect_vars(chart)
+  ('mpg' %in% vars)
+  ('hp' %in% vars)
+  (!('label' %in% vars))
+})
+
 assert('trim_data removes unused columns', {
   df = iris
   result = trim_data(df, c('Sepal.Length', 'Species'))
@@ -605,6 +683,19 @@ assert('build_config trims mark-level data frames', {
   cfg = build_config(chart)
   mark_data = cfg$children[[1]]$data$value
   (names(mark_data) %==% c('a', 'b'))
+})
+
+assert('build_config preserves labels text column in mark-level data', {
+  df = data.frame(x = 1:3, y = 4:6, lbl = c('p', 'q', 'r'), z = 7:9)
+  chart = g2() |>
+    mark_point(data = df, encode = list(x = 'x', y = 'y')) |>
+    labels_(text = ~ lbl)
+  cfg = build_config(chart)
+  mark_data = cfg$children[[1]]$data$value
+  ('x' %in% names(mark_data))
+  ('y' %in% names(mark_data))
+  ('lbl' %in% names(mark_data))
+  (!('z' %in% names(mark_data)))
 })
 
 assert('build_config does not trim I()-wrapped mark-level data', {

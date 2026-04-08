@@ -18,7 +18,7 @@ mark-level encodings are kept. Wrap it in \code{\link[=I]{I()}} to preserve all 
 Add a Vertical Reference Line (lineX)
 }
 \examples{
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line_x(data = list(list(x = 20)),
     style = list(stroke = 'red', lineDash = c(4, 4)))

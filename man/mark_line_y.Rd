@@ -18,7 +18,7 @@ mark-level encodings are kept. Wrap it in \code{\link[=I]{I()}} to preserve all 
 Add a Horizontal Reference Line (lineY)
 }
 \examples{
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line_y(data = list(list(y = 150)),
     style = list(stroke = 'red', lineDash = c(4, 4)))

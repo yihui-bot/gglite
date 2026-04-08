@@ -18,7 +18,7 @@ mark-level encodings are kept. Wrap it in \code{\link[=I]{I()}} to preserve all 
 Add a Range Mark
 }
 \examples{
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_range(
     data = list(list(x = c(15, 25), y = c(100, 200))),

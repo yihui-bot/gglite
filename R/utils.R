@@ -71,12 +71,30 @@ process_layout = function(name, value) {
   dropNulls(lapply(res, function(v) if (is.na(v)) NULL else v))
 }
 
+#' Extract Column References from a G2 Inline Data Transform Spec
+#'
+#' When a layer's `data` is a list with a `transform` key (rather than a data
+#' frame), the transform entries can reference data columns via `field`,
+#' `fields`, `groupBy`, or `by`. This helper extracts those names so they can
+#' be included in the trimming allowlist.
+#'
+#' @param data A layer `data` value.
+#' @return A list of referenced column names, or `NULL`.
+#' @noRd
+data_transform_vars = function(data) {
+  if (!is.list(data) || is.data.frame(data) || is.null(data$transform)) return()
+  vars = NULL
+  for (t in data$transform)
+    vars = c(vars, t$field, t$fields, t$groupBy, t$by)
+  vars
+}
+
 #' Collect Variable Names Used in a Chart
 #'
 #' Gathers all column names referenced by the chart's aesthetic mappings,
-#' facet encodings, and any mark-level encode overrides that do not supply
-#' their own data (since those references must resolve against the chart-level
-#' data).
+#' facet encodings, and the encode, label text, and inline transform fields of
+#' any layer that reads from the chart-level data (i.e., layers that do not
+#' supply their own data frame).
 #'
 #' @param chart A `g2` object.
 #' @return A character vector of unique variable names.
@@ -85,9 +103,16 @@ collect_vars = function(chart) {
   vars = NULL
   vars = c(vars, chart$aesthetics)
   vars = c(vars, chart$facet$encode)
-  # Only include layer encode vars for layers that use the chart-level data
-  for (layer in chart$layers)
-    if (is.null(layer$data)) vars = c(vars, layer$encode)
+  # Include vars for layers that use the chart-level data. Layers with their
+  # own data *frame* bring their own source; layers with a G2 transform spec
+  # (a list) or no data at all still read from the chart-level data frame.
+  for (layer in chart$layers) {
+    if (!is.data.frame(layer$data)) {
+      vars = c(vars, layer$encode)
+      vars = c(vars, lapply(layer$labels, `[[`, 'text'))
+      vars = c(vars, data_transform_vars(layer$data))
+    }
+  }
   unique(unlist(vars))
 }
 
@@ -175,6 +200,30 @@ extract_terms = function(expr) {
 #' @return A list with `aesthetics` (named list) and `facet` (a facet list or
 #'   `NULL`).
 #' @noRd
+#' Convert a One-Sided Formula to a Variable Name
+#'
+#' Converts a one-sided formula of the form `~ var` to the character string
+#' `"var"`. All other values are returned unchanged. This allows users to write
+#' aesthetic mappings as `color = ~ species` instead of `color = 'species'`.
+#'
+#' @param x A value (formula or otherwise).
+#' @return A character string if `x` is a one-sided single-term formula;
+#'   otherwise `x` unchanged.
+#' @noRd
+as_var = function(x) {
+  if (!inherits(x, 'formula') || length(x) != 2) return(x)
+  terms = extract_terms(x[[2]])
+  if (length(terms) != 1) stop(
+    "Formula '", deparse(x), "' must contain exactly one variable name ",
+    "(e.g., `~ var`)"
+  )
+  terms
+}
+
+#' Apply as_var() to Each Element of a List
+#' @noRd
+as_vars = function(x) lapply(x, as_var)
+
 parse_formula = function(f) {
   lhs = if (length(f) == 3) f[[2]]
   rhs = if (length(f) == 3) f[[3]] else f[[2]]

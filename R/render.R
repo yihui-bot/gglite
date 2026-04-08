@@ -127,9 +127,10 @@ build_config = function(chart) {
     # Layer-specific properties (may override encode, add style, transform, etc.)
     extra = layer[setdiff(names(layer), 'type')]
     if (length(extra)) m = modifyList(m, extra)
-    # Trim mark-level data frames (merge chart aesthetics + layer encode for vars)
+    # Trim mark-level data frames (merge chart aesthetics + layer encode +
+    # labels text for vars)
     if (is.data.frame(m$data)) {
-      lv = unlist(c(chart$aesthetics, layer$encode))
+      lv = unlist(c(chart$aesthetics, layer$encode, lapply(layer$labels, `[[`, 'text')))
       m$data = trim_data(m$data, lv)
     }
     m

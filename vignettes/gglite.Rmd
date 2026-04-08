@@ -48,18 +48,17 @@ whichever you prefer.
 ## Data and encodings
 
 Every chart starts with `g2()`, which accepts a data frame and aesthetic
-mappings. Column names are always passed as **character strings** (no
-non-standard evaluation):
+mappings as R formulas:
 
 ```{r}
 library(gglite)
-g2(mtcars, x = 'mpg', y = 'hp')
+g2(mtcars, hp ~ mpg)
 ```
 
 You can also set encodings later with `encode()`:
 
 ```{r}
-g2(mtcars) |> encode(x = 'mpg', y = 'hp', color = 'cyl')
+g2(mtcars) |> encode(x = ~ mpg, y = ~ hp, color = ~ cyl)
 ```
 
 ### Formula interface
@@ -74,7 +73,7 @@ g2(mtcars, hp ~ mpg)
 Additional aesthetics like `color` can be passed alongside the formula:
 
 ```{r}
-g2(iris, Sepal.Length ~ Sepal.Width, color = 'Species')
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
 ```
 
 Use `|` for faceting:
@@ -94,7 +93,23 @@ coordinates):
 
 ```{r}
 g2(iris, ~ Sepal.Length + Sepal.Width + Petal.Length + Petal.Width,
-  color = 'Species')
+  color = ~ Species)
+```
+
+### Character string interface
+
+All aesthetic channels also accept plain character strings instead of formulas.
+This alternative syntax is equivalent---`color = 'species'` produces the same
+result as `color = ~ species`:
+
+```{r}
+g2(mtcars, x = 'mpg', y = 'hp', color = 'cyl')
+```
+
+The `encode()` function also accepts character strings:
+
+```{r}
+g2(mtcars) |> encode(x = 'mpg', y = 'hp', color = 'cyl')
 ```
 
 ## Marks (geometries)
@@ -105,7 +120,7 @@ the most common ones.
 ### Points (scatter plot)
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
   mark_point()
 ```
 
@@ -116,27 +131,27 @@ df = data.frame(
   x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
   group = rep(c('A', 'B'), each = 5)
 )
-g2(df, x = 'x', y = 'y', color = 'group') |> mark_line()
+g2(df, y ~ x, color = ~ group) |> mark_line()
 ```
 
 ### Bars (intervals)
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y') |> mark_interval()
+g2(df, y ~ x) |> mark_interval()
 ```
 
 ### Areas
 
 ```{r}
 df = data.frame(x = 1:10, y = c(3, 1, 4, 1, 5, 9, 2, 6, 5, 3))
-g2(df, x = 'x', y = 'y') |> mark_area()
+g2(df, y ~ x) |> mark_area()
 ```
 
 ### Box plots
 
 ```{r}
-g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
+g2(iris, Sepal.Width ~ Species) |> mark_boxplot()
 ```
 
 ### Combining marks
@@ -145,7 +160,7 @@ Multiple marks can be layered on the same chart:
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_interval() |>
   mark_text(encode = list(text = 'y'))
 ```
@@ -182,7 +197,7 @@ This means you can often skip the mark entirely:
 ### Scatter plot (numeric × numeric)
 
 ```{r}
-g2(penguins, bill_len ~ bill_dep, color = 'species')
+g2(penguins, bill_len ~ bill_dep, color = ~ species)
 ```
 
 ### Bar plot (categorical × numeric, unique categories)
@@ -247,13 +262,13 @@ g2(penguins, ~ species)
 ### Parallel coordinates (multiple position fields)
 
 ```{r}
-g2(penguins, ~ bill_len + bill_dep + flipper_len + body_mass, color = 'species')
+g2(penguins, ~ bill_len + bill_dep + flipper_len + body_mass, color = ~ species)
 ```
 
 You can still add scales, themes, titles, and other components as usual:
 
 ```{r}
-g2(mtcars, hp ~ mpg, color = 'cyl') |>
+g2(mtcars, hp ~ mpg, color = ~ cyl) |>
   scale_color(type = 'ordinal') |>
   title_('Motor Trend Cars')
 ```
@@ -284,7 +299,7 @@ Scales control how data values map to visual properties. Use helpers like
 `scale_x()`, `scale_y()`, and `scale_color()` to configure scales:
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', color = 'wt') |>
+g2(mtcars, hp ~ mpg, color = ~ wt) |>
   scale_y(type = 'log') |>
   scale_color(palette = 'viridis')
 ```
@@ -292,7 +307,7 @@ g2(mtcars, x = 'mpg', y = 'hp', color = 'wt') |>
 Custom domain and range:
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   scale_x(domain = c(10, 35)) |>
   scale_y(domain = c(0, 400))
 ```
@@ -306,7 +321,7 @@ supports Cartesian (default), polar, theta, and radial coordinates.
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y', color = 'x') |>
+g2(df, y ~ x, color = ~ x) |>
   mark_interval() |>
   coord_polar()
 ```
@@ -314,7 +329,7 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
 ### Theta coordinates (pie chart)
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'x') |>
+g2(df, y ~ x, color = ~ x) |>
   mark_interval() |>
   transform_('stackY') |>
   coord_theta(innerRadius = 0.5)
@@ -325,7 +340,7 @@ g2(df, x = 'x', y = 'y', color = 'x') |>
 `coord_transpose()` swaps x and y (similar to ggplot2's `coord_flip()`):
 
 ```{r}
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_interval() |>
   coord_transpose()
 ```
@@ -342,7 +357,7 @@ df = data.frame(
   x = rep(c('A', 'B', 'C'), each = 2), y = c(3, 2, 5, 4, 1, 6),
   color = rep(c('a', 'b'), 3)
 )
-g2(df, x = 'x', y = 'y', color = 'color') |>
+g2(df, y ~ x, color = ~ color) |>
   mark_interval() |>
   transform_('stackY')
 ```
@@ -350,7 +365,7 @@ g2(df, x = 'x', y = 'y', color = 'color') |>
 ### Dodged bars
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'color') |>
+g2(df, y ~ x, color = ~ color) |>
   mark_interval() |>
   transform_('dodgeX')
 ```
@@ -362,7 +377,7 @@ df = data.frame(
   x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
   group = rep(c('A', 'B'), each = 5)
 )
-g2(df, x = 'x', y = 'y', color = 'group') |>
+g2(df, y ~ x, color = ~ group) |>
   mark_area() |>
   transform_('stackY')
 ```
@@ -372,8 +387,8 @@ g2(df, x = 'x', y = 'y', color = 'group') |>
 Faceting splits data into panels. Use `facet_rect()` for a grid layout:
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
-  facet_rect(x = 'Species')
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
+  facet_rect(x = ~ Species)
 ```
 
 The formula interface supports faceting with `|`. Use `| var` for column facets,
@@ -401,7 +416,7 @@ Themes change the overall look. Built-in themes include `theme_classic()`
 `theme_academy()`:
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
   theme_academy()
 ```
 
@@ -413,14 +428,14 @@ legends, and labels.
 ### Titles
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   title_('Motor Trend Cars', subtitle = 'mpg vs horsepower')
 ```
 
 ### Tooltips
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   tooltip_(crosshairs = TRUE)
 ```
 
@@ -428,9 +443,9 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_interval() |>
-  labels_(text = 'y')
+  labels_(text = ~ y)
 ```
 
 ## Interactions
@@ -438,7 +453,7 @@ g2(df, x = 'x', y = 'y') |>
 Interactions add user-driven behaviors like hovering, brushing, and filtering:
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
   interact('tooltip') |>
   interact('legendFilter') |>
   interact('brushHighlight')
@@ -454,7 +469,7 @@ df = data.frame(
   y = c(120, 80, 150, 90, 180, 110, 200, 130),
   product = rep(c('Widget', 'Gadget'), 4)
 )
-g2(df, x = 'x', y = 'y', color = 'product') |>
+g2(df, y ~ x, color = ~ product) |>
   mark_interval() |>
   transform_('dodgeX') |>
   scale_color(range = c('#5470c6', '#91cc75')) |>
@@ -471,14 +486,14 @@ produce identical charts:
 
 ```{r}
 # Pipe style
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') |>
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
   scale_color(palette = 'set2') |>
   title_('Iris Dataset')
 ```
 
 ```{r}
 # ggplot2 style
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Species') +
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) +
   scale_color(palette = 'set2') +
   title_('Iris Dataset')
 ```
@@ -488,7 +503,7 @@ transforms, and components all work with `+`:
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y', color = 'x') +
+g2(df, y ~ x, color = ~ x) +
   mark_interval() +
   coord_polar() +
   title_('Polar Bar Chart') +
@@ -501,9 +516,9 @@ the same result:
 
 ```{r}
 # These are all equivalent:
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   scale_x(type = 'log') + theme_dark()
 
-g2(mtcars, x = 'mpg', y = 'hp') +
+g2(mtcars, hp ~ mpg) +
   scale_x(type = 'log') + theme_dark()
 ```
