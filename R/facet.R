@@ -5,18 +5,18 @@
 #' `y` arguments to specify faceting variables.
 #'
 #' @param chart A `g2` object.
-#' @param ... Facet encoding and options. Pass `x = 'var'` and/or `y = 'var'`
-#'   to specify the faceting variable(s).
+#' @param ... Facet encoding and options. Pass `x = ~var` and/or `y = ~var`
+#'   to specify the faceting variable(s). Character strings are also accepted.
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
-#'   facet_rect(x = 'Species')
+#' g2(iris, Sepal.Length ~ Sepal.Width) |>
+#'   facet_rect(x = ~ Species)
 facet_rect = function(chart = NULL, ...) {
   mod = check_chart(facet_rect, chart, list(...))
   if (!is.null(mod)) return(mod)
   chart$facet = list(type = 'facetRect')
-  enc = list(...)
+  enc = as_vars(list(...))
   if (length(enc)) chart$facet$encode = enc
   chart
 }
@@ -24,18 +24,18 @@ facet_rect = function(chart = NULL, ...) {
 #' Facet in a Circular Layout
 #'
 #' @param chart A `g2` object.
-#' @param ... Facet encoding and options. Pass `position = 'var'` to specify
-#'   the faceting variable.
+#' @param ... Facet encoding and options. Pass `position = ~var` to specify
+#'   the faceting variable. Character strings are also accepted.
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' g2(iris, x = 'Sepal.Width', y = 'Sepal.Length') |>
-#'   facet_circle(position = 'Species')
+#' g2(iris, Sepal.Length ~ Sepal.Width) |>
+#'   facet_circle(position = ~ Species)
 facet_circle = function(chart = NULL, ...) {
   mod = check_chart(facet_circle, chart, list(...))
   if (!is.null(mod)) return(mod)
   chart$facet = list(type = 'facetCircle')
-  enc = list(...)
+  enc = as_vars(list(...))
   if (length(enc)) chart$facet$encode = enc
   chart
 }

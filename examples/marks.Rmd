@@ -16,33 +16,33 @@ here is to document each mark type individually.
 ## Point (Scatter Plot)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+g2(mtcars, hp ~ mpg) |> mark_point()
 ```
 
 ### Color by a variable
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', color = 'wt') |>
+g2(mtcars, hp ~ mpg, color = ~ wt) |>
   mark_point()
 ```
 
 ### Size by a variable
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', size = 'wt') |> mark_point()
+g2(mtcars, hp ~ mpg, size = ~ wt) |> mark_point()
 ```
 
 ### Shape by a variable
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', shape = 'Species') |>
+g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species) |>
   mark_point()
 ```
 
 ### Custom style
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp', size = 10) |>
+g2(mtcars, hp ~ mpg, size = 10) |>
   mark_point() |>
   style_mark(fill = 'lightyellow', stroke = 'steelblue', lineWidth = 2)
 ```
@@ -51,7 +51,7 @@ g2(mtcars, x = 'mpg', y = 'hp', size = 10) |>
 
 ```{r}
 df = data.frame(x = 1:10, y = cumsum(rnorm(10)))
-g2(df, x = 'x', y = 'y') |> mark_line()
+g2(df, y ~ x) |> mark_line()
 ```
 
 ### Multi-series line
@@ -61,14 +61,14 @@ df = data.frame(
   x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
   group = rep(c('A', 'B'), each = 5)
 )
-g2(df, x = 'x', y = 'y', color = 'group') |> mark_line()
+g2(df, y ~ x, color = ~ group) |> mark_line()
 ```
 
 ## Interval (Bar Chart)
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y') |> mark_interval()
+g2(df, y ~ x) |> mark_interval()
 ```
 
 ### Stacked bar
@@ -78,14 +78,14 @@ df = data.frame(
   x = rep(c('A', 'B', 'C'), each = 2), y = c(3, 2, 5, 4, 1, 6),
   color = rep(c('a', 'b'), 3)
 )
-g2(df, x = 'x', y = 'y', color = 'color') |>
+g2(df, y ~ x, color = ~ color) |>
   mark_interval() |> transform_('stackY')
 ```
 
 ### Grouped (dodged) bar
 
 ```{r}
-g2(df, x = 'x', y = 'y', color = 'color') |>
+g2(df, y ~ x, color = ~ color) |>
   mark_interval() |> transform_('dodgeX')
 ```
 
@@ -93,7 +93,7 @@ g2(df, x = 'x', y = 'y', color = 'color') |>
 
 ```{r}
 df = data.frame(x = 1:10, y = c(3, 1, 4, 1, 5, 9, 2, 6, 5, 3))
-g2(df, x = 'x', y = 'y') |> mark_area()
+g2(df, y ~ x) |> mark_area()
 ```
 
 ### Stacked area
@@ -103,14 +103,14 @@ df = data.frame(
   x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
   group = rep(c('A', 'B'), each = 5)
 )
-g2(df, x = 'x', y = 'y', color = 'group') |>
+g2(df, y ~ x, color = ~ group) |>
   mark_area() |> transform_('stackY')
 ```
 
 ## Rect
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_rect() |>
   transform_('bin', thresholdsX = 10, thresholdsY = 10)
 ```
@@ -120,14 +120,14 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ```{r}
 df = expand.grid(x = LETTERS[1:5], y = LETTERS[1:5])
 df$value = seq_len(nrow(df))
-g2(df, x = 'x', y = 'y', color = 'value') |> mark_cell()
+g2(df, y ~ x, color = ~ value) |> mark_cell()
 ```
 
 ## Text
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_interval() |>
   mark_text(encode = list(text = 'y'))
 ```
@@ -139,7 +139,7 @@ shapes. It does not use x/y data coordinates like `mark_line()`. Use
 `mark_line()` to connect data points in order.
 
 ```{r, eval=FALSE}
-g2(df, x = 'x', y = 'y') |> mark_path()
+g2(df, y ~ x) |> mark_path()
 ```
 
 A line mark connecting data points in order:
@@ -148,7 +148,7 @@ A line mark connecting data points in order:
 n = 100
 t = seq(0, 4 * pi, length.out = n)
 df = data.frame(x = t * cos(t), y = t * sin(t))
-g2(df, x = 'x', y = 'y') |> mark_line()
+g2(df, y ~ x) |> mark_line()
 ```
 
 ## Polygon
@@ -160,7 +160,7 @@ vertex coordinates for each polygon.
 df = data.frame(group = c('triangle', 'square'))
 df$x = list(c(0, 1, 0.5), c(2, 3, 3, 2))
 df$y = list(c(0, 0, 1), c(0, 0, 1, 1))
-g2(df, color = 'group') |>
+g2(df, color = ~ group) |>
   mark_polygon(encode = list(x = 'x', y = 'y'))
 ```
 
@@ -181,7 +181,7 @@ g2(df) |>
 ### Vertical reference line (lineX)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line_x(
     data = list(list(x = mean(mtcars$mpg))),
@@ -193,7 +193,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ### Horizontal reference line (lineY)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_line_y(
     data = list(list(y = mean(mtcars$hp))),
@@ -207,7 +207,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ### Full range
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_range(
     data = list(list(x = c(15, 25), y = c(100, 200))),
@@ -219,7 +219,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ### Horizontal range (rangeX)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_range_x(
     data = list(list(x = c(15, 25))),
@@ -231,7 +231,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 ### Vertical range (rangeY)
 
 ```{r}
-g2(mtcars, x = 'mpg', y = 'hp') |>
+g2(mtcars, hp ~ mpg) |>
   mark_point() |>
   mark_range_y(
     data = list(list(y = c(100, 200))),
@@ -244,7 +244,7 @@ g2(mtcars, x = 'mpg', y = 'hp') |>
 
 ```{r}
 df = data.frame(x = c('A', 'B'), y = c(3, 7))
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_interval() |>
   mark_connector(
     data = list(list(x = 'A', x1 = 'B')),
@@ -256,7 +256,7 @@ g2(df, x = 'x', y = 'y') |>
 ## Box Plot
 
 ```{r}
-g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_boxplot()
+g2(iris, Sepal.Width ~ Species) |> mark_boxplot()
 ```
 
 ## Beeswarm
@@ -266,20 +266,20 @@ without overlap, creating a beeswarm layout useful for visualizing distributions
 within categories.
 
 ```{r}
-g2(iris, x = 'Species', y = 'Sepal.Width') |> mark_beeswarm()
+g2(iris, Sepal.Width ~ Species) |> mark_beeswarm()
 ```
 
 ### Beeswarm with color
 
 ```{r}
-g2(iris, x = 'Species', y = 'Sepal.Width', color = 'Species') |>
+g2(iris, Sepal.Width ~ Species, color = ~ Species) |>
   mark_beeswarm()
 ```
 
 ### Beeswarm + box plot overlay
 
 ```{r}
-g2(iris, x = 'Species', y = 'Sepal.Width') |>
+g2(iris, Sepal.Width ~ Species) |>
   mark_beeswarm() |> mark_boxplot() |> style_mark(boxFillOpacity = 0.15)
 ```
 
@@ -294,7 +294,7 @@ g2() |>
 ## Heatmap
 
 ```{r}
-g2(iris, x = 'Sepal.Width', y = 'Sepal.Length', color = 'Petal.Length') |>
+g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Petal.Length) |>
   mark_heatmap()
 ```
 
@@ -309,7 +309,7 @@ df = data.frame(
     'https://cdn.jsdelivr.net/npm/@browser-logos/chrome/chrome_64x64.png', 3
   )
 )
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   mark_image(encode = list(src = 'url')) |>
   style_mark(width = 30, height = 30)
 ```
@@ -476,7 +476,7 @@ The density mark computes kernel density estimation (KDE) automatically
 from the `x` aesthetic. Map `color` for grouped density curves.
 
 ```{r}
-g2(iris, x = 'Sepal.Width', color = 'Species') |> mark_density()
+g2(iris, ~ Sepal.Width, color = ~ Species) |> mark_density()
 ```
 
 ## Sunburst

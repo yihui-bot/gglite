@@ -133,6 +133,30 @@ extract_terms = function(expr) {
 #' @return A list with `aesthetics` (named list) and `facet` (a facet list or
 #'   `NULL`).
 #' @noRd
+#' Convert a One-Sided Formula to a Variable Name
+#'
+#' Converts a one-sided formula of the form `~ var` to the character string
+#' `"var"`. All other values are returned unchanged. This allows users to write
+#' aesthetic mappings as `color = ~ species` instead of `color = 'species'`.
+#'
+#' @param x A value (formula or otherwise).
+#' @return A character string if `x` is a one-sided single-term formula;
+#'   otherwise `x` unchanged.
+#' @noRd
+as_var = function(x) {
+  if (!inherits(x, 'formula') || length(x) != 2) return(x)
+  terms = extract_terms(x[[2]])
+  if (length(terms) != 1) stop(
+    "Formula '", deparse(x), "' must contain exactly one variable name ",
+    "(e.g., `~ var`)"
+  )
+  terms
+}
+
+#' Apply as_var() to Each Element of a List
+#' @noRd
+as_vars = function(x) lapply(x, as_var)
+
 parse_formula = function(f) {
   lhs = if (length(f) == 3) f[[2]]
   rhs = if (length(f) == 3) f[[3]] else f[[2]]

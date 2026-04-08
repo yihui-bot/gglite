@@ -4,7 +4,7 @@ title: Themes
 
 ```{r}
 library(gglite)
-p = g2(mtcars, x = 'mpg', y = 'hp')
+p = g2(mtcars, hp ~ mpg)
 ```
 
 Themes control the overall visual appearance of the chart. Use helpers like
@@ -45,7 +45,7 @@ p |> theme_academy()
 
 ```{r}
 df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
-g2(df, x = 'x', y = 'y', color = 'x') |>
+g2(df, y ~ x, color = ~ x) |>
   theme_dark()
 ```
 
@@ -56,7 +56,7 @@ df = data.frame(
   x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
   group = rep(c('A', 'B'), each = 5)
 )
-g2(df, x = 'x', y = 'y', color = 'group') |>
+g2(df, y ~ x, color = ~ group) |>
   mark_line() |>
   theme_classicDark()
 ```

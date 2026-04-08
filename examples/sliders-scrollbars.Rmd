@@ -5,7 +5,7 @@ title: Sliders and Scrollbars
 ```{r}
 library(gglite)
 df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
-p  = g2(df, x = 'x', y = 'y') |> mark_line()
+p  = g2(df, y ~ x) |> mark_line()
 ```
 
 Sliders and scrollbars allow users to zoom and pan through data.
@@ -54,6 +54,6 @@ p |>
 
 ```{r}
 df = data.frame(x = paste0('Item ', 1:50), y = sample(1:100, 50))
-g2(df, x = 'x', y = 'y') |>
+g2(df, y ~ x) |>
   slider_x()
 ```
