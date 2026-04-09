@@ -462,7 +462,7 @@ assert('knit_print.g2 returns a knit_asis object containing chart HTML', {
 
 assert('knit_print.g2 includes CDN scripts on first call and omits them on subsequent calls', {
   # Reset the knitr flag to simulate a fresh document
-  knitr::opts_knit$set('gglite.scripts_added' = NULL)
+  knitr::opts_knit$delete(.knitr.flag)
   chart = g2(iris, Sepal.Length ~ Sepal.Width)
   out1 = knit_print.g2(chart)
   out2 = knit_print.g2(chart)
@@ -470,7 +470,7 @@ assert('knit_print.g2 includes CDN scripts on first call and omits them on subse
   (grepl('unpkg.com', out1))
   (!grepl('unpkg.com', out2))
   # Reset for other tests
-  knitr::opts_knit$set('gglite.scripts_added' = NULL)
+  knitr::opts_knit$delete(.knitr.flag)
 })
 
 assert('knit_print.g2 does not pass knitr chunk options to chart_html', {
@@ -502,7 +502,7 @@ assert('repr_html.g2 returns complete HTML with CDN and chart', {
   (grepl('G2.Chart', html, fixed = TRUE))
 })
 
-assert('repr methods are registered when repr is loaded', {
+if (xfun::loadable('repr')) assert('repr methods are registered when repr is loaded', {
   loadNamespace('repr')
   chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
   html = repr::repr_html(chart)

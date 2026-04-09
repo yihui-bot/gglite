@@ -4,6 +4,14 @@ on:
   schedule:
     - cron: '0 0 * * 0'  # weekly on Sunday at midnight UTC
   workflow_dispatch:
+  push:
+    paths:
+      - 'tests/test-gglite.qmd'
+      - 'tests/test-gglite.ipynb'
+  pull_request:
+    paths:
+      - 'tests/test-gglite.qmd'
+      - 'tests/test-gglite.ipynb'
 
 permissions: read-all
 
@@ -27,13 +35,9 @@ jobs:
 
       - name: Install Jupyter and IRkernel
         run: |
-          pip install jupyter nbconvert
-          Rscript -e "IRkernel::installspec()"
-
-      - name: Install Playwright
-        run: |
-          pip install playwright
+          pip install jupyter nbconvert playwright
           python -m playwright install chromium
+          Rscript -e "IRkernel::installspec()"
 
       - name: Render Quarto example
         run: quarto render tests/test-gglite.qmd
@@ -44,108 +48,14 @@ jobs:
             --output /tmp/test-gglite-executed.ipynb
 
       - name: Browser-test Quarto output
-        run: |
-          python - << 'EOF'
-          import asyncio
-          from playwright.async_api import async_playwright
-          import os
+        run: python tests/test-quarto.py tests/test-gglite.html
+        env:
+          SCREENSHOT_PATH: /tmp/quarto-test.png
 
-          async def test():
-              async with async_playwright() as p:
-                  browser = await p.chromium.launch()
-                  page = await browser.new_page()
-
-                  g2_errors = []
-                  page.on("pageerror", lambda e: g2_errors.append(str(e)))
-
-                  html = os.path.abspath("tests/test-gglite.html")
-                  await page.goto(f"file://{html}")
-                  await page.wait_for_timeout(6000)
-
-                  canvases = await page.query_selector_all("canvas")
-                  print(f"Quarto: {len(canvases)} canvas elements")
-                  g2_errs = [e for e in g2_errors if "G2" in e or "chart" in e.lower()]
-                  if g2_errs:
-                      raise AssertionError(f"G2 errors: {g2_errs}")
-                  assert len(canvases) >= 3, f"Expected >= 3 canvases, got {len(canvases)}"
-                  print("Quarto test PASSED")
-
-                  await page.screenshot(path="/tmp/quarto-test.png", full_page=True)
-                  await browser.close()
-
-          asyncio.run(test())
-          EOF
-
-      - name: Browser-test Jupyter output (iframe simulation)
-        run: |
-          python - << 'EOF'
-          import asyncio, json, os, tempfile
-          from playwright.async_api import async_playwright
-
-          # Load the executed notebook and build an iframe-based test page
-          with open("/tmp/test-gglite-executed.ipynb") as f:
-              nb = json.load(f)
-
-          # Collect all text/html cell outputs (charts)
-          chart_htmls = []
-          for cell in nb["cells"]:
-              for out in cell.get("outputs", []):
-                  if "text/html" in out.get("data", {}):
-                      chart_htmls.append("".join(out["data"]["text/html"]))
-
-          print(f"Found {len(chart_htmls)} chart outputs in notebook")
-          assert len(chart_htmls) >= 3, f"Expected >= 3 chart outputs, got {len(chart_htmls)}"
-
-          # Write each chart as a separate file for iframe loading
-          tmp_dir = tempfile.mkdtemp()
-          iframe_tags = []
-          for i, html in enumerate(chart_htmls):
-              path = os.path.join(tmp_dir, f"chart{i}.html")
-              with open(path, "w") as f:
-                  f.write(html)
-              iframe_tags.append(
-                  f'<iframe src="file://{path}" width="800" height="520" '
-                  f'frameborder="0" id="frame{i}"></iframe>'
-              )
-
-          # Wrapper page
-          wrapper_path = os.path.join(tmp_dir, "wrapper.html")
-          with open(wrapper_path, "w") as f:
-              f.write("<!DOCTYPE html><html><body>\n")
-              f.write("\n".join(iframe_tags))
-              f.write("\n</body></html>")
-
-          async def test():
-              async with async_playwright() as p:
-                  browser = await p.chromium.launch()
-                  page = await browser.new_page()
-
-                  errors = []
-                  page.on("pageerror", lambda e: errors.append(str(e)))
-
-                  await page.goto(f"file://{wrapper_path}")
-                  await page.wait_for_timeout(8000)
-
-                  iframe_canvases = 0
-                  for iframe_el in await page.query_selector_all("iframe"):
-                      frame = await iframe_el.content_frame()
-                      if frame:
-                          cs = await frame.query_selector_all("canvas")
-                          iframe_canvases += len(cs)
-
-                  print(f"Jupyter: {iframe_canvases} canvas elements across iframes")
-                  g2_errs = [e for e in errors if "G2" in e]
-                  if g2_errs:
-                      raise AssertionError(f"G2 errors in Jupyter output: {g2_errs}")
-                  assert iframe_canvases >= 3, \
-                      f"Expected >= 3 canvases, got {iframe_canvases}"
-                  print("Jupyter test PASSED")
-
-                  await page.screenshot(path="/tmp/jupyter-test.png", full_page=True)
-                  await browser.close()
-
-          asyncio.run(test())
-          EOF
+      - name: Browser-test Jupyter output
+        run: python tests/test-jupyter.py /tmp/test-gglite-executed.ipynb
+        env:
+          SCREENSHOT_PATH: /tmp/jupyter-test.png
 
       - name: Upload screenshots
         if: always()
@@ -153,3 +63,4 @@ jobs:
         with:
           name: browser-screenshots
           path: /tmp/*.png
+

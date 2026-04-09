@@ -10,3 +10,5 @@
 ^G2$
 ^tests/test-gglite\.qmd$
 ^tests/test-gglite\.ipynb$
+^tests/test-quarto\.py$
+^tests/test-jupyter\.py$

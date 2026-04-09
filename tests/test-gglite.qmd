@@ -1,6 +1,8 @@
 ---
 title: "gglite in Quarto"
 format: html
+execute:
+  echo: false
 ---
 
 ```{r}
@@ -11,14 +13,14 @@ library(gglite)
 
 ```{r}
 #| label: scatter
-g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
+g2(mtcars, hp ~ mpg)
 ```
 
-## Bar chart
+## Histogram
 
 ```{r}
-#| label: bar
-g2(mtcars, x = 'cyl') |> mark_interval()
+#| label: histogram
+g2(mtcars, ~ mpg)
 ```
 
 ## Line chart (time series)
