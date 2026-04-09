@@ -192,6 +192,8 @@ tooltip_ = function(chart = NULL, ...) {
     return(chart)
   }
   keys = names(args)
+  # grepl prefix match covers crosshairs* and marker* style props (e.g.
+  # crosshairsStroke, markerFill) which are too numerous to enumerate
   is_int = keys %in% .tooltip_interact_keys | grepl('^crosshairs|^marker', keys)
   if (any(is_int)) {
     cur = if (is.list(chart$interactions[['tooltip']])) chart$interactions[['tooltip']] else list()
@@ -204,6 +206,9 @@ tooltip_ = function(chart = NULL, ...) {
       cur = if (is.list(chart$layers[[n]]$tooltip)) chart$layers[[n]]$tooltip else list()
       chart$layers[[n]]$tooltip = modifyList(cur, data_args)
     } else {
+      # No marks yet: store at chart level as a fallback. This is serialized
+      # as the view-level tooltip component, but may not be processed by G2
+      # for channel/valueFormatter — prefer calling tooltip_() after marks.
       chart$tooltip_config = modifyList(as.list(chart$tooltip_config), data_args)
     }
   }
