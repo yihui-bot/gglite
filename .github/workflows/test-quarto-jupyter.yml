@@ -67,11 +67,12 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python tests/normalize-notebook.py \
-            /tmp/test-gglite-executed.ipynb tests/test-gglite.ipynb
-          if git diff --quiet tests/test-gglite.ipynb; then
+            /tmp/test-gglite-executed.ipynb /tmp/test-gglite-normalized.ipynb
+          if diff -q tests/test-gglite.ipynb /tmp/test-gglite-normalized.ipynb > /dev/null 2>&1; then
             echo "Notebook outputs unchanged."
           else
-            BRANCH="auto/update-notebook-$(date +%Y%m%d%H%M%S)"
+            cp /tmp/test-gglite-normalized.ipynb tests/test-gglite.ipynb
+            BRANCH="auto/update-notebook-${{ github.run_id }}"
             git config user.email "github-actions[bot]@users.noreply.github.com"
             git config user.name "github-actions[bot]"
             git checkout -b "$BRANCH"
