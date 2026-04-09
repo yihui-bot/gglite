@@ -33,7 +33,7 @@ p |>
 ## Slider with a Bar Chart
 
 ```{r}
-df2 = data.frame(x = paste0('Item ', 1:50), y = sample(1:100, 50))
-g2(df2, y ~ x) |>
+bar_df = data.frame(x = paste0('Item ', 1:50), y = sample(1:100, 50))
+g2(bar_df, y ~ x) |>
   slider_x()
 ```

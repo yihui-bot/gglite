@@ -34,9 +34,9 @@ Crosshairs are reference lines that track the cursor. They work with marks that
 use the *series* tooltip path (line, area, etc.).
 
 ```{r}
-air = aggregate(Temp ~ Month, data = airquality, FUN = mean)
-air$Month = month.abb[air$Month]
-g2(air, Temp ~ Month) |>
+air_monthly = aggregate(Temp ~ Month, data = airquality, FUN = mean)
+air_monthly$Month = month.abb[air_monthly$Month]
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   mark_point() |>
   tooltip_(crosshairs = TRUE)
@@ -48,13 +48,13 @@ g2(air, Temp ~ Month) |>
 only the horizontal line.
 
 ```{r}
-g2(air, Temp ~ Month) |>
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   tooltip_(crosshairsX = TRUE)
 ```
 
 ```{r}
-g2(air, Temp ~ Month) |>
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   tooltip_(crosshairsY = TRUE)
 ```
@@ -65,7 +65,7 @@ Use `crosshairsStroke`, `crosshairsLineWidth`, and `crosshairsLineDash` to
 customize the appearance of crosshairs.
 
 ```{r}
-g2(air, Temp ~ Month) |>
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   tooltip_(
     crosshairs = TRUE,
@@ -98,14 +98,14 @@ to hide it, or customize with `markerType`, `markerFill`, `markerStroke`, and
 
 ```{r}
 # Hide the hover marker
-g2(air, Temp ~ Month) |>
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   tooltip_(marker = FALSE)
 ```
 
 ```{r}
 # Hollow marker
-g2(air, Temp ~ Month) |>
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   tooltip_(markerType = 'hollow', markerSize = 8)
 ```
@@ -115,7 +115,7 @@ g2(air, Temp ~ Month) |>
 `body = FALSE` shows only the hover marker with no tooltip box.
 
 ```{r}
-g2(air, Temp ~ Month) |>
+g2(air_monthly, Temp ~ Month) |>
   mark_line() |>
   tooltip_(body = FALSE)
 ```
@@ -241,10 +241,10 @@ Set `tooltip = FALSE` on a specific mark to hide its tooltip while keeping it
 for others.
 
 ```{r}
-air2 = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
-air2$Month = month.abb[air2$Month]
+air_monthly2 = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
+air_monthly2$Month = month.abb[air_monthly2$Month]
 
-g2(air2, ~ Month) |>
+g2(air_monthly2, ~ Month) |>
   mark_interval(encode = list(y = 'Temp'), tooltip = FALSE) |>
   scale_y(independent = TRUE) |>
   axis_y(title = 'Temp (°F)') |>

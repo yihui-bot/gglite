@@ -62,10 +62,10 @@ Call `scale_y(independent = TRUE)` and `axis_y()` immediately after each mark
 to configure its y-axis independently.
 
 ```{r}
-air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
-air$Month = month.abb[air$Month]
+air_monthly = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
+air_monthly$Month = month.abb[air_monthly$Month]
 
-g2(air, ~ Month) |>
+g2(air_monthly, ~ Month) |>
   mark_interval(encode = list(y = 'Temp')) |>
   style_mark(fill = '#85C5A6', fillOpacity = 0.7) |>
   scale_y(independent = TRUE) |>
