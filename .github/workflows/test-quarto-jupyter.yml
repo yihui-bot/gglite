@@ -19,9 +19,8 @@ jobs:
           use-public-rspm: true
 
       - uses: yihui/actions/setup-r-dependencies@HEAD
-
-      - name: Install R package
-        run: R CMD INSTALL .
+        with:
+          extra-packages: . IRkernel
 
       - name: Install Quarto
         uses: quarto-dev/quarto-actions/setup@HEAD
@@ -29,7 +28,6 @@ jobs:
       - name: Install Jupyter and IRkernel
         run: |
           pip install jupyter nbconvert
-          Rscript -e "install.packages('IRkernel', repos='https://cloud.r-project.org', quiet=TRUE)"
           Rscript -e "IRkernel::installspec()"
 
       - name: Install Playwright
