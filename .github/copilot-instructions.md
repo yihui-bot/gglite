@@ -83,8 +83,27 @@ in headless browsers** to make sure they can be rendered correctly and produce
 no errors in the browser console. The workflow is:
 
 1. **Render the Rmd to HTML first** using litedown (see above).
-2. **Open the HTML** in a headless browser (Puppeteer or Playwright).
-3. Verify that:
+2. **Pre-download CDN resources and patch the HTML** — CDN URLs are often
+   blocked in the Copilot agent environment. Before opening the HTML in a
+   browser, download every external script referenced by `<script src="...">` tags
+   and replace those URLs with the local paths. gglite uses two CDN scripts:
+   ```bash
+   # Download once; re-use across multiple test sessions
+   curl -L -o /tmp/g2.min.js \
+     'https://unpkg.com/@antv/g2@5/dist/g2.min.js'
+   curl -L -o /tmp/g2-patches.min.js \
+     'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.32/js/g2-patches.min.js'
+
+   # Patch the rendered HTML in-place
+   sed -i \
+     -e 's|https://unpkg.com/@antv/g2@5/dist/g2.min.js|/tmp/g2.min.js|g' \
+     -e 's|https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.32/js/g2-patches.min.js|/tmp/g2-patches.min.js|g' \
+     /tmp/foo.html
+   ```
+3. **Serve the patched HTML from a local HTTP server** (file:// URLs don't work
+   in this environment either). Start `python3 -m http.server` pointing at `/tmp`,
+   then navigate Playwright to `http://127.0.0.1:<port>/foo.html`.
+4. Verify that:
    - The chart container element exists in the DOM.
    - The G2 chart renders without JavaScript errors.
    - No warnings or errors appear in the browser console.
