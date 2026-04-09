@@ -25,9 +25,10 @@ g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.32/js/g2-patche
 xfun::js
 
 # Returns TRUE when scale_/axis_ should target the last mark rather than the
-# chart: only when the user just added a mark AND there are multiple marks
-# (so single-mark charts always use chart-level scale/axis for compatibility).
-mark_ctx = function(chart) isTRUE(chart$last_op == 'mark') && length(chart$layers) > 1
+# chart: any time the user just added a mark (last_op == 'mark'), regardless
+# of how many marks exist. This means scale/axis always stay with their mark,
+# enabling correct dual-axis charts even when only one mark has been added.
+mark_ctx = function(chart) isTRUE(chart$last_op == 'mark')
 
 #' Create a Deferred Chart Modifier
 #'

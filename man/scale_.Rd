@@ -41,8 +41,8 @@ Add or modify scale settings for a given aesthetic channel. When called
 immediately after a \verb{mark_*()} function (or after \code{style_mark()},
 \code{labels_()}, etc. that target the last mark), the scale is applied to that
 mark only. Otherwise it is applied at the chart level and affects all marks.
-This context-sensitivity enables dual-axis charts: add marks and pipe
-\code{scale_y(independent = TRUE)} to give one mark its own y scale.
+This context-sensitivity enables dual-axis charts: pipe \code{scale_y()} right
+after each mark to give it its own independent y scale.
 }
 \details{
 G2 scale types: \code{'linear'}, \code{'ordinal'}, \code{'band'}, \code{'point'}, \code{'time'},
@@ -73,11 +73,13 @@ p |> scale_('y', type = 'sqrt')
 g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
   scale_('color', palette = 'category10')
 
-# Mark-level independent y scale for dual-axis charts
-df = data.frame(x = 1:5, a = c(1, 4, 2, 5, 3), b = c(100, 200, 150, 300, 250))
-g2(df, ~ x) |>
-  mark_interval(encode = list(y = 'a')) |>
-  mark_line(encode = list(y = 'b')) |>
+# Dual-axis: pipe scale_y() right after each mark
+air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
+air$Month = month.abb[air$Month]
+g2(air, x = 'Month') |>
+  mark_interval(encode = list(y = 'Temp')) |>
+  scale_y(independent = TRUE) |>
+  mark_line(encode = list(y = 'Wind')) |>
   scale_y(independent = TRUE) |>
   axis_y(position = 'right', grid = FALSE)
 

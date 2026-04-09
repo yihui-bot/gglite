@@ -47,12 +47,24 @@ g2(df, y ~ x) |>
 ### Enable crosshairs
 
 Crosshairs are lines that track the cursor position. Pass `crosshairs = TRUE`
-to enable them.
+to `tooltip_()`. Crosshairs work with line and area charts (which use series
+tooltip by default).
 
 ```{r}
-g2(mtcars, hp ~ mpg) |>
+air = aggregate(Temp ~ Month, data = airquality, FUN = mean)
+air$Month = month.abb[air$Month]
+g2(air, Temp ~ Month) |>
+  mark_line() |>
   mark_point() |>
   tooltip_(crosshairs = TRUE)
+```
+
+### Crosshairs with custom style
+
+```{r}
+g2(air, Temp ~ Month) |>
+  mark_line() |>
+  tooltip_(crosshairs = TRUE, crosshairsStroke = '#aaa', crosshairsLineWidth = 1)
 ```
 
 ### Shared tooltip (useful for multi-series)
@@ -69,39 +81,31 @@ g2(df, y ~ x, color = ~ group) |>
   tooltip_(shared = TRUE)
 ```
 
-### Crosshairs with custom style
-
-```{r}
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  tooltip_(crosshairs = TRUE, crosshairsStroke = '#aaa', crosshairsLineWidth = 1)
-```
-
 ### Format tooltip values
 
-Use `valueFormatter` with a
-[d3-format](https://d3js.org/d3-format) string to format the displayed value.
-Call `tooltip_()` **after** the mark.
+Pass a `tooltip` list to the mark function to format values using a
+[d3-format](https://d3js.org/d3-format) string. This keeps the tooltip data
+configuration with the mark that owns it.
 
 ```{r}
-g2(mtcars, hp ~ mpg) |>
-  mark_point() |>
-  tooltip_(channel = 'y', valueFormatter = '.0f')
+g2(airquality, Temp ~ Wind) |>
+  mark_point(tooltip = list(channel = 'y', valueFormatter = '.1f'))
 ```
 
 ### Format tooltip values in a normalized stacked bar chart
 
+After `transform_('normalizeY')`, y values are on a 0–1 scale. Use
+`valueFormatter = '.0%'` to display them as percentages.
+
 ```{r}
-data(diamonds, package = 'ggplot2')
-aggregate(data = diamonds, price ~ cut + clarity, FUN = mean) |>
-  g2(price ~ clarity, color = ~ cut) |>
-  mark_interval() |>
+wb = aggregate(breaks ~ wool + tension, data = warpbreaks, FUN = mean)
+g2(wb, breaks ~ tension, color = ~ wool) |>
+  mark_interval(tooltip = list(channel = 'y', valueFormatter = '.0%')) |>
   transform_('stackY') |>
   transform_('normalizeY') |>
-  scale_('color', palette = 'puRd') |>
   axis_y(labelFormatter = '.0%') |>
-  tooltip_(channel = 'y', valueFormatter = '.1%') |>
-  legend_color(position = 'right')
+  legend_color(position = 'right') |>
+  title_('Warp Breaks by Tension and Wool Type')
 ```
 
 ### Disable tooltip
@@ -109,3 +113,4 @@ aggregate(data = diamonds, price ~ cut + clarity, FUN = mean) |>
 ```{r}
 p |> tooltip_(FALSE)
 ```
+

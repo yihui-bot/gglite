@@ -4,8 +4,8 @@
 #' immediately after a `mark_*()` function (or after `style_mark()`,
 #' `labels_()`, etc. that target the last mark), the scale is applied to that
 #' mark only. Otherwise it is applied at the chart level and affects all marks.
-#' This context-sensitivity enables dual-axis charts: add marks and pipe
-#' `scale_y(independent = TRUE)` to give one mark its own y scale.
+#' This context-sensitivity enables dual-axis charts: pipe `scale_y()` right
+#' after each mark to give it its own independent y scale.
 #'
 #' G2 scale types: `'linear'`, `'ordinal'`, `'band'`, `'point'`, `'time'`,
 #' `'log'`, `'pow'`, `'sqrt'`, `'threshold'`, `'quantize'`, `'quantile'`,
@@ -30,11 +30,13 @@
 #' g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species) |>
 #'   scale_('color', palette = 'category10')
 #'
-#' # Mark-level independent y scale for dual-axis charts
-#' df = data.frame(x = 1:5, a = c(1, 4, 2, 5, 3), b = c(100, 200, 150, 300, 250))
-#' g2(df, ~ x) |>
-#'   mark_interval(encode = list(y = 'a')) |>
-#'   mark_line(encode = list(y = 'b')) |>
+#' # Dual-axis: pipe scale_y() right after each mark
+#' air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
+#' air$Month = month.abb[air$Month]
+#' g2(air, x = 'Month') |>
+#'   mark_interval(encode = list(y = 'Temp')) |>
+#'   scale_y(independent = TRUE) |>
+#'   mark_line(encode = list(y = 'Wind')) |>
 #'   scale_y(independent = TRUE) |>
 #'   axis_y(position = 'right', grid = FALSE)
 scale_ = function(chart = NULL, field, ...) {

@@ -27,8 +27,8 @@ The modified \code{g2} object.
 Customise the axis for a positional channel (\code{'x'} or \code{'y'}). Set to
 \code{FALSE} to hide the axis. When called immediately after a \verb{mark_*()}
 function (or \code{style_mark()}, \code{labels_()}, etc.), the axis is applied to
-that mark only, enabling per-mark axis customization (e.g., a right-side
-y-axis for a dual-axis chart). Otherwise it applies at the chart level.
+that mark only, enabling per-mark axis customization for dual-axis charts.
+Otherwise it applies at the chart level.
 }
 \details{
 \code{axis_x()}: Shortcut for \code{axis_(chart, 'x', ...)}.
@@ -41,11 +41,14 @@ g2(mtcars, hp ~ mpg) |>
   axis_('x', title = 'Miles per Gallon') |>
   axis_('y', title = 'Horsepower')
 
-# Mark-level axis for dual-axis chart
-df = data.frame(x = 1:5, a = c(1, 4, 2, 5, 3), b = c(100, 200, 150, 300, 250))
-g2(df, ~ x) |>
-  mark_interval(encode = list(y = 'a')) |>
-  mark_line(encode = list(y = 'b')) |>
+# Dual-axis chart: each mark gets its own axis immediately after mark_*()
+air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
+air$Month = month.abb[air$Month]
+g2(air, x = 'Month') |>
+  mark_interval(encode = list(y = 'Temp')) |>
   scale_y(independent = TRUE) |>
-  axis_y(position = 'right', grid = FALSE)
+  axis_y(title = 'Temperature (°F)') |>
+  mark_line(encode = list(y = 'Wind')) |>
+  scale_y(independent = TRUE) |>
+  axis_y(position = 'right', grid = FALSE, title = 'Wind Speed (mph)')
 }

@@ -3,8 +3,8 @@
 #' Customise the axis for a positional channel (`'x'` or `'y'`). Set to
 #' `FALSE` to hide the axis. When called immediately after a `mark_*()`
 #' function (or `style_mark()`, `labels_()`, etc.), the axis is applied to
-#' that mark only, enabling per-mark axis customization (e.g., a right-side
-#' y-axis for a dual-axis chart). Otherwise it applies at the chart level.
+#' that mark only, enabling per-mark axis customization for dual-axis charts.
+#' Otherwise it applies at the chart level.
 #'
 #' @param chart A `g2` object.
 #' @param channel Positional channel: `'x'` or `'y'`.
@@ -18,13 +18,16 @@
 #'   axis_('x', title = 'Miles per Gallon') |>
 #'   axis_('y', title = 'Horsepower')
 #'
-#' # Mark-level axis for dual-axis chart
-#' df = data.frame(x = 1:5, a = c(1, 4, 2, 5, 3), b = c(100, 200, 150, 300, 250))
-#' g2(df, ~ x) |>
-#'   mark_interval(encode = list(y = 'a')) |>
-#'   mark_line(encode = list(y = 'b')) |>
+#' # Dual-axis chart: each mark gets its own axis immediately after mark_*()
+#' air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
+#' air$Month = month.abb[air$Month]
+#' g2(air, x = 'Month') |>
+#'   mark_interval(encode = list(y = 'Temp')) |>
 #'   scale_y(independent = TRUE) |>
-#'   axis_y(position = 'right', grid = FALSE)
+#'   axis_y(title = 'Temperature (°F)') |>
+#'   mark_line(encode = list(y = 'Wind')) |>
+#'   scale_y(independent = TRUE) |>
+#'   axis_y(position = 'right', grid = FALSE, title = 'Wind Speed (mph)')
 axis_ = function(chart = NULL, channel, ...) {
   mod = check_chart(axis_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
@@ -144,41 +147,36 @@ title_ = function(chart = NULL, text, ...) {
   chart
 }
 
-# Keys that configure the tooltip interaction (e.g., crosshairs, shared) rather
-# than the tooltip data items (e.g., channel, valueFormatter). Used by tooltip_()
-# to route args to the correct G2 spec location.
-.tooltip_interact_keys = c(
-  'shared', 'series', 'facet', 'body', 'crosshairs', 'marker',
-  'groupName', 'disableNative', 'disableAutoHide', 'offset',
-  'position', 'bounding', 'mount', 'css', 'enterable', 'sort',
-  'filter', 'render'
-)
-
 #' Configure the Tooltip
 #'
-#' Configure tooltip behavior and data display. Behavior options such as
-#' `crosshairs` and `shared` are applied to the tooltip interaction
-#' (`interaction.tooltip` in G2). Data display options such as `channel` and
-#' `valueFormatter` are applied to the last mark's tooltip (call after adding
-#' marks). Pass `FALSE` to disable the tooltip entirely.
+#' Configure tooltip interaction behavior. All options are applied to
+#' `interaction.tooltip` in the G2 spec: pass `FALSE` to disable the tooltip,
+#' or pass named options such as `crosshairs`, `shared`, `marker`, and any
+#' `crosshairs*`/`marker*` style properties. To configure the data displayed in
+#' a tooltip for a specific mark (e.g., `channel`, `valueFormatter`, `items`),
+#' pass a `tooltip` list argument directly to the mark function instead, e.g.,
+#' `mark_line(tooltip = list(channel = 'y', valueFormatter = '.0%'))`.
 #'
 #' @param chart A `g2` object.
-#' @param ... Tooltip options. Behavior options: `shared`, `crosshairs`,
-#'   `marker`, `series`, `facet`, `groupName`, and all `crosshairs*`/`marker*`
-#'   style props. Data options (applied to the last mark): `channel`,
-#'   `valueFormatter`, `title`, `items`, `name`, `color`. Or `FALSE` to
-#'   disable.
+#' @param ... Tooltip interaction options such as `shared`, `crosshairs`,
+#'   `marker`, `series`, `crosshairsStroke`, or `FALSE` to disable the tooltip.
 #' @return The modified `g2` object.
 #' @export
 #' @examples
-#' # Enable crosshairs
-#' g2(mtcars, hp ~ mpg) |>
+#' # Enable crosshairs (works best with line/area marks which use series tooltip)
+#' df = data.frame(x = 1:6, y = c(3, 1, 4, 1, 5, 2))
+#' g2(df, y ~ x) |>
+#'   mark_line() |>
 #'   tooltip_(crosshairs = TRUE)
 #'
-#' # Format y-axis values in tooltip (call after mark)
-#' g2(mtcars, hp ~ mpg) |>
-#'   mark_point() |>
-#'   tooltip_(channel = 'y', valueFormatter = '.0f')
+#' # Shared tooltip for multi-series line chart
+#' df2 = data.frame(
+#'   x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
+#'   group = rep(c('A', 'B'), each = 5)
+#' )
+#' g2(df2, y ~ x, color = ~ group) |>
+#'   mark_line() |>
+#'   tooltip_(shared = TRUE)
 #'
 #' # Disable tooltip
 #' g2(mtcars, hp ~ mpg) |>
@@ -191,27 +189,8 @@ tooltip_ = function(chart = NULL, ...) {
     chart$interactions[['tooltip']] = args[[1]]
     return(chart)
   }
-  keys = names(args)
-  # grepl prefix match covers crosshairs* and marker* style props (e.g.
-  # crosshairsStroke, markerFill) which are too numerous to enumerate
-  is_int = keys %in% .tooltip_interact_keys | grepl('^crosshairs|^marker', keys)
-  if (any(is_int)) {
-    cur = if (is.list(chart$interactions[['tooltip']])) chart$interactions[['tooltip']] else list()
-    chart$interactions[['tooltip']] = modifyList(cur, args[is_int])
-  }
-  data_args = args[!is_int]
-  if (length(data_args)) {
-    if (length(chart$layers)) {
-      n = length(chart$layers)
-      cur = if (is.list(chart$layers[[n]]$tooltip)) chart$layers[[n]]$tooltip else list()
-      chart$layers[[n]]$tooltip = modifyList(cur, data_args)
-    } else {
-      # No marks yet: store at chart level as a fallback. This is serialized
-      # as the view-level tooltip component, but may not be processed by G2
-      # for channel/valueFormatter — prefer calling tooltip_() after marks.
-      chart$tooltip_config = modifyList(as.list(chart$tooltip_config), data_args)
-    }
-  }
+  cur = if (is.list(chart$interactions[['tooltip']])) chart$interactions[['tooltip']] else list()
+  chart$interactions[['tooltip']] = modifyList(cur, args)
   chart
 }
 
