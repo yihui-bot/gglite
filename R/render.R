@@ -330,24 +330,65 @@ print.g2 = function(x, ...) {
 #' @param ... Ignored.
 #' @return A `knit_asis` character vector.
 knit_print.g2 = function(x, ...) {
-  if (requireNamespace('htmltools', quietly = TRUE)) {
-    dep = htmltools::htmlDependency(
-      name = 'antv-g2', version = '5',
-      src = c(href = ''),
-      head = paste(cdn_scripts(), collapse = '\n')
-    )
-    knitr::knit_meta_add(list(dep))
-    structure(chart_html(x), class = c('knit_asis', 'html'))
-  } else {
-    out = paste(c(cdn_scripts(), chart_html(x)), collapse = '\n')
-    structure(out, class = c('knit_asis', 'html'))
+  # Use opts_knit as a document-scoped flag: include CDN scripts only once per
+  # knit session (opts_knit is restored between documents). This avoids the
+  # disk-based dependency requirement that htmltools::htmlDependency imposes,
+  # which would cause Quarto to error.
+  key = 'gglite.scripts_added'
+  html = chart_html(x)
+  if (!isTRUE(knitr::opts_knit$get(key))) {
+    knitr::opts_knit$set(setNames(list(TRUE), key))
+    html = paste(c(cdn_scripts(), html), collapse = '\n')
   }
+  structure(html, class = c('knit_asis', 'html'))
+}
+
+#' HTML Representation for Jupyter Notebooks
+#'
+#' Called by the `repr` package (used by IRkernel) to render g2 charts in
+#' Jupyter notebooks. Returns a complete HTML page so the chart is displayed
+#' inside a sandboxed output cell.
+#'
+#' @param obj A `g2` object.
+#' @param ... Ignored.
+#' @return A character string of complete HTML.
+repr_html.g2 = function(obj, ...) {
+  html = c(
+    '<!DOCTYPE html>', '<html>', '<head>',
+    '<meta charset="utf-8">',
+    cdn_scripts(),
+    '</head>', '<body>',
+    chart_html(obj),
+    '</body>', '</html>'
+  )
+  paste(html, collapse = '\n')
+}
+
+#' Text Representation for Jupyter Notebooks
+#'
+#' Returns a brief text description so IRkernel's MIME bundle includes a
+#' non-empty `text/plain` entry, which is required before any rich display
+#' (including HTML) is sent to the Jupyter frontend.
+#'
+#' @param obj A `g2` object.
+#' @param ... Ignored.
+#' @return A character string.
+repr_text.g2 = function(obj, ...) {
+  n = if (is.data.frame(obj$data)) nrow(obj$data) else NULL
+  marks = paste(vapply(obj$layers, `[[`, '', 'type'), collapse = ', ')
+  if (!nzchar(marks)) marks = 'auto'
+  sprintf('G2 chart (%s; %s rows)', marks, if (is.null(n)) 'no data' else n)
 }
 
 #' @importFrom xfun record_print
 #' @export
 record_print.g2 = function(x, ...) {
   xfun::new_record(c(cdn_scripts(), chart_html(x, ...), ''), 'asis')
+}
+
+register_repr_html = function() {
+  registerS3method('repr_html', 'g2', repr_html.g2, envir = asNamespace('repr'))
+  registerS3method('repr_text', 'g2', repr_text.g2, envir = asNamespace('repr'))
 }
 
 register_knit_print = function() {
@@ -357,4 +398,6 @@ register_knit_print = function() {
 .onLoad = function(...) {
   if (isNamespaceLoaded('knitr')) register_knit_print()
   setHook(packageEvent('knitr', 'onLoad'), function(...) register_knit_print())
+  if (isNamespaceLoaded('repr')) register_repr_html()
+  setHook(packageEvent('repr', 'onLoad'), function(...) register_repr_html())
 }
