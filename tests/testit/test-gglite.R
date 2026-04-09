@@ -479,8 +479,7 @@ assert('knit_print.g2 does not pass knitr chunk options to chart_html', {
   (!has_error(knit_print.g2(chart, options = list(echo = TRUE))))
 })
 
-assert('knitr dispatches knit_print to knit_print.g2', {
-  loadNamespace('knitr')
+if (xfun::loadable('knitr')) assert('knitr dispatches knit_print to knit_print.g2', {
   chart = g2(iris, Sepal.Length ~ Sepal.Width)
   out = knitr::knit_print(chart)
   (inherits(out, 'knit_asis'))
@@ -502,8 +501,7 @@ assert('repr_html.g2 returns complete HTML with CDN and chart', {
   (grepl('G2.Chart', html, fixed = TRUE))
 })
 
-assert('repr methods are registered when repr is loaded', {
-  loadNamespace('repr')
+if (xfun::loadable('repr')) assert('repr methods are registered when repr is loaded', {
   chart = g2(mtcars, x = 'mpg', y = 'hp') |> mark_point()
   html = repr::repr_html(chart)
   txt = repr::repr(chart, format = 'text')
