@@ -1,5 +1,5 @@
 ---
-title: Axes and Legends
+title: Axes
 ---
 
 ```{r}
@@ -7,9 +7,7 @@ library(gglite)
 p = g2(mtcars, hp ~ mpg)
 ```
 
-## Axis Customization
-
-### Axis titles
+## Axis Titles
 
 ```{r}
 p |>
@@ -17,13 +15,13 @@ p |>
   axis_y(title = 'Horsepower')
 ```
 
-### Hide an axis
+## Hide an Axis
 
 ```{r}
 p |> axis_y(FALSE)
 ```
 
-### Hide both axes
+## Hide Both Axes
 
 ```{r}
 p |>
@@ -31,7 +29,7 @@ p |>
   axis_y(FALSE)
 ```
 
-### Axis with grid
+## Axis with Grid
 
 ```{r}
 p |>
@@ -39,7 +37,7 @@ p |>
   axis_y(grid = TRUE)
 ```
 
-### Axis tick count
+## Axis Tick Count
 
 ```{r}
 p |>
@@ -47,46 +45,14 @@ p |>
   axis_y(tickCount = 8)
 ```
 
-## Legend Customization
+## Axis Label Formatter
+
+Use a [d3-format](https://d3js.org/d3-format) or
+[d3-time-format](https://d3js.org/d3-time-format) string.
 
 ```{r}
-p2 = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
-```
-
-### Legend position
-
-```{r}
-p2 |> legend_color(position = 'right')
-```
-
-### Legend at the top
-
-```{r}
-p2 |> legend_color(position = 'top')
-```
-
-### Legend at the bottom
-
-```{r}
-p2 |> legend_color(position = 'bottom')
-```
-
-### Legend at the left
-
-```{r}
-p2 |> legend_color(position = 'left')
-```
-
-### Hide a legend
-
-```{r}
-p2 |> legend_color(FALSE)
-```
-
-### Legend with title
-
-```{r}
-p2 |> legend_color(position = 'right', title = 'Iris Species')
+# Format y-axis labels as integers (no decimal)
+p |> axis_y(labelFormatter = '.0f')
 ```
 
 ## Dual Y-Axis
@@ -96,7 +62,6 @@ Call `scale_y(independent = TRUE)` and `axis_y()` immediately after each mark
 to configure its y-axis independently.
 
 ```{r}
-# Monthly averages of temperature (°F) and wind speed (mph) from airquality
 air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
 air$Month = month.abb[air$Month]
 

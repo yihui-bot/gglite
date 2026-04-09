@@ -1,0 +1,41 @@
+---
+title: Titles
+---
+
+```{r}
+library(gglite)
+p = g2(mtcars, hp ~ mpg)
+```
+
+## Title and Subtitle via `g2()` Arguments
+
+```{r}
+g2(mtcars, hp ~ mpg,
+  title = 'Motor Trend Cars', subtitle = 'mpg vs horsepower')
+```
+
+## Simple Title
+
+```{r}
+p |> title_('Motor Trend Cars')
+```
+
+## Title with Subtitle
+
+```{r}
+p |> title_('Motor Trend Cars', subtitle = 'mpg vs horsepower')
+```
+
+## Title Alignment
+
+```{r}
+p |> title_('Right-aligned Title', align = 'right')
+```
+
+## Title on a Bar Chart
+
+```{r}
+df = data.frame(x = c('A', 'B', 'C', 'D'), y = c(3, 7, 2, 5))
+g2(df, y ~ x) |>
+  title_('Simple Bar Chart', subtitle = 'Categories A-D')
+```
