@@ -35,7 +35,8 @@ assert('pipe chaining works end-to-end', {
     interact('tooltip')
   (inherits(chart, 'g2'))
   (length(chart$layers) %==% 1L)
-  (chart$scales$x$type %==% 'linear')
+  # scale after mark goes to mark level
+  (chart$layers[[1]]$scale$x$type %==% 'linear')
   (chart$coords$type %==% 'polar')
   (length(chart$interactions) %==% 1L)
 })
@@ -333,7 +334,22 @@ assert('+ works with coord, facet, axis, legend, title, tooltip', {
   (chart$axes$x$title %==% 'Width')
   (chart$legends$color$position %==% 'right')
   (chart$chart_title %==% 'Iris')
-  (chart$tooltip_config %==% FALSE)
+  (chart$interactions[['tooltip']] %==% FALSE)
+})
+
+assert('tooltip_() routes all named args to interaction.tooltip', {
+  # FALSE -> interaction level
+  chart1 = g2(mtcars, hp ~ mpg) |> tooltip_(FALSE)
+  (chart1$interactions[['tooltip']] %==% FALSE)
+  # all named args -> interaction.tooltip
+  chart2 = g2(mtcars, hp ~ mpg) |> tooltip_(crosshairs = TRUE, shared = TRUE)
+  (chart2$interactions[['tooltip']]$crosshairs %==% TRUE)
+  (chart2$interactions[['tooltip']]$shared %==% TRUE)
+  # mark-level tooltip data goes through mark directly
+  chart3 = g2(mtcars, hp ~ mpg) |>
+    mark_point(tooltip = list(channel = 'y', valueFormatter = '.0f'))
+  (chart3$layers[[1]]$tooltip$channel %==% 'y')
+  (chart3$layers[[1]]$tooltip$valueFormatter %==% '.0f')
 })
 
 assert('facet_rect() accepts formula variables', {
@@ -390,7 +406,8 @@ assert('+ works with parent functions (mark_, scale_, coord_)', {
   chart = g2(mtcars, x = 'mpg', y = 'hp') +
     mark_('point') + scale_('x', type = 'log') + coord_('polar')
   (chart$layers[[1]]$type %==% 'point')
-  (chart$scales$x$type %==% 'log')
+  # scale after mark goes to mark level
+  (chart$layers[[1]]$scale$x$type %==% 'log')
   (chart$coords$type %==% 'polar')
 })
 
@@ -521,12 +538,12 @@ assert('scale_y after second-or-later mark applies to that mark', {
   (is.null(chart$scales$y))
 })
 
-assert('scale_y after a single mark applies at chart level', {
+assert('scale_y after a single mark applies at mark level', {
   chart = g2(mtcars, x = 'mpg', y = 'hp') |>
     mark_point() |>
     scale_y(type = 'log')
-  (chart$scales$y %==% list(type = 'log'))
-  (is.null(chart$layers[[1]]$scale))
+  (chart$layers[[1]]$scale$y %==% list(type = 'log'))
+  (is.null(chart$scales$y))
 })
 
 assert('scale_y before marks always applies at chart level', {
@@ -547,19 +564,19 @@ assert('axis_y after second-or-later mark applies to that mark', {
   (is.null(chart$axes$y))
 })
 
-assert('axis_y after a single mark applies at chart level', {
+assert('axis_y after a single mark applies at mark level', {
   chart = g2(mtcars, x = 'mpg', y = 'hp') |>
     mark_point() |>
     axis_y(position = 'right')
-  (chart$axes$y$position %==% 'right')
-  (is.null(chart$layers[[1]]$axis))
+  (chart$layers[[1]]$axis$y$position %==% 'right')
+  (is.null(chart$axes$y))
 })
 
-assert('axis_y FALSE after single mark hides chart-level axis', {
+assert('axis_y FALSE after single mark hides mark-level axis', {
   chart = g2(mtcars, x = 'mpg', y = 'hp') |>
     mark_point() |>
     axis_y(FALSE)
-  (isFALSE(chart$axes$y))
+  (isFALSE(chart$layers[[1]]$axis$y))
 })
 
 assert('coord_ resets last_op so scale/axis become chart-level', {
@@ -591,6 +608,7 @@ assert('dual-axis chart builds valid config', {
   chart = g2(air, x = 'Month') |>
     mark_interval(encode = list(y = 'Temp')) |>
     style_mark(fill = '#85C5A6', fillOpacity = 0.7) |>
+    scale_y(independent = TRUE) |>
     axis_y(title = 'Temperature (°F)', titleFill = '#85C5A6') |>
     mark_line(encode = list(y = 'Wind')) |>
     style_mark(stroke = 'steelblue', lineWidth = 2) |>
@@ -603,6 +621,9 @@ assert('dual-axis chart builds valid config', {
   (length(cfg$children) %==% 2L)
   (cfg$children[[1]]$encode$y %==% 'Temp')
   (cfg$children[[2]]$encode$y %==% 'Wind')
+  # each mark's scale and axis go to mark level
+  (isTRUE(cfg$children[[1]]$scale$y$independent))
+  (cfg$children[[1]]$axis$y$title %==% 'Temperature (°F)')
   (isTRUE(cfg$children[[2]]$scale$y$independent))
   (cfg$children[[2]]$axis$y$position %==% 'right')
 })

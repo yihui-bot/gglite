@@ -8,7 +8,8 @@ assert('component functions set chart options', {
     legend_('color', position = 'right') |>
     title_('Cars')
   (chart$theme$type %==% 'dark')
-  (chart$axes$x$title %==% 'MPG')
+  # axis after mark goes to mark level
+  (chart$layers[[1]]$axis$x$title %==% 'MPG')
   (chart$legends$color$position %==% 'right')
   (chart$chart_title %==% 'Cars')
 })
@@ -16,8 +17,9 @@ assert('component functions set chart options', {
 assert('axis_x() and axis_y() are shortcuts', {
   chart = g2() |> mark_point() |>
     axis_x(title = 'X') |> axis_y(title = 'Y')
-  (chart$axes$x$title %==% 'X')
-  (chart$axes$y$title %==% 'Y')
+  # after mark, axis goes to mark level
+  (chart$layers[[1]]$axis$x$title %==% 'X')
+  (chart$layers[[1]]$axis$y$title %==% 'Y')
 })
 
 assert('legend_color() is shortcut for legend_(color)', {

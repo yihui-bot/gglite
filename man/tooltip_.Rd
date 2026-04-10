@@ -9,17 +9,38 @@ tooltip_(chart = NULL, ...)
 \arguments{
 \item{chart}{A \code{g2} object.}
 
-\item{...}{Tooltip options such as \code{shared}, \code{crosshairs}, \code{marker}, or
-\code{FALSE} to disable.}
+\item{...}{Tooltip interaction options such as \code{shared}, \code{crosshairs},
+\code{marker}, \code{series}, \code{crosshairsStroke}, or \code{FALSE} to disable the tooltip.}
 }
 \value{
 The modified \code{g2} object.
 }
 \description{
-Set chart-level tooltip options. Mark-level tooltips can be passed via \code{...}
-in \verb{mark_*()} functions.
+Configure tooltip interaction behavior. All options are applied to
+\code{interaction.tooltip} in the G2 spec: pass \code{FALSE} to disable the tooltip,
+or pass named options such as \code{crosshairs}, \code{shared}, \code{marker}, and any
+\verb{crosshairs*}/\verb{marker*} style properties. To configure the data displayed in
+a tooltip for a specific mark (e.g., \code{channel}, \code{valueFormatter}, \code{items}),
+pass a \code{tooltip} list argument directly to the mark function instead, e.g.,
+\code{mark_line(tooltip = list(channel = 'y', valueFormatter = '.0\%'))}.
 }
 \examples{
-g2(mtcars, hp ~ mpg) |>
+# Enable crosshairs (works best with line/area marks which use series tooltip)
+df = data.frame(x = 1:6, y = c(3, 1, 4, 1, 5, 2))
+g2(df, y ~ x) |>
+  mark_line() |>
   tooltip_(crosshairs = TRUE)
+
+# Shared tooltip for multi-series line chart
+df2 = data.frame(
+  x = rep(1:5, 2), y = c(3, 1, 4, 1, 5, 2, 7, 1, 8, 3),
+  group = rep(c('A', 'B'), each = 5)
+)
+g2(df2, y ~ x, color = ~ group) |>
+  mark_line() |>
+  tooltip_(shared = TRUE)
+
+# Disable tooltip
+g2(mtcars, hp ~ mpg) |>
+  tooltip_(FALSE)
 }

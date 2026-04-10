@@ -14,7 +14,8 @@ assert('build_config() produces correct spec', {
   (config$children[[1]]$type %==% 'interval')
   (config$children[[1]]$encode$x %==% 'x')
   (config$children[[1]]$encode$y %==% 'y')
-  (config$scale$y$nice %==% TRUE)
+  # scale after mark goes to mark level in the spec
+  (config$children[[1]]$scale$y$nice %==% TRUE)
 })
 
 assert('chart_html() generates correct HTML structure', {

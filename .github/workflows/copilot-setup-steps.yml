@@ -34,3 +34,7 @@ jobs:
       - uses: yihui/actions/setup-r-dependencies@HEAD
         with:
           extra-packages: roxygen2
+
+      - name: Set options in .Rprofile
+        run: |
+          echo "options(litedown.html.options = list(embed_resources = 'all'))" >> ~/.Rprofile
