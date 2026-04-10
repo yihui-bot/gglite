@@ -79,9 +79,8 @@ Since gglite generates HTML/JavaScript visualizations, **plots must be tested in
 headless browsers** to make sure they can be rendered correctly and produce no
 errors in the browser console. The workflow is:
 
-1.  **Render to a full HTML page** — for `.Rmd` files use `litedown::fuse()`;
-    for `.R` scripts set `options(litedown.html.template = TRUE)` first so the
-    output is a complete `<!DOCTYPE html>` page (not a bare fragment).
+1.  **Render to a full HTML page** — both `.Rmd` and `.R` files can be rendered
+    to `.html` via `litedown::fuse()`.
 
 2.  **Serve via a local HTTP server** (`file://` URLs don't work).
 
@@ -125,6 +124,7 @@ errors in the browser console. The workflow is:
     ```
 
 5.  Verify:
+
     -   The chart container element exists in the DOM.
     -   The G2 chart renders without JavaScript errors (check `console.error`).
     -   No warnings or errors appear in the browser console.
