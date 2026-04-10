@@ -29,57 +29,21 @@ use \code{NA} to skip individual sides. \code{NULL} (the default) leaves the val
 unset.}
 
 \item{renderer}{The rendering backend: \code{"Canvas"} (default), \code{"SVG"}, or
-\code{"WebGL"} (case-insensitive). See the \strong{Renderer} section for details.}
+\code{"WebGL"} (case-insensitive).}
 
 \item{...}{Additional top-level chart options passed to \code{chart.options()} in
-JavaScript (e.g., \code{clip = TRUE}, \code{depth = 400}).}
+JavaScript (e.g., \code{clip = TRUE}).}
 }
 \value{
 The modified \code{g2} object (or a \code{g2_mod} when \code{chart} is \code{NULL}).
 }
 \description{
-Set chart dimensions, layout spacing, and renderer for a G2 chart. Pipe
-this after \code{\link[=g2]{g2()}} to customize the canvas before rendering.
+Set chart dimensions, layout spacing, and renderer for a G2 chart. See
+\url{https://pkg.yihui.org/gglite/examples/canvas.html} for full examples.
 }
-\section{Renderer}{
-
-The \code{renderer} argument controls which rendering backend G2 uses:
-\describe{
-\item{\code{"Canvas"} (default)}{Uses the Canvas 2D API via the full
-\code{g2.min.js} bundle (~1.1 MB). Fast and appropriate for most charts.}
-\item{\code{"SVG"}}{Uses SVG rendering. Requires loading the G2 lite bundle
-plus \verb{@antv/g} and \verb{@antv/g-svg} (~1.5 MB total). SVG output can be
-inspected in browser DevTools and is useful for debugging.}
-\item{\code{"WebGL"}}{Uses WebGL for GPU-accelerated rendering. Requires
-loading the G2 lite bundle plus \verb{@antv/g} and \verb{@antv/g-webgl} (~1.9 MB
-total). Best suited for charts with very large numbers of data points.}
-}
-
-\strong{Important caveat for multi-chart documents:} \code{g2.min.js} and
-\code{g2.lite.min.js} cannot coexist on the same page. If you want to use SVG or
-WebGL rendering in a document that contains multiple charts (e.g., R
-Markdown, Quarto, Jupyter), you must declare a global renderer option at the
-top of the document:
-
-\if{html}{\out{<div class="sourceCode r">}}\preformatted{options(gglite.renderer = 'svg')  # or 'webgl'
-}\if{html}{\out{</div>}}
-
-When this option is set, \strong{all} charts in the document switch to the
-\code{g2.lite.min.js} CDN. Individual charts can still override the renderer via
-\code{canvas(renderer = ...)} — for example, when \code{options(gglite.renderer = 'svg')} is set globally, a specific chart can use
-\code{g2(...) |> canvas(renderer = 'webgl')}.
-
-For \strong{standalone plots} previewed in the browser (via \code{\link[=print.g2]{print.g2()}}), no
-global option is needed because each plot is a separate HTML page.
-}
-
 \examples{
-# Set chart dimensions
-g2(mtcars, hp ~ mpg) |> canvas(width = 600, height = 400)
-
-# Add padding
-g2(mtcars, hp ~ mpg) |> canvas(padding = 30)
-
-# SVG renderer (standalone; no global option needed)
-g2(mtcars, hp ~ mpg) |> canvas(renderer = 'svg')
+p = g2(mtcars, hp ~ mpg)
+p |> canvas(width = 600, height = 400)
+p |> canvas(padding = 30)
+p |> canvas(renderer = 'svg')
 }
