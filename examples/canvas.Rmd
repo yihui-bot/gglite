@@ -106,3 +106,17 @@ dedicated parameters.
 ```{r}
 g2(mtcars, hp ~ mpg) |> canvas(clip = TRUE)
 ```
+
+## WebGL for Large Datasets
+
+The WebGL renderer is GPU-accelerated and handles very large numbers of data
+points with less frame-time than Canvas. The example below plots 100,000 random
+points to illustrate this:
+
+```{r}
+set.seed(42)
+n = 100000L
+df = data.frame(x = rnorm(n), y = rnorm(n))
+g2(df, x ~ y) |> canvas(renderer = 'webgl') |>
+  mark_point() |> style_mark(size = 1, fillOpacity = 0.3)
+```
