@@ -120,11 +120,6 @@ check_chart = function(fn, chart, args) {
 #'   inside inline JavaScript functions that cannot be statically detected.
 #' @param ... Aesthetic mappings as `name = ~column` formulas or a positional
 #'   formula for `x`/`y`. Character strings are also accepted.
-#' @param width,height Width and height of the chart in pixels.
-#' @param padding,margin,inset Layout spacing in pixels. Each can be a scalar
-#'   (applied to all sides) or a length-4 vector `c(top, right, bottom, left)`;
-#'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
-#'   unset.
 #' @param title Chart title string, a convenient alternative to piping into
 #'   [title_()] separately.
 #' @param subtitle Chart subtitle string.
@@ -142,11 +137,7 @@ check_chart = function(fn, chart, args) {
 #'
 #' # Title and subtitle
 #' g2(mtcars, hp ~ mpg, title = 'Motor Trend Cars', subtitle = 'mpg vs hp')
-g2 = function(
-  data = NULL, ..., width = NULL, height = 480,
-  padding = NULL, margin = NULL, inset = NULL,
-  title = NULL, subtitle = NULL
-) {
+g2 = function(data = NULL, ..., title = NULL, subtitle = NULL) {
   dots = list(...)
   # A positional (unnamed) formula like `hp ~ mpg` or `~ mpg` as the first arg
   has_formula = length(dots) &&
@@ -171,7 +162,7 @@ g2 = function(
   }
   chart = structure(list(
     data = data,
-    options = list(width = width, height = height, autoFit = if (is.null(width)) TRUE),
+    options = list(height = 480L, autoFit = TRUE),
     layers = list(),
     scales = list(),
     coords = NULL,
@@ -184,13 +175,112 @@ g2 = function(
     legends = list(),
     chart_title = dropNulls(list(title = title, subtitle = subtitle)),
     facet = facet_from_formula,
-    layout = c(
-      process_layout('padding', padding),
-      process_layout('margin', margin),
-      process_layout('inset', inset)
-    )
+    layout = list()
   ), class = 'g2')
   if (length(dots)) chart$aesthetics = modifyList(chart$aesthetics, dots)
+  chart
+}
+
+#' Configure Canvas Options
+#'
+#' Set chart dimensions, layout spacing, and renderer for a G2 chart. Pipe
+#' this after [g2()] to customize the canvas before rendering.
+#'
+#' @section Renderer:
+#' The `renderer` argument controls which rendering backend G2 uses:
+#' \describe{
+#'   \item{`"Canvas"` (default)}{Uses the Canvas 2D API via the full
+#'     `g2.min.js` bundle (~1.1 MB). Fast and appropriate for most charts.}
+#'   \item{`"SVG"`}{Uses SVG rendering. Requires loading the G2 lite bundle
+#'     plus `@antv/g` and `@antv/g-svg` (~1.5 MB total). SVG output can be
+#'     inspected in browser DevTools and is useful for debugging.}
+#'   \item{`"WebGL"`}{Uses WebGL for GPU-accelerated rendering. Requires
+#'     loading the G2 lite bundle plus `@antv/g` and `@antv/g-webgl` (~1.9 MB
+#'     total). Best suited for charts with very large numbers of data points.}
+#' }
+#'
+#' **Important caveat for multi-chart documents:** `g2.min.js` and
+#' `g2.lite.min.js` cannot coexist on the same page. If you want to use SVG or
+#' WebGL rendering in a document that contains multiple charts (e.g., R
+#' Markdown, Quarto, Jupyter), you must declare a global renderer option at the
+#' top of the document:
+#'
+#' ```r
+#' options(gglite.renderer = 'svg')  # or 'webgl'
+#' ```
+#'
+#' When this option is set, **all** charts in the document switch to the
+#' `g2.lite.min.js` CDN. Individual charts can still override the renderer via
+#' `canvas(renderer = ...)` — for example, when `options(gglite.renderer =
+#' 'svg')` is set globally, a specific chart can use
+#' `g2(...) |> canvas(renderer = 'webgl')`.
+#'
+#' For **standalone plots** previewed in the browser (via [print.g2()]), no
+#' global option is needed because each plot is a separate HTML page.
+#'
+#' @param chart A `g2` object, or `NULL` to create a deferred modifier.
+#' @param width Width of the chart in pixels. `NULL` (default) enables
+#'   auto-fit to the container width.
+#' @param height Height of the chart in pixels. Default is `480`.
+#' @param padding,margin,inset Layout spacing in pixels. Each can be a scalar
+#'   (applied to all sides) or a length-4 vector `c(top, right, bottom, left)`;
+#'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
+#'   unset.
+#' @param renderer The rendering backend: `"Canvas"` (default), `"SVG"`, or
+#'   `"WebGL"` (case-insensitive). See the **Renderer** section for details.
+#' @param ... Additional top-level chart options passed to `chart.options()` in
+#'   JavaScript (e.g., `clip = TRUE`, `depth = 400`).
+#' @return The modified `g2` object (or a `g2_mod` when `chart` is `NULL`).
+#' @export
+#' @examples
+#' # Set chart dimensions
+#' g2(mtcars, hp ~ mpg) |> canvas(width = 600, height = 400)
+#'
+#' # Add padding
+#' g2(mtcars, hp ~ mpg) |> canvas(padding = 30)
+#'
+#' # SVG renderer (standalone; no global option needed)
+#' g2(mtcars, hp ~ mpg) |> canvas(renderer = 'svg')
+canvas = function(
+  chart = NULL, width = NULL, height = 480,
+  padding = NULL, margin = NULL, inset = NULL,
+  renderer = NULL, ...
+) {
+  args = list(
+    width = width, height = height,
+    padding = padding, margin = margin, inset = inset,
+    renderer = renderer, ...
+  )
+  mod = check_chart(canvas, chart, args)
+  if (!is.null(mod)) return(mod)
+
+  # Dimensions
+  chart$options = dropNulls(list(
+    width = width,
+    height = height,
+    autoFit = if (is.null(width)) TRUE else NULL
+  ))
+
+  # Layout spacing
+  chart$layout = c(
+    process_layout('padding', padding),
+    process_layout('margin', margin),
+    process_layout('inset', inset)
+  )
+
+  # Renderer
+  if (!is.null(renderer)) {
+    r = tolower(renderer)
+    r = match.arg(r, c('canvas', 'svg', 'webgl'))
+    chart$renderer = r
+  }
+
+  # Extra top-level chart.options() args (e.g., clip, depth)
+  extra = list(...)
+  if (length(extra)) chart$canvas_extra = modifyList(
+    as.list(chart$canvas_extra), extra
+  )
+
   chart
 }
 

@@ -1,0 +1,108 @@
+---
+title: Canvas Options
+---
+
+```{r}
+library(gglite)
+```
+
+The `canvas()` function controls chart dimensions, layout spacing, and the
+rendering backend. Pipe it after `g2()` to customize a chart's canvas before
+rendering.
+
+## Dimensions
+
+Use `width` and `height` to set the chart size in pixels. By default (`width =
+NULL`), the chart auto-fits to its container width and uses a height of 480 px.
+
+```{r}
+g2(mtcars, hp ~ mpg) |> canvas(width = 500, height = 300)
+```
+
+## Layout Spacing
+
+The `padding`, `margin`, and `inset` arguments control spacing in pixels. Each
+accepts a scalar (all sides) or a length-4 vector `c(top, right, bottom, left)`
+where `NA` skips a side.
+
+```{r}
+# Add padding around the plot area (useful for parallel coords, etc.)
+g2(iris, position = names(iris)[-5], color = ~ Species) |>
+  canvas(padding = 30) |>
+  coord_parallel() |>
+  legend_color(position = 'bottom')
+```
+
+## Renderer
+
+G2 supports three rendering backends, selected via the `renderer` argument
+(case-insensitive):
+
+| Renderer | CDN scripts loaded | Approx. size |
+|---|---|---|
+| `"Canvas"` (default) | `g2.min.js` | ~1.1 MB |
+| `"SVG"` | `@antv/g` + `@antv/g-svg` + `g2.lite.min.js` | ~1.5 MB |
+| `"WebGL"` | `@antv/g` + `@antv/g-webgl` + `g2.lite.min.js` | ~1.9 MB |
+
+The default Canvas renderer is the lightest option. SVG output can be inspected
+in the browser's DevTools (useful for debugging). WebGL is GPU-accelerated and
+suited for very large datasets.
+
+```{r}
+# SVG renderer — standalone preview, no global option needed
+g2(mtcars, hp ~ mpg) |> canvas(renderer = 'svg')
+```
+
+### Caveat: using SVG or WebGL in a multi-chart document
+
+`g2.min.js` (Canvas) and `g2.lite.min.js` (SVG/WebGL) **cannot coexist on the
+same HTML page**. In a document that contains multiple charts — such as an R
+Markdown, Quarto, or Jupyter notebook — the CDN scripts are injected once for
+the whole document. If any chart uses SVG or WebGL, all charts must use the
+lite bundle.
+
+To switch the entire document to the lite bundle, declare a global renderer
+option **at the top of the document** (before any charts are rendered):
+
+```r
+options(gglite.renderer = 'svg')   # or 'webgl'
+```
+
+When this option is set:
+
+- All charts in the document use `g2.lite.min.js` automatically.
+- Individual charts can still override the renderer via `canvas(renderer = ...)`.
+  For example, when `options(gglite.renderer = 'svg')` is active, a specific
+  chart can use `g2(...) |> canvas(renderer = 'webgl')`.
+
+For **standalone plots** previewed in the browser (`print()` / RStudio Viewer),
+each plot is its own HTML page, so no global option is needed.
+
+```{r echo=FALSE}
+# Set global renderer to svg for the rest of this document
+options(gglite.renderer = 'svg')
+```
+
+```{r}
+# With options(gglite.renderer = 'svg') set, all charts use g2.lite
+g2(mtcars, hp ~ mpg)
+```
+
+```{r}
+# Override to WebGL for a specific chart
+g2(mtcars, hp ~ mpg) |> canvas(renderer = 'webgl')
+```
+
+```{r echo=FALSE}
+options(gglite.renderer = NULL)  # restore default
+```
+
+## Extra Options
+
+The `...` argument in `canvas()` accepts any additional top-level
+`chart.options()` keys (e.g., `clip`, `depth`) that are not covered by the
+dedicated parameters.
+
+```{r}
+g2(mtcars, hp ~ mpg) |> canvas(clip = TRUE)
+```

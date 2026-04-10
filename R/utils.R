@@ -45,6 +45,10 @@ ts_to_df = function(x) {
 #' @noRd
 dropNulls = function(x) x[!vapply(x, is.null, logical(1))]
 
+#' Null-coalescing operator
+#' @noRd
+`%||%` = function(x, y) if (is.null(x)) y else x
+
 #' Process a Layout Argument (padding, margin, or inset)
 #'
 #' Convert a scalar or length-4 vector into named G2 layout options.
