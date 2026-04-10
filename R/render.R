@@ -232,39 +232,21 @@ effective_renderer = function(chart) {
   chart$renderer %||% tolower(getOption('gglite.renderer') %||% 'canvas')
 }
 
-# Returns TRUE when the page should use g2.lite (non-canvas global option set,
-# or per-chart renderer is svg/webgl).
+# Returns TRUE when the page should use g2.lite (global renderer option set
+# to any value, or per-chart renderer is svg/webgl).
 needs_lite = function(chart) {
-  global_r = tolower(getOption('gglite.renderer') %||% 'canvas')
-  global_r != 'canvas' || isTRUE(chart$renderer %in% c('svg', 'webgl'))
+  !is.null(getOption('gglite.renderer')) || isTRUE(chart$renderer %in% c('svg', 'webgl'))
 }
 
-# CDN URLs for a given renderer mode ('canvas' uses g2.min.js; 'svg'/'webgl'
-# use g2.lite.min.js + @antv/g + renderer-specific package).
-g2_cdn_urls = function(renderer = 'canvas') {
-  if (renderer == 'canvas')
-    return(c(g2_cdn(), g2_patches_cdn))
-  r_url = switch(renderer,
-    svg   = 'https://unpkg.com/@antv/g-svg',
-    webgl = 'https://unpkg.com/@antv/g-webgl'
-  )
-  c(
-    'https://unpkg.com/@antv/g',
-    r_url,
-    'https://unpkg.com/@antv/g2@5/dist/g2.lite.min.js',
-    g2_patches_cdn
-  )
+cdn_scripts = function(chart = NULL) {
+  sprintf('<script src="%s" defer></script>', g2_cdn(chart))
 }
 
-cdn_scripts = function(renderer = 'canvas') {
-  sprintf('<script src="%s" defer></script>', g2_cdn_urls(renderer))
-}
-
-g2_html_page = function(body, renderer = 'canvas') {
+g2_html_page = function(body, chart = NULL) {
   paste(c(
     '<!DOCTYPE html>', '<html>', '<head>',
     '<meta charset="utf-8">',
-    cdn_scripts(renderer),
+    cdn_scripts(chart),
     '</head>', '<body>',
     body,
     '</body>', '</html>'
@@ -292,7 +274,7 @@ g2_html_page = function(body, renderer = 'canvas') {
 #' @return A character string of HTML.
 #' @export
 chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
-  ctor = dropNulls(chart$options)
+  ctor = dropNulls(chart$options %||% list(height = 480L, autoFit = TRUE))
   spec = build_config(chart)
   defer_opt = getOption('gglite.defer_render')
   threshold = if (isTRUE(defer_opt)) 0.5 else if (is.numeric(defer_opt)) defer_opt
@@ -363,7 +345,7 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
 #' @export
 print.g2 = function(x, ...) {
   #TODO: xfun >= 0.57.3 no longer needs paste()
-  xfun::html_view(g2_html_page(chart_html(x, ...), renderer = effective_renderer(x)))
+  xfun::html_view(g2_html_page(chart_html(x, ...), chart = x))
   invisible(x)
 }
 
@@ -382,9 +364,7 @@ knit_print.g2 = function(x, ...) {
   html = chart_html(x)
   if (!isTRUE(knitr::opts_knit$get(.knitr.flag))) {
     knitr::opts_knit$set(setNames(list(TRUE), .knitr.flag))
-    # CDN choice is driven by global option so all charts use consistent scripts
-    global_r = tolower(getOption('gglite.renderer') %||% 'canvas')
-    html = paste(c(cdn_scripts(global_r), html), collapse = '\n')
+    html = paste(c(cdn_scripts(x), html), collapse = '\n')
   }
   structure(html, class = c('knit_asis', 'html'))
 }
@@ -399,7 +379,7 @@ knit_print.g2 = function(x, ...) {
 #' @param ... Ignored.
 #' @return A character string of complete HTML.
 #' @noRd
-repr_html.g2 = function(obj, ...) g2_html_page(chart_html(obj), renderer = effective_renderer(obj))
+repr_html.g2 = function(obj, ...) g2_html_page(chart_html(obj), chart = obj)
 
 #' Text Representation for Jupyter Notebooks
 #'
@@ -422,7 +402,7 @@ repr_text.g2 = function(obj, ...) {
 #' @importFrom xfun record_print
 #' @export
 record_print.g2 = function(x, ...) {
-  xfun::new_record(c(cdn_scripts(effective_renderer(x)), chart_html(x, ...), ''), 'asis')
+  xfun::new_record(c(cdn_scripts(x), chart_html(x, ...), ''), 'asis')
 }
 
 register_methods = function(pkgs, generics) {

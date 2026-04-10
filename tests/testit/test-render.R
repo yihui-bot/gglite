@@ -136,16 +136,24 @@ assert('effective_renderer() per-chart overrides global', {
 })
 
 assert('cdn_scripts() returns g2.min.js for canvas', {
-  scripts = cdn_scripts('canvas')
+  scripts = cdn_scripts(g2())
   (any(grepl('g2.min.js', scripts, fixed = TRUE)))
   (!any(grepl('g2.lite.min.js', scripts, fixed = TRUE)))
 })
 
 assert('cdn_scripts() returns g2.lite.min.js for svg', {
-  scripts = cdn_scripts('svg')
+  scripts = cdn_scripts(g2() |> canvas(renderer = 'svg'))
   (any(grepl('g2.lite.min.js', scripts, fixed = TRUE)))
   (any(grepl('@antv/g-svg', scripts, fixed = TRUE)))
   (!any(grepl('g2.min.js"', scripts, fixed = TRUE)))
+})
+
+assert('cdn_scripts() returns g2.lite.min.js when global renderer is set', {
+  old = options(gglite.renderer = 'canvas')
+  scripts = cdn_scripts(g2())
+  options(old)
+  (any(grepl('g2.lite.min.js', scripts, fixed = TRUE)))
+  (any(grepl('@antv/g-canvas', scripts, fixed = TRUE)))
 })
 
 assert('build_config includes canvas_extra options', {

@@ -6,16 +6,34 @@
 #' @keywords internal
 "_PACKAGE"
 
-#' CDN URL for the G2 Library
+#' CDN URLs for the G2 Library
 #'
-#' Returns the URL for loading the G2 JavaScript library. Customizable via the
-#' `gglite.g2_cdn` option. The default `@5` resolves to the latest v5.x
-#' release.
+#' Returns CDN URLs for loading the G2 JavaScript library. When the chart uses
+#' a non-default renderer or the `gglite.renderer` global option is set, the
+#' lite bundle plus renderer packages are returned instead of `g2.min.js`.
+#' The default `g2.min.js` URL is customizable via the `gglite.g2_cdn` option.
 #'
-#' @return A character string.
+#' @param chart A `g2` object, or `NULL` for the default (Canvas) CDN.
+#' @return A character vector of CDN URLs.
 #' @noRd
-g2_cdn = function() {
-  getOption('gglite.g2_cdn', 'https://unpkg.com/@antv/g2@5/dist/g2.min.js')
+g2_cdn = function(chart = NULL) {
+  if (is.null(chart) || !needs_lite(chart))
+    return(c(
+      getOption('gglite.g2_cdn', 'https://unpkg.com/@antv/g2@5/dist/g2.min.js'),
+      g2_patches_cdn
+    ))
+  r = effective_renderer(chart)
+  r_url = switch(r,
+    svg    = 'https://unpkg.com/@antv/g-svg',
+    webgl  = 'https://unpkg.com/@antv/g-webgl',
+    canvas = 'https://unpkg.com/@antv/g-canvas'
+  )
+  c(
+    'https://unpkg.com/@antv/g',
+    r_url,
+    'https://unpkg.com/@antv/g2@5/dist/g2.lite.min.js',
+    g2_patches_cdn
+  )
 }
 
 g2_patches_cdn = 'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.32/js/g2-patches.min.js'
@@ -162,7 +180,7 @@ g2 = function(data = NULL, ..., title = NULL, subtitle = NULL) {
   }
   chart = structure(list(
     data = data,
-    options = list(height = 480L, autoFit = TRUE),
+    options = NULL,
     layers = list(),
     scales = list(),
     coords = NULL,
@@ -183,40 +201,8 @@ g2 = function(data = NULL, ..., title = NULL, subtitle = NULL) {
 
 #' Configure Canvas Options
 #'
-#' Set chart dimensions, layout spacing, and renderer for a G2 chart. Pipe
-#' this after [g2()] to customize the canvas before rendering.
-#'
-#' @section Renderer:
-#' The `renderer` argument controls which rendering backend G2 uses:
-#' \describe{
-#'   \item{`"Canvas"` (default)}{Uses the Canvas 2D API via the full
-#'     `g2.min.js` bundle (~1.1 MB). Fast and appropriate for most charts.}
-#'   \item{`"SVG"`}{Uses SVG rendering. Requires loading the G2 lite bundle
-#'     plus `@antv/g` and `@antv/g-svg` (~1.5 MB total). SVG output can be
-#'     inspected in browser DevTools and is useful for debugging.}
-#'   \item{`"WebGL"`}{Uses WebGL for GPU-accelerated rendering. Requires
-#'     loading the G2 lite bundle plus `@antv/g` and `@antv/g-webgl` (~1.9 MB
-#'     total). Best suited for charts with very large numbers of data points.}
-#' }
-#'
-#' **Important caveat for multi-chart documents:** `g2.min.js` and
-#' `g2.lite.min.js` cannot coexist on the same page. If you want to use SVG or
-#' WebGL rendering in a document that contains multiple charts (e.g., R
-#' Markdown, Quarto, Jupyter), you must declare a global renderer option at the
-#' top of the document:
-#'
-#' ```r
-#' options(gglite.renderer = 'svg')  # or 'webgl'
-#' ```
-#'
-#' When this option is set, **all** charts in the document switch to the
-#' `g2.lite.min.js` CDN. Individual charts can still override the renderer via
-#' `canvas(renderer = ...)` — for example, when `options(gglite.renderer =
-#' 'svg')` is set globally, a specific chart can use
-#' `g2(...) |> canvas(renderer = 'webgl')`.
-#'
-#' For **standalone plots** previewed in the browser (via [print.g2()]), no
-#' global option is needed because each plot is a separate HTML page.
+#' Set chart dimensions, layout spacing, and renderer for a G2 chart. See
+#' <https://pkg.yihui.org/gglite/examples/canvas.html> for full examples.
 #'
 #' @param chart A `g2` object, or `NULL` to create a deferred modifier.
 #' @param width Width of the chart in pixels. `NULL` (default) enables
@@ -227,20 +213,16 @@ g2 = function(data = NULL, ..., title = NULL, subtitle = NULL) {
 #'   use `NA` to skip individual sides. `NULL` (the default) leaves the value
 #'   unset.
 #' @param renderer The rendering backend: `"Canvas"` (default), `"SVG"`, or
-#'   `"WebGL"` (case-insensitive). See the **Renderer** section for details.
+#'   `"WebGL"` (case-insensitive).
 #' @param ... Additional top-level chart options passed to `chart.options()` in
-#'   JavaScript (e.g., `clip = TRUE`, `depth = 400`).
+#'   JavaScript (e.g., `clip = TRUE`).
 #' @return The modified `g2` object (or a `g2_mod` when `chart` is `NULL`).
 #' @export
 #' @examples
-#' # Set chart dimensions
-#' g2(mtcars, hp ~ mpg) |> canvas(width = 600, height = 400)
-#'
-#' # Add padding
-#' g2(mtcars, hp ~ mpg) |> canvas(padding = 30)
-#'
-#' # SVG renderer (standalone; no global option needed)
-#' g2(mtcars, hp ~ mpg) |> canvas(renderer = 'svg')
+#' p = g2(mtcars, hp ~ mpg)
+#' p |> canvas(width = 600, height = 400)
+#' p |> canvas(padding = 30)
+#' p |> canvas(renderer = 'svg')
 canvas = function(
   chart = NULL, width = NULL, height = 480,
   padding = NULL, margin = NULL, inset = NULL,

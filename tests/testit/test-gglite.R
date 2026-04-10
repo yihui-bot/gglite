@@ -46,7 +46,7 @@ assert('g2_cdn() respects gglite.g2_cdn option', {
   options(gglite.g2_cdn = 'https://example.com/g2.js')
   res = g2_cdn()
   options(gglite.g2_cdn = old)
-  (res %==% 'https://example.com/g2.js')
+  (res[1] %==% 'https://example.com/g2.js')
 })
 
 assert('canvas() padding scalar sets layout', {
@@ -450,7 +450,7 @@ assert('mixing + and |> produces same result as pure |>', {
 # ---- knit_print.g2 ----
 
 assert('cdn_scripts returns two <script> tags', {
-  s = cdn_scripts()
+  s = cdn_scripts(g2())
   (length(s) %==% 2L)
   (all(grepl('^<script src=".+" defer></script>$', s)))
 })
