@@ -3,110 +3,82 @@
 ## Repository Overview
 
 This is an R package that provides a lightweight interface to the AntV G2
-JavaScript visualization library with a ggplot2-style API. It supports
-rendering in R Markdown, litedown, Shiny, and standalone HTML previews.
+JavaScript visualization library with a ggplot2-style API. It supports rendering
+in R Markdown, litedown, Shiny, and standalone HTML previews.
 
-**Project Type**: R package
-**Languages**: R, JavaScript (via CDN)
-**Size**: Small repository (~15 R source files)
-**Target Runtime**: R (>= 3.5.0)
+**Project Type**: R package **Languages**: R, JavaScript (via CDN) **Size**:
+Small repository (\~15 R source files)
 
 ## Build and Test Instructions
 
 ### Prerequisites
 
-**Note**: R is automatically installed via `.github/copilot-setup-steps.yml`
-when working with GitHub Copilot. For manual setup:
-- R (>= 3.5.0) - available via `copilot-setup-steps.yml`
-- R package dependencies (testit, roxygen2, xfun, litedown) - available via
-  `copilot-setup-steps.yml`
-
-**For testing on Linux manually**: If not using Copilot's automated setup,
-install the latest R from CRAN, not from Debian/Ubuntu official repositories.
-Follow instructions at https://cran.r-project.org/bin/linux/ubuntu to ensure
-you're testing with the most recent R version that users will have.
+R has been automatically installed via `.github/copilot-setup-steps.yml` when
+working with GitHub Copilot.
 
 ### Bootstrap and Build Sequence
 
-1. **Build the R package**:
-   ```bash
-   R CMD build .
-   ```
+1.  **Build the R package**:
 
-2. **Install the package**:
-   ```bash
-   R CMD INSTALL gglite_*.tar.gz
-   ```
+    ``` bash
+    R CMD build .
+    ```
 
-3. **Run tests**:
-   ```bash
-   R CMD check gglite_*.tar.gz --no-manual
-   ```
-   or directly:
-   ```bash
-   Rscript tests/test-all.R
-   ```
-   - Tests use the `testit` package
-   - All tests should pass without errors
+2.  **Install the package**:
+
+    ``` bash
+    R CMD INSTALL *_*.tar.gz
+    ```
 
 ### Testing Conventions
 
-- Tests are in `tests/testit/test-gglite.R`
-- Use `testit` package for assertions
-- Always wrap test conditions in `{}`: `assert('message', {})`
-- Use `has_error()` instead of `tryCatch()` for error testing
-- Load the package with `library(gglite)` before testing
-- Use `%==%` (from testit) instead of `==` to test for strict equality
-- Never use `:::` to access internal functions in tests; testit exposes
-  internal functions automatically, so call them directly
+-   Tests are in `tests/testit/test-*.R`
+-   Use `testit` package for assertions
+-   Always wrap test conditions in `{}`: `assert('message', {})`
+-   Use `has_error()` instead of `tryCatch()` for error testing
+-   Load the package with `library(gglite)` before testing
+-   Use `%==%` (from testit) instead of `==` to test for strict equality
+-   Never use `:::` to access internal functions in tests; testit exposes
+    internal functions automatically, so call them directly
 
 ### Rendering Example Rmd Files
 
-All `examples/*.Rmd` files are rendered using **litedown**, not rmarkdown.
-Never use `rmarkdown::render()` — it will produce incorrect output or fail.
+All `examples/*.Rmd` files are rendered using **litedown**, not rmarkdown. Never
+use `rmarkdown::render()` — it will produce incorrect output or fail.
 
 To render an Rmd file to HTML (e.g., for inspection or headless browser
 testing):
 
-```bash
+``` bash
 Rscript -e 'litedown::fuse("path/to/foo.Rmd")'
 # output: path/to/foo.html
 ```
 
-The GitHub Pages site is built by the `yihui/litedown/site` action, which
-calls `litedown::fuse()` for every Rmd in the repo.
+This will render a self-contained HTML file (since we have enabled the
+`embed_resources` option for litedown in `copilot-setup-steps.yml`). All
+external JS/CSS resources are embedded, so they won't be blocked when testing
+via headless browsers.
+
+The GitHub Pages site is built by the `yihui/litedown/site` action, which calls
+`litedown::fuse()` for every Rmd in the repo.
 
 ### Testing Plots in Headless Browsers
 
-Since gglite generates HTML/JavaScript visualizations, **plots must be tested
-in headless browsers** to make sure they can be rendered correctly and produce
-no errors in the browser console. The workflow is:
+Since gglite generates HTML/JavaScript visualizations, **plots must be tested in
+headless browsers** to make sure they can be rendered correctly and produce no
+errors in the browser console. The workflow is:
 
-1. **Render the Rmd to HTML first** using litedown (see above).
-2. **Pre-download CDN resources and patch the HTML** — CDN URLs are often
-   blocked in the Copilot agent environment. Before opening the HTML in a
-   browser, download every external script referenced by `<script src="...">` tags
-   and replace those URLs with the local paths. gglite uses two CDN scripts:
-   ```bash
-   # Download once; re-use across multiple test sessions
-   curl -L -o /tmp/g2.min.js \
-     'https://unpkg.com/@antv/g2@5/dist/g2.min.js'
-   curl -L -o /tmp/g2-patches.min.js \
-     'https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.32/js/g2-patches.min.js'
-
-   # Patch the rendered HTML in-place
-   sed -i \
-     -e 's|https://unpkg.com/@antv/g2@5/dist/g2.min.js|/tmp/g2.min.js|g' \
-     -e 's|https://cdn.jsdelivr.net/npm/@xiee/utils@v1.14.32/js/g2-patches.min.js|/tmp/g2-patches.min.js|g' \
-     /tmp/foo.html
-   ```
-3. **Serve the patched HTML from a local HTTP server** (file:// URLs don't work
-   in this environment either). Start `python3 -m http.server` pointing at `/tmp`,
-   then navigate Playwright to `http://127.0.0.1:<port>/foo.html`.
-4. Verify that:
-   - The chart container element exists in the DOM.
-   - The G2 chart renders without JavaScript errors.
-   - No warnings or errors appear in the browser console.
+1.  **Render the Rmd to HTML first** using litedown (see above).
+2.  **Serve the output HTML from a local HTTP server** (<file://> URLs don't
+    work in this environment). Start `python3 -m http.server` pointing at the
+    directory of the .html file, then navigate Playwright to
+    `http://127.0.0.1:<port>/foo.html`.
+3.  Verify that:
+    -   The chart container element exists in the DOM.
+    -   The G2 chart renders without JavaScript errors.
+    -   No warnings or errors appear in the browser console.
+    -   If a chart involves interaction (e.g., hover or click), interact with it
+        and verify behavior.
 
 ### Submitting Plot Changes in PRs
 
@@ -120,8 +92,8 @@ When dealing with issues that you cannot solve easily, you should dig into G2's
 source code and documentation, which have been checked out to the directory `G2`
 under the root directory for you. Use that as the source of truth.
 
-- **G2 source repository**: https://github.com/antvis/G2
-- **G2 documentation site**: https://g2.antv.antgroup.com
+-   **G2 source repository**: <https://github.com/antvis/G2>
+-   **G2 documentation site**: <https://g2.antv.antgroup.com>
 
 If you have consulted the source repository and documentation but still cannot
 solve a problem raised in a PR, **file a GitHub issue for that problem to keep
@@ -130,79 +102,39 @@ you cannot solve it.
 
 ## Project Structure
 
-### Key Files and Directories
-
-**Root level**:
-- `DESCRIPTION` - R package metadata
-- `NAMESPACE` - R package namespace (auto-generated by roxygen2)
-- `NEWS.md` - Changelog
-- `README.md` - Package documentation
-- `examples/` - Rmd example files for each chart component
-
-**R code** (`R/`):
-- `gglite.R` - Core: package doc, CDN URLs, `g2()`, `encode()`,
-  `annotate_df()`
-- `mark.R` - All 35 mark (geometry) functions
-- `scale.R` - `scale_()` and helpers (`scale_x()`, `scale_y()`, etc.)
-- `coordinate.R` - `coord_()`, `coord_transpose()`
-- `interact.R` - `interact()`
-- `theme.R` - `theme_()` and theme shortcuts
-- `transform.R` - `transform_()`
-- `facet.R` - `facet_rect()`, `facet_circle()`
-- `animate.R` - `animate()`
-- `component.R` - `axis_()`, `legend_()`, `title_()`, `tooltip_()`,
-  `labels_()`, `style_mark()`, `slider_()`, `scrollbar_()` and helpers
-- `render.R` - `build_config()`, `chart_html()`, `print.g2()`,
-  `knit_print.g2()`, `record_print.g2()`
-
-**Tests** (`tests/`):
-- `test-all.R` - Entry point
-- `testit/test-gglite.R` - All package tests using testit framework
-
 ### CI/CD Configuration
 
 **GitHub Actions** (`.github/workflows/`):
-- `R-CMD-check.yaml` - Runs R CMD check on multiple platforms
-- `copilot-setup-steps.yml` - Sets up the environment for Copilot
-- `github-pages.yml` - Builds and deploys the package site via litedown
 
-## Validation Steps
-
-Before submitting changes:
-
-1. Run `R CMD build .` to build the package
-2. Run `R CMD check gglite_*.tar.gz --no-manual` to validate
-3. Ensure all tests pass: `Rscript tests/test-all.R`
-4. Check GitHub Actions status for multi-platform validation
-5. Update `NEWS.md` to document your changes (except for v0.1). **Do NOT add
-   NEWS entries while the package is still at v0.1** — the initial release
-   description is sufficient.
+-   `R-CMD-check.yaml` - Runs R CMD check on multiple platforms
+-   `copilot-setup-steps.yml` - Sets up the environment for Copilot
+-   `github-pages.yml` - Builds and deploys the package site via litedown
 
 ## Important Conventions
 
 ### R Code Style
 
-1. **Assignment**: Use `=` instead of `<-` for assignment
-2. **Strings**: Use single quotes for strings (e.g., `'text'`)
-3. **Indentation**: Use 2 spaces (not 4 spaces or tabs)
-4. **Compact code**: Avoid `{}` for single-expression if statements; prefer
-   compact forms when possible
-5. **Roxygen documentation**: Don't use `@description` or `@details`
-   explicitly — just write the description text directly after the title. Don't
-   use `@title` either.
-6. **Examples**: Avoid `\dontrun{}` unless absolutely necessary. Prefer
-   runnable examples that can be tested automatically.
-7. **Function definitions**: For functions with many arguments, break the line
-   right after the opening `(`, indent arguments by 2 spaces, and try to wrap
-   them at 80-char width.
-8. **Re-wrap code**: Always re-wrap the code after making changes to maintain
-   consistent formatting and line length.
-9. **JavaScript in R**: Use `const` and arrow functions (`=>`) in JS,
-   `type="module"` for inline scripts, `defer` for external scripts.
-10. **Implicit NULL**: Don't write `if (cond) foo else NULL`; the `else NULL`
-    is unnecessary since R's `if` without `else` already returns `NULL`.
-11. **Return NULL**: Never write `return(NULL)`; use `return()` instead since
-    R functions return `NULL` by default when no value is given.
+1.  **Assignment**: Use `=` instead of `<-` for assignment
+2.  **Strings**: Use single quotes for strings (e.g., `'text'`)
+3.  **Indentation**: Use 2 spaces (not 4 spaces or tabs)
+4.  **Compact code**: Avoid `{}` for single-expression if statements; prefer
+    compact forms when possible
+5.  **Roxygen documentation**: Don't use `@description` or `@details` explicitly
+    — just write the description text directly after the title. Don't use
+    `@title` either.
+6.  **Examples**: Avoid `\dontrun{}` unless absolutely necessary. Prefer
+    runnable examples that can be tested automatically.
+7.  **Function definitions**: For functions with many arguments, break the line
+    right after the opening `(`, indent arguments by 2 spaces, and try to wrap
+    them at 80-char width.
+8.  **Re-wrap code**: Always re-wrap the code after making changes to maintain
+    consistent formatting and line length.
+9.  **JavaScript in R**: Use `const` and arrow functions (`=>`) in JS,
+    `type="module"` for inline scripts, `defer` for external scripts.
+10. **Implicit NULL**: Don't write `if (cond) foo else NULL`; the `else NULL` is
+    unnecessary since R's `if` without `else` already returns `NULL`.
+11. **Return NULL**: Never write `return(NULL)`; use `return()` instead since R
+    functions return `NULL` by default when no value is given.
 12. **US spelling**: Use US spelling throughout all documentation, code
     comments, and example text (e.g., "color" not "colour", "center" not
     "centre", "summarize" not "summarise").
@@ -210,10 +142,10 @@ Before submitting changes:
     appears more than once, factor it into a shared helper function. This
     applies to expressions, patterns, and multi-line blocks alike.
 14. **Example plot reuse**: In Rmd and Rd examples, define a base chart object
-    (e.g., `p = g2(df, y ~ x) |> mark_line()`) once and reuse it with `p |>`
-    for subsequent variations. Group related examples together so readers can
-    compare them without scrolling past unrelated chart types. Never interrupt
-    a series of bar-chart examples with a scatter-plot example.
+    (e.g., `p = g2(df, y ~ x) |> mark_line()`) once and reuse it with `p |>` for
+    subsequent variations. Group related examples together so readers can
+    compare them without scrolling past unrelated chart types. Never interrupt a
+    series of bar-chart examples with a scatter-plot example.
 15. **Short pipes on one line**: When a pipe chain fits within 80 characters,
     keep it on a single line. Only break after `|>` when the full expression
     would exceed 80 characters. For example, write
@@ -222,11 +154,11 @@ Before submitting changes:
 ### Variables and Formula Interface
 
 gglite does **NOT** use non-standard evaluation (NSE). Variables can be
-specified either as character strings (`x = 'mpg'`) or via the formula
-interface (`y ~ x`). **Prefer the formula interface** in examples and
-documentation because it is more concise and readable:
+specified either as character strings (`x = 'mpg'`) or via the formula interface
+(`y ~ x`). **Prefer the formula interface** in examples and documentation
+because it is more concise and readable:
 
-```r
+``` r
 # Preferred: formula interface
 g2(mtcars, hp ~ mpg)
 
@@ -235,24 +167,25 @@ g2(mtcars, x = 'mpg', y = 'hp')
 ```
 
 For single-variable distributions, omit the LHS:
-```r
+
+``` r
 g2(mtcars, ~ mpg)   # histogram
-g2(mtcars, ~ cyl)   # histogram (cyl is numeric in mtcars)
 ```
 
 The formula interface also works for other aesthetic channels by passing a
 one-sided formula as a named argument:
-```r
+
+``` r
 g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
 g2(mtcars, hp ~ mpg, color = ~ cyl, size = ~ wt)
 g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species)
 ```
 
 **Drop explicit marks that can be automatically inferred.** gglite's
-`auto_mark()` detects the appropriate mark from the data types. Only specify
-a mark explicitly when you need a non-default one:
+`auto_mark()` detects the appropriate mark from the data types. Only specify a
+mark explicitly when you need a non-default one:
 
-```r
+``` r
 # Preferred: auto-inferred scatter plot
 g2(mtcars, hp ~ mpg)
 
@@ -262,58 +195,62 @@ g2(mtcars, hp ~ mpg) |> mark_line()
 
 ### Testing Conventions
 
-1. **Every change must have tests**: Every code change must come with
-   corresponding tests. If you add or fix a function, add assertions in the
-   test file that cover the new or fixed behavior. Tests are the first place
-   to catch regressions and errors.
-2. **Use testit properly**: Write all test conditions in `()`, use `%==%` to
-   test for `identical()`, and test conditions can return vectors.
-   ```r
-   assert("test description", {
-     (length(result) %==% 3L)
-     (file.exists(result))
-   })
-   ```
+1.  **Every change must have tests**: Every code change must come with
+    corresponding tests. If you add or fix a function, add assertions in the
+    test file that cover the new or fixed behavior. Tests are the first place to
+    catch regressions and errors.
 
-### Build and Package Conventions
+2.  **Use testit properly**: Write all test conditions in `()`, use `%==%` to
+    test for `identical()`, and test conditions can return vectors.
 
-1. **Always re-roxygenize**: Run `roxygen2::roxygenize()` after changing any
-   roxygen documentation to update man files
-2. **MANDATORY: R CMD check before EVERY commit**: You MUST run `R CMD check`
-   successfully before submitting ANY code changes.
-3. **MANDATORY: Wait for CI to be green**: After pushing code, you MUST wait
-   for GitHub Actions CI to complete successfully before claiming the task is
-   done. Do not wait more than 3 minutes for any single CI job; if it hasn't
-   finished, skip it and continue your work.
-4. **MANDATORY: Merge latest main before pushing**: Before pushing to a branch
-   or PR, always pull and merge the latest main branch. If there are merge
-   conflicts, resolve them before pushing.
-5. **Bump version in PRs**: Bump the patch version number in DESCRIPTION once
-   per PR (on the first commit or when you first make changes), not on every
-   commit to the PR
-6. **NEVER BREAK CI**: Breaking CI is completely unacceptable. If CI fails, you
-   must immediately fix it.
-7. **Never commit binary files**: Avoid version-controlling binary files,
-   especially automatically generated ones.
-8. **Testing**: Use testit assertions with proper error handling
-9. **Update NEWS.md**: When making changes, make sure to update `NEWS.md`
-   accordingly to document what changed — **except for v0.1** (do NOT add
-   individual change entries for the initial release). The first heading in
-   NEWS.md always represents the dev version and must be of the form
-   `# PKG x.y` where PKG is the package name and x.y is the next version to
-   be released to CRAN (note: x.y, not x.y.0). Usually y is bumped from the
-   current minor version, e.g., if the current dev version is 1.8.3, the next
-   CRAN release is expected to be 1.9.
+    ``` r
+    assert("test description", {
+      (length(result) %==% 3L)
+      (file.exists(result))
+    })
+    ```
+
+### Check list
+
+Always send a pull request, unless you are told otherwise. For each PR:
+
+1.  **Always re-roxygenize**: Run `roxygen2::roxygenize()` after changing any
+    roxygen documentation to update man files
+2.  **MANDATORY: R CMD check before EVERY commit**: You MUST run `R CMD check`
+    successfully before submitting ANY code changes.
+3.  **MANDATORY: Wait for CI to be green**: After pushing code, you MUST wait
+    for GitHub Actions CI to complete successfully before claiming the task is
+    done. Do not wait more than 3 minutes for any single CI job; if it hasn't
+    finished, skip it and continue your work.
+4.  **MANDATORY: Merge latest main before pushing**: Before pushing to a branch
+    or PR, always pull and merge the latest main branch. If there are merge
+    conflicts, resolve them before pushing.
+5.  **Bump version in PRs**: Bump the patch version number in DESCRIPTION once
+    per PR (on the first commit or when you first make changes), not on every
+    commit to the PR
+6.  **NEVER BREAK CI**: Breaking CI is completely unacceptable. If CI fails, you
+    must immediately fix it.
+7.  **Never commit binary files**: Avoid version-controlling binary files,
+    especially automatically generated ones.
+8.  **Testing**: Use testit assertions with proper error handling
+9.  **Update NEWS.md**: When making changes, make sure to update `NEWS.md`
+    accordingly to document what changed — **except for v0.1** (do NOT add
+    individual change entries for the initial release). The first heading in
+    NEWS.md always represents the dev version and must be of the form
+    `# PKG x.y` where PKG is the package name and x.y is the next version to be
+    released to CRAN (note: x.y, not x.y.0). Usually y is bumped from the
+    current minor version, e.g., if the current dev version is 1.8.3, the next
+    CRAN release is expected to be 1.9.
 
 ## Package API
 
-The main entry point is `g2()` which creates a chart object, then pipe
-operators (`|>`) chain mark, scale, coordinate, interaction, theme, and
-component functions:
+The main entry point is `g2()` which creates a chart object, then pipe operators
+(`|>`) chain mark, scale, coordinate, interaction, theme, and component
+functions:
 
-```r
-g2(mtcars, x = 'mpg', y = 'hp') |>
+``` r
+g2(mtcars, hp ~ mpg) |>
   scale_x(type = 'log') |>
-  theme_('dark') |>
+  theme_dark() |>
   title_('Motor Trend Cars')
 ```
