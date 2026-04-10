@@ -214,6 +214,7 @@ build_config = function(chart) {
     }
   }
   if (length(chart$layout)) config = modifyList(config, chart$layout)
+  if (length(chart$canvas_extra)) config = modifyList(config, chart$canvas_extra)
 
   # Theme: merge global option with per-chart theme
   theme = modifyList(as.list(getOption('gglite.theme')), as.list(chart$theme))
@@ -233,6 +234,33 @@ build_config = function(chart) {
 }
 
 # ---- HTML generation ----
+
+# Returns the effective renderer string for a chart ('canvas', 'svg', 'webgl').
+# Per-chart setting (chart$renderer) takes precedence over the global option.
+effective_renderer = function(chart) {
+  chart$renderer %||% tolower(getOption('gglite.renderer') %||% 'canvas')
+}
+
+# Returns TRUE when the page should use g2.lite (global renderer option set
+# to any value, or per-chart renderer is svg/webgl).
+needs_lite = function(chart) {
+  !is.null(getOption('gglite.renderer')) || isTRUE(chart$renderer %in% c('svg', 'webgl'))
+}
+
+cdn_scripts = function(chart = NULL) {
+  sprintf('<script src="%s" defer></script>', g2_cdn(chart))
+}
+
+g2_html_page = function(body, chart = NULL) {
+  paste(c(
+    '<!DOCTYPE html>', '<html>', '<head>',
+    '<meta charset="utf-8">',
+    cdn_scripts(chart),
+    '</head>', '<body>',
+    body,
+    '</body>', '</html>'
+  ), collapse = '\n')
+}
 
 #' Generate Chart HTML
 #'
@@ -255,7 +283,7 @@ build_config = function(chart) {
 #' @return A character string of HTML.
 #' @export
 chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
-  ctor = dropNulls(chart$options)
+  ctor = dropNulls(chart$options %||% list(height = 480L, autoFit = TRUE))
   spec = build_config(chart)
   defer_opt = getOption('gglite.defer_render')
   threshold = if (isTRUE(defer_opt)) 0.5 else if (is.numeric(defer_opt)) defer_opt
@@ -293,6 +321,14 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
 
   if (nzchar(style)) style = paste0(' style="', style, '"')
 
+  # Renderer setup: when using g2.lite (non-canvas renderer or global option
+  # set), pass a raw JS renderer instantiation directly in the ctor.
+  if (needs_lite(chart)) {
+    r = effective_renderer(chart)
+    r_ns = switch(r, svg = 'window.G.SVG', webgl = 'window.G.WebGL', canvas = 'window.G.Canvas2D')
+    ctor$renderer = js(paste0('new ', r_ns, '.Renderer()'))
+  }
+
   if (is.null(id)) {
     div = paste0('<div data-gglite-container', style, '></div>\n')
     ctor$container = js('el')
@@ -310,21 +346,6 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
   paste0(div, '<script type="module">\n', spec_js, ctor_js, options_js, render_js, '</script>')
 }
 
-cdn_scripts = function() {
-  sprintf('<script src="%s" defer></script>', c(g2_cdn(), g2_patches_cdn))
-}
-
-g2_html_page = function(body) {
-  paste(c(
-    '<!DOCTYPE html>', '<html>', '<head>',
-    '<meta charset="utf-8">',
-    cdn_scripts(),
-    '</head>', '<body>',
-    body,
-    '</body>', '</html>'
-  ), collapse = '\n')
-}
-
 #' Preview a Chart in the Viewer or Browser
 #'
 #' @param x A `g2` object.
@@ -333,7 +354,7 @@ g2_html_page = function(body) {
 #' @export
 print.g2 = function(x, ...) {
   #TODO: xfun >= 0.57.3 no longer needs paste()
-  xfun::html_view(g2_html_page(chart_html(x, ...)))
+  xfun::html_view(g2_html_page(chart_html(x, ...), chart = x))
   invisible(x)
 }
 
@@ -352,7 +373,7 @@ knit_print.g2 = function(x, ...) {
   html = chart_html(x)
   if (!isTRUE(knitr::opts_knit$get(.knitr.flag))) {
     knitr::opts_knit$set(setNames(list(TRUE), .knitr.flag))
-    html = paste(c(cdn_scripts(), html), collapse = '\n')
+    html = paste(c(cdn_scripts(x), html), collapse = '\n')
   }
   structure(html, class = c('knit_asis', 'html'))
 }
@@ -367,7 +388,7 @@ knit_print.g2 = function(x, ...) {
 #' @param ... Ignored.
 #' @return A character string of complete HTML.
 #' @noRd
-repr_html.g2 = function(obj, ...) g2_html_page(chart_html(obj))
+repr_html.g2 = function(obj, ...) g2_html_page(chart_html(obj), chart = obj)
 
 #' Text Representation for Jupyter Notebooks
 #'
@@ -390,7 +411,7 @@ repr_text.g2 = function(obj, ...) {
 #' @importFrom xfun record_print
 #' @export
 record_print.g2 = function(x, ...) {
-  xfun::new_record(c(cdn_scripts(), chart_html(x, ...), ''), 'asis')
+  xfun::new_record(c(cdn_scripts(x), chart_html(x, ...), ''), 'asis')
 }
 
 register_methods = function(pkgs, generics) {
