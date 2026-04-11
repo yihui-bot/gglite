@@ -24,40 +24,19 @@ legend_opacity(chart = NULL, ...)
 \item{channel}{Visual channel name.}
 
 \item{...}{Legend options such as \code{position} (\code{'top'}, \code{'bottom'}, \code{'left'},
-\code{'right'}), \code{layout}, \code{title}, etc.}
+\code{'right'}), \code{layout}, \code{title}, etc., or \code{FALSE} to hide.}
 }
 \value{
 The modified \code{g2} object.
 }
 \description{
-Customise the legend for a visual channel (\code{'color'}, \code{'size'}, \code{'shape'},
+Customize the legend for a visual channel (\code{'color'}, \code{'size'}, \code{'shape'},
 \code{'opacity'}). Set to \code{FALSE} to hide.
-}
-\details{
-\code{legend_color()}: Shortcut for \code{legend_(chart, 'color', ...)}.
-
-\code{legend_size()}: Shortcut for \code{legend_(chart, 'size', ...)}.
-
-\code{legend_shape()}: Shortcut for \code{legend_(chart, 'shape', ...)}.
-
-\code{legend_opacity()}: Shortcut for \code{legend_(chart, 'opacity', ...)}.
 }
 \examples{
 p = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
-p |> legend_('color', position = 'right')
-
-# Color legend via shortcut
 p |> legend_color(position = 'right')
 
-# Size legend
 g2(mtcars, hp ~ mpg, size = ~ wt) |>
   legend_size(position = 'bottom')
-
-# Shape legend
-p = g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species)
-p |> legend_shape(position = 'bottom')
-
-# Opacity legend
-g2(mtcars, hp ~ mpg, opacity = ~ wt) |>
-  legend_opacity(position = 'bottom')
 }

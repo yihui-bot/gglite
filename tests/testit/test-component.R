@@ -6,7 +6,7 @@ assert('component functions set chart options', {
     theme_('dark') |>
     axis_('x', title = 'MPG') |>
     legend_('color', position = 'right') |>
-    title_('Cars')
+    header('Cars')
   (chart$theme$type %==% 'dark')
   # axis after mark goes to mark level
   (chart$layers[[1]]$axis$x$title %==% 'MPG')
@@ -27,8 +27,8 @@ assert('legend_color() is shortcut for legend_(color)', {
   (chart$legends$color$position %==% 'right')
 })
 
-assert('slider_x() and scrollbar_y() are shortcuts', {
-  chart = g2() |> mark_point() |> slider_x() |> scrollbar_y()
+assert('slider_x() and scroll_y() are shortcuts', {
+  chart = g2() |> mark_point() |> slider_x() |> scroll_y()
   (isTRUE(chart$sliders$x))
   (isTRUE(chart$scrollbars$y))
 })

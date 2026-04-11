@@ -5,15 +5,15 @@ title: Tooltips
 Tooltips in gglite have two distinct configuration points that match G2's
 internal structure:
 
-- **Chart-level** (`tooltip_()` → `interaction.tooltip`): controls tooltip
+- **Chart-level** (`tooltip()` → `interaction.tooltip`): controls tooltip
   *behavior* — crosshairs, shared mode, marker style, position, and rendering.
 - **Mark-level** (`mark_*(tooltip = list(...))` → mark spec `tooltip`): controls
   what *data* is shown for a specific mark — which channels to display, value
   formatting, custom item names.
 
-## Chart-Level Tooltip (`tooltip_()`)
+## Chart-Level Tooltip (`tooltip()`)
 
-All arguments to `tooltip_()` are passed to G2's `interaction.tooltip`. These
+All arguments to `tooltip()` are passed to G2's `interaction.tooltip`. These
 options apply across all marks in the chart.
 
 | Option | Default | Description |
@@ -44,7 +44,7 @@ Pass `FALSE` to turn off the tooltip entirely.
 
 ```{r}
 library(gglite)
-g2(mtcars, hp ~ mpg) |> tooltip_(FALSE)
+g2(mtcars, hp ~ mpg) |> tooltip(FALSE)
 ```
 
 ### Crosshairs
@@ -56,7 +56,7 @@ They only work with the *series* tooltip path used by line and area marks.
 air_monthly = aggregate(Temp ~ Month, data = airquality, FUN = mean)
 air_monthly$Month = month.abb[air_monthly$Month]
 p = g2(air_monthly, Temp ~ Month) |> mark_line() |> mark_point()
-p |> tooltip_(crosshairs = TRUE)
+p |> tooltip(crosshairs = TRUE)
 ```
 
 ### Crosshairs on One Axis Only
@@ -65,11 +65,11 @@ p |> tooltip_(crosshairs = TRUE)
 only the vertical line.
 
 ```{r}
-p |> tooltip_(crosshairsX = TRUE, crosshairsY = FALSE)
+p |> tooltip(crosshairsX = TRUE, crosshairsY = FALSE)
 ```
 
 ```{r}
-p |> tooltip_(crosshairsX = FALSE, crosshairsY = TRUE)
+p |> tooltip(crosshairsX = FALSE, crosshairsY = TRUE)
 ```
 
 ### Crosshairs Style
@@ -78,20 +78,18 @@ Use `crosshairsStroke`, `crosshairsLineWidth`, `crosshairsLineDash`, and
 `crosshairsStrokeOpacity` to customize crosshair appearance.
 
 ```{r}
-p |> tooltip_(
-  crosshairs = TRUE, crosshairsStroke = 'tomato', crosshairsLineWidth = 2
-)
+p |> tooltip(crosshairs = TRUE, crosshairsStroke = 'tomato', crosshairsLineWidth = 2)
 ```
 
 ### Default Crosshairs in Line Charts
 
 Series marks (`mark_line()`, `mark_area()`) show a **vertical crosshair by
-default** without any `tooltip_()` call. This is controlled by G2's built-in
+default** without any `tooltip()` call. This is controlled by G2's built-in
 `crosshairs: true` mark option. If you do not want crosshairs, pass
-`crosshairsY = FALSE` (or `crosshairs = FALSE`) to `tooltip_()`:
+`crosshairsY = FALSE` (or `crosshairs = FALSE`) to `tooltip()`:
 
 ```{r}
-p |> tooltip_(crosshairsY = FALSE)
+p |> tooltip(crosshairsY = FALSE)
 ```
 
 ### Marker Style
@@ -103,11 +101,11 @@ clearly visible.
 
 ```{r}
 p_line = g2(air_monthly, Temp ~ Month) |> mark_line()
-p_line |> tooltip_(marker = FALSE)
+p_line |> tooltip(marker = FALSE)
 ```
 
 ```{r}
-p_line |> tooltip_(markerType = 'hollow', markerSize = 12)
+p_line |> tooltip(markerType = 'hollow', markerSize = 12)
 ```
 
 ### Hide Tooltip Body
@@ -115,7 +113,7 @@ p_line |> tooltip_(markerType = 'hollow', markerSize = 12)
 `body = FALSE` shows only the hover marker with no tooltip box.
 
 ```{r}
-p |> tooltip_(body = FALSE)
+p |> tooltip(body = FALSE)
 ```
 
 ### Tooltip Position
@@ -123,7 +121,7 @@ p |> tooltip_(body = FALSE)
 Control where the tooltip appears relative to the cursor.
 
 ```{r}
-p |> tooltip_(position = 'top-left')
+p |> tooltip(position = 'top-left')
 ```
 
 ### Tooltip Offset
@@ -131,7 +129,7 @@ p |> tooltip_(position = 'top-left')
 Adjust the tooltip's x/y offset from the cursor in pixels.
 
 ```{r}
-p |> tooltip_(offset = c(30, 30))
+p |> tooltip(offset = c(30, 30))
 ```
 
 ### Enterable Tooltip
@@ -140,7 +138,7 @@ p |> tooltip_(offset = c(30, 30))
 useful when the tooltip contains interactive content.
 
 ```{r}
-p |> tooltip_(enterable = TRUE)
+p |> tooltip(enterable = TRUE)
 ```
 
 ### Shared Tooltip
@@ -154,7 +152,7 @@ df = data.frame(
   group = rep(c('A', 'B'), each = 5)
 )
 p2 = g2(df, y ~ x, color = ~ group) |> mark_line()
-p2 |> tooltip_(shared = TRUE)
+p2 |> tooltip(shared = TRUE)
 ```
 
 ### Group Name
@@ -162,7 +160,7 @@ p2 |> tooltip_(shared = TRUE)
 `groupName = FALSE` hides the series/group name prefix in each tooltip item.
 
 ```{r}
-p2 |> tooltip_(shared = TRUE, groupName = FALSE)
+p2 |> tooltip(shared = TRUE, groupName = FALSE)
 ```
 
 ## Mark-Level Tooltip (`mark_*(tooltip = list(...))`)
@@ -216,7 +214,7 @@ g2(wb, breaks ~ tension, color = ~ wool) |>
   transform_('normalizeY') |>
   axis_y(labelFormatter = '.0%') |>
   legend_color(position = 'right') |>
-  title_('Warp Breaks by Tension and Wool Type')
+  header('Warp Breaks by Tension and Wool Type')
 ```
 
 ### Custom Item Color

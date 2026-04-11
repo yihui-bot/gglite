@@ -25,16 +25,7 @@ The modified \code{g2} object.
 \description{
 Add a range slider to a positional channel for zooming/panning.
 }
-\details{
-\code{slider_x()}: Shortcut for \code{slider_(chart, 'x', ...)}.
-
-\code{slider_y()}: Shortcut for \code{slider_(chart, 'y', ...)}.
-}
 \examples{
 p = g2(mtcars, hp ~ mpg)
-p |> slider_('x')
-
-# Slider shortcuts
-p |> slider_x()
-p |> slider_y()
+p |> slider_x() |> slider_y()
 }

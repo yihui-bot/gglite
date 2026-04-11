@@ -24,22 +24,17 @@ axis_y(chart = NULL, ...)
 The modified \code{g2} object.
 }
 \description{
-Customise the axis for a positional channel (\code{'x'} or \code{'y'}). Set to
+Customize the axis for a positional channel (\code{'x'} or \code{'y'}). Set to
 \code{FALSE} to hide the axis. When called immediately after a \verb{mark_*()}
-function (or \code{style_mark()}, \code{labels_()}, etc.), the axis is applied to
+function (or \code{style_mark()}, \code{label()}, etc.), the axis is applied to
 that mark only, enabling per-mark axis customization for dual-axis charts.
 Otherwise it applies at the chart level.
 }
-\details{
-\code{axis_x()}: Shortcut for \code{axis_(chart, 'x', ...)}.
-
-\code{axis_y()}: Shortcut for \code{axis_(chart, 'y', ...)}.
-}
 \examples{
-# Chart-level axis titles (no marks yet)
+# Chart-level axis titles
 g2(mtcars, hp ~ mpg) |>
-  axis_('x', title = 'Miles per Gallon') |>
-  axis_('y', title = 'Horsepower')
+  axis_x(title = 'Miles per Gallon') |>
+  axis_y(title = 'Horsepower')
 
 # Dual-axis chart: each mark gets its own axis immediately after mark_*()
 air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)

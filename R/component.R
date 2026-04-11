@@ -1,8 +1,8 @@
 #' Configure an Axis
 #'
-#' Customise the axis for a positional channel (`'x'` or `'y'`). Set to
+#' Customize the axis for a positional channel (`'x'` or `'y'`). Set to
 #' `FALSE` to hide the axis. When called immediately after a `mark_*()`
-#' function (or `style_mark()`, `labels_()`, etc.), the axis is applied to
+#' function (or `style_mark()`, `label()`, etc.), the axis is applied to
 #' that mark only, enabling per-mark axis customization for dual-axis charts.
 #' Otherwise it applies at the chart level.
 #'
@@ -11,12 +11,11 @@
 #' @param ... Axis options such as `title`, `labelFormatter`, `tickCount`,
 #'   `grid`, `position`, etc., or `FALSE` to hide.
 #' @return The modified `g2` object.
-#' @export
 #' @examples
-#' # Chart-level axis titles (no marks yet)
+#' # Chart-level axis titles
 #' g2(mtcars, hp ~ mpg) |>
-#'   axis_('x', title = 'Miles per Gallon') |>
-#'   axis_('y', title = 'Horsepower')
+#'   axis_x(title = 'Miles per Gallon') |>
+#'   axis_y(title = 'Horsepower')
 #'
 #' # Dual-axis chart: each mark gets its own axis immediately after mark_*()
 #' air = aggregate(cbind(Temp, Wind) ~ Month, data = airquality, FUN = mean)
@@ -42,30 +41,30 @@ axis_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' @details `axis_x()`: Shortcut for `axis_(chart, 'x', ...)`.
 #' @rdname axis_
 #' @export
 axis_x = function(chart = NULL, ...) axis_(chart, 'x', ...)
 
-#' @details `axis_y()`: Shortcut for `axis_(chart, 'y', ...)`.
 #' @rdname axis_
 #' @export
 axis_y = function(chart = NULL, ...) axis_(chart, 'y', ...)
 
 #' Configure a Legend
 #'
-#' Customise the legend for a visual channel (`'color'`, `'size'`, `'shape'`,
+#' Customize the legend for a visual channel (`'color'`, `'size'`, `'shape'`,
 #' `'opacity'`). Set to `FALSE` to hide.
 #'
 #' @param chart A `g2` object.
 #' @param channel Visual channel name.
 #' @param ... Legend options such as `position` (`'top'`, `'bottom'`, `'left'`,
-#'   `'right'`), `layout`, `title`, etc.
+#'   `'right'`), `layout`, `title`, etc., or `FALSE` to hide.
 #' @return The modified `g2` object.
-#' @export
 #' @examples
 #' p = g2(iris, Sepal.Length ~ Sepal.Width, color = ~ Species)
-#' p |> legend_('color', position = 'right')
+#' p |> legend_color(position = 'right')
+#'
+#' g2(mtcars, hp ~ mpg, size = ~ wt) |>
+#'   legend_size(position = 'bottom')
 legend_ = function(chart = NULL, channel, ...) {
   mod = check_chart(legend_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
@@ -86,63 +85,41 @@ legend_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' @details `legend_color()`: Shortcut for `legend_(chart, 'color', ...)`.
 #' @rdname legend_
 #' @export
-#' @examples
-#'
-#' # Color legend via shortcut
-#' p |> legend_color(position = 'right')
 legend_color = function(chart = NULL, ...) legend_(chart, 'color', ...)
 
-#' @details `legend_size()`: Shortcut for `legend_(chart, 'size', ...)`.
 #' @rdname legend_
 #' @export
-#' @examples
-#'
-#' # Size legend
-#' g2(mtcars, hp ~ mpg, size = ~ wt) |>
-#'   legend_size(position = 'bottom')
 legend_size = function(chart = NULL, ...) legend_(chart, 'size', ...)
 
-#' @details `legend_shape()`: Shortcut for `legend_(chart, 'shape', ...)`.
 #' @rdname legend_
 #' @export
-#' @examples
-#'
-#' # Shape legend
-#' p = g2(iris, Sepal.Length ~ Sepal.Width, shape = ~ Species)
-#' p |> legend_shape(position = 'bottom')
 legend_shape = function(chart = NULL, ...) legend_(chart, 'shape', ...)
 
-#' @details `legend_opacity()`: Shortcut for `legend_(chart, 'opacity', ...)`.
 #' @rdname legend_
 #' @export
-#' @examples
-#'
-#' # Opacity legend
-#' g2(mtcars, hp ~ mpg, opacity = ~ wt) |>
-#'   legend_opacity(position = 'bottom')
 legend_opacity = function(chart = NULL, ...) legend_(chart, 'opacity', ...)
 
 #' Set the Chart Title
 #'
+#' Set the chart title and subtitle, as well as their styles.
 #' @param chart A `g2` object.
-#' @param text Title text string.
+#' @param title Title text string.
 #' @param ... Additional title options such as `subtitle`, `align`, `style`.
 #' @return The modified `g2` object.
 #' @export
 #' @examples
 #' g2(mtcars, hp ~ mpg) |>
-#'   title_('Motor Trend Cars', subtitle = 'mpg vs hp')
-title_ = function(chart = NULL, text, ...) {
-  mod = check_chart(title_, chart, c(if (!missing(text)) list(text), list(...)))
+#'   header('Motor Trend Cars', subtitle = 'mpg vs hp')
+header = function(chart = NULL, title, ...) {
+  mod = check_chart(header, chart, c(if (!missing(title)) list(title), list(...)))
   if (!is.null(mod)) return(mod)
   dots = list(...)
   if (length(dots)) {
-    chart$chart_title = c(list(title = text), dots)
+    chart$chart_title = c(list(title = title), dots)
   } else {
-    chart$chart_title = text
+    chart$chart_title = title
   }
   chart
 }
@@ -170,7 +147,7 @@ title_ = function(chart = NULL, text, ...) {
 #' df = data.frame(x = 1:6, y = c(3, 1, 4, 1, 5, 2))
 #' g2(df, y ~ x) |>
 #'   mark_line() |>
-#'   tooltip_(crosshairs = TRUE)
+#'   tooltip(crosshairs = TRUE)
 #'
 #' # Shared tooltip for multi-series line chart
 #' df2 = data.frame(
@@ -179,13 +156,13 @@ title_ = function(chart = NULL, text, ...) {
 #' )
 #' g2(df2, y ~ x, color = ~ group) |>
 #'   mark_line() |>
-#'   tooltip_(shared = TRUE)
+#'   tooltip(shared = TRUE)
 #'
 #' # Disable tooltip
 #' g2(mtcars, hp ~ mpg) |>
-#'   tooltip_(FALSE)
-tooltip_ = function(chart = NULL, ...) {
-  mod = check_chart(tooltip_, chart, list(...))
+#'   tooltip(FALSE)
+tooltip = function(chart = NULL, ...) {
+  mod = check_chart(tooltip, chart, list(...))
   if (!is.null(mod)) return(mod)
   args = list(...)
   if (length(args) == 1 && is.null(names(args)) && is.logical(args[[1]])) {
@@ -210,9 +187,9 @@ tooltip_ = function(chart = NULL, ...) {
 #' @examples
 #' df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
 #' g2(df, y ~ x) |>
-#'   labels_(text = ~ y, position = 'inside')
-labels_ = function(chart = NULL, ...) {
-  mod = check_chart(labels_, chart, list(...))
+#'   label(text = ~ y, position = 'inside')
+label = function(chart = NULL, ...) {
+  mod = check_chart(label, chart, list(...))
   if (!is.null(mod)) return(mod)
   was_empty = !length(chart$layers)
   if (was_empty) chart = ensure_mark(chart)
@@ -249,10 +226,9 @@ style_mark = function(chart = NULL, ...) {
 #' @param channel Positional channel: `'x'` or `'y'`.
 #' @param ... Slider options.
 #' @return The modified `g2` object.
-#' @export
 #' @examples
 #' p = g2(mtcars, hp ~ mpg)
-#' p |> slider_('x')
+#' p |> slider_x() |> slider_y()
 slider_ = function(chart = NULL, channel, ...) {
   mod = check_chart(slider_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
@@ -262,20 +238,12 @@ slider_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' @details `slider_x()`: Shortcut for `slider_(chart, 'x', ...)`.
 #' @rdname slider_
 #' @export
-#' @examples
-#'
-#' # Slider shortcuts
-#' p |> slider_x()
 slider_x = function(chart = NULL, ...) slider_(chart, 'x', ...)
 
-#' @details `slider_y()`: Shortcut for `slider_(chart, 'y', ...)`.
 #' @rdname slider_
 #' @export
-#' @examples
-#' p |> slider_y()
 slider_y = function(chart = NULL, ...) slider_(chart, 'y', ...)
 
 #' Add a Scrollbar
@@ -286,13 +254,12 @@ slider_y = function(chart = NULL, ...) slider_(chart, 'y', ...)
 #' @param channel Positional channel: `'x'` or `'y'`.
 #' @param ... Scrollbar options.
 #' @return The modified `g2` object.
-#' @export
 #' @examples
 #' df = data.frame(x = 1:100, y = cumsum(rnorm(100)))
 #' p = g2(df, y ~ x) |> mark_line()
-#' p |> scrollbar_('x')
-scrollbar_ = function(chart = NULL, channel, ...) {
-  mod = check_chart(scrollbar_, chart, c(if (!missing(channel)) list(channel), list(...)))
+#' p |> scroll_x() |> scroll_y()
+scroll_ = function(chart = NULL, channel, ...) {
+  mod = check_chart(scroll_, chart, c(if (!missing(channel)) list(channel), list(...)))
   if (!is.null(mod)) return(mod)
   if (is.null(chart$scrollbars)) chart$scrollbars = list()
   args = list(...)
@@ -300,18 +267,10 @@ scrollbar_ = function(chart = NULL, channel, ...) {
   chart
 }
 
-#' @details `scrollbar_x()`: Shortcut for `scrollbar_(chart, 'x', ...)`.
-#' @rdname scrollbar_
+#' @rdname scroll_
 #' @export
-#' @examples
-#'
-#' # Scrollbar shortcuts
-#' p |> scrollbar_x()
-scrollbar_x = function(chart = NULL, ...) scrollbar_(chart, 'x', ...)
+scroll_x = function(chart = NULL, ...) scroll_(chart, 'x', ...)
 
-#' @details `scrollbar_y()`: Shortcut for `scrollbar_(chart, 'y', ...)`.
-#' @rdname scrollbar_
+#' @rdname scroll_
 #' @export
-#' @examples
-#' p |> scrollbar_y()
-scrollbar_y = function(chart = NULL, ...) scrollbar_(chart, 'y', ...)
+scroll_y = function(chart = NULL, ...) scroll_(chart, 'y', ...)
