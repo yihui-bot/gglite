@@ -195,7 +195,7 @@ tooltip_ = function(chart = NULL, ...) {
   # When crosshairs=TRUE without explicit crosshairsX/Y, set both explicitly.
   # TODO: G2 bug — useThemeInteraction() mutates theme.tooltip via deepMix(),
   # so crosshairsY:false set on a previous chart leaks into this one. Remove
-  # this block once the upstream fix lands (see https://github.com/antvis/G2).
+  # this block once g2-patches.min.js is updated with the structuredClone fix.
   if (isTRUE(args$crosshairs) && is.null(args$crosshairsX) && is.null(args$crosshairsY)) {
     args$crosshairsX = TRUE
     args$crosshairsY = TRUE
@@ -204,7 +204,7 @@ tooltip_ = function(chart = NULL, ...) {
   # leaking options such as body=FALSE or marker=FALSE from an earlier chart on
   # the same page into all later charts. Explicitly restating G2's own defaults
   # here prevents that inherited state from taking effect. Remove these three
-  # lines once the upstream fix lands (see https://github.com/antvis/G2).
+  # lines once g2-patches.min.js is updated with the structuredClone fix.
   if (is.null(args$body)) args$body = TRUE
   if (is.null(args$marker)) args$marker = TRUE
   if (is.null(args$shared)) args$shared = FALSE

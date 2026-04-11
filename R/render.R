@@ -195,8 +195,8 @@ build_config = function(chart) {
   # so options set on an earlier chart (e.g. body=FALSE, shared=TRUE) leak into
   # charts that have no explicit tooltip_() call, such as mark-level tooltip
   # examples. Injecting explicit safe defaults here shields every chart from
-  # that inherited state. Remove this block once the upstream fix lands
-  # (see https://github.com/antvis/G2).
+  # that inherited state. Remove this block once g2-patches.min.js is updated
+  # with the structuredClone fix.
   tip = chart$interactions[['tooltip']]
   if (!isFALSE(tip)) {
     defaults = list(body = TRUE, marker = TRUE, shared = FALSE)
