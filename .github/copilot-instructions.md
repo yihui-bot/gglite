@@ -89,38 +89,64 @@ errors in the browser console. The workflow is:
     python3 -m http.server 8765 --bind 127.0.0.1 &
     ```
 
-3.  **Open with Chromium under Xvfb** and enable remote debugging:
+3.  **Open with `google-chrome` under Xvfb** and enable remote debugging.
+    Use `google-chrome`, **not** `chromium` — `chromium` crashes in this
+    environment. Also **omit** `--no-zygote` and `--single-process`; both cause
+    crashes with the installed Chrome build.
 
     ``` bash
     Xvfb :99 -screen 0 1280x1024x24 &
-    DISPLAY=:99 chromium --no-sandbox --disable-gpu \
-      --disable-dev-shm-usage --no-zygote \
+    DISPLAY=:99 google-chrome --no-sandbox --disable-gpu \
+      --disable-dev-shm-usage \
       --remote-debugging-port=9222 \
-      "http://127.0.0.1:8765/foo.html" &
-    sleep 4   # wait for page + JS to execute
+      "about:blank" 2>/dev/null &
+    sleep 10   # wait for Chrome to start (needs ~10s in this environment)
     ```
 
     > **Important:** The `playwright-browser_*` tools are sandboxed from the
     > loopback interface and will return `ERR_CONNECTION_REFUSED` for
     > `127.0.0.1` URLs. Do **not** use them for local serving. Use the
-    > Chromium + CDP approach above instead.
+    > `google-chrome` + CDP approach above instead.
 
-4.  **Query the live DOM via CDP** (Chrome DevTools Protocol):
+4.  **Query the live DOM via CDP** (Chrome DevTools Protocol) using Python's
+    `websockets` package (`pip install websockets`):
 
     ``` bash
     # Get the WebSocket debugger URL
     WS=$(curl -s http://127.0.0.1:9222/json | \
       python3 -c "import sys,json; print(json.load(sys.stdin)[0]['webSocketDebuggerUrl'])")
 
-    # Evaluate JS in the page (e.g., count SVG elements)
-    node -e "
-    const ws = new (require('ws'))(process.env.WS);
-    ws.on('open', () => {
-      ws.send(JSON.stringify({id:1, method:'Runtime.evaluate',
-        params:{expression:'document.querySelectorAll(\"svg\").length'}}));
-    });
-    ws.on('message', d => { console.log(JSON.parse(d).result.result.value); process.exit(0); });
-    " WS="$WS"
+    # Navigate and evaluate JS using Python CDP helper
+    python3 << 'PYEOF'
+    import asyncio, json
+    import websockets
+
+    WS_URL = "..."  # paste WS URL here
+    rid = [0]
+
+    async def send(ws, method, params=None):
+        rid[0] += 1
+        r = rid[0]
+        await ws.send(json.dumps({"id": r, "method": method, "params": params or {}}))
+        while True:
+            msg = json.loads(await ws.recv())
+            if msg.get("id") == r:
+                return msg.get("result", {})
+
+    async def js(ws, expr, await_promise=False):
+        return await send(ws, "Runtime.evaluate", {
+            "expression": expr, "awaitPromise": await_promise, "returnByValue": True
+        })
+
+    async def main():
+        async with websockets.connect(WS_URL) as ws:
+            await send(ws, "Page.navigate", {"url": "http://127.0.0.1:8765/foo.html"})
+            await asyncio.sleep(5)
+            r = await js(ws, "document.querySelectorAll('canvas').length")
+            print("canvases:", r["result"]["value"])
+
+    asyncio.run(main())
+    PYEOF
     ```
 
 5.  Verify:
