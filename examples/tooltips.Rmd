@@ -22,9 +22,10 @@ options apply across all marks in the chart.
 | `crosshairs` | `FALSE` | Show crosshairs on both axes (series marks only) |
 | `crosshairsX` | `FALSE` | Show horizontal crosshair only (series marks only) |
 | `crosshairsY` | `FALSE` | Show vertical crosshair only (series marks only) |
-| `crosshairsStroke` | `'#aaa'` | Crosshair line color |
-| `crosshairsLineWidth` | `2` | Crosshair line width in pixels |
+| `crosshairsStroke` | `'#1b1e23'` | Crosshair line color |
+| `crosshairsLineWidth` | `1` | Crosshair line width in pixels |
 | `crosshairsLineDash` | `NULL` | Dash pattern, e.g. `c(4, 4)` |
+| `crosshairsStrokeOpacity` | `0.5` | Crosshair line opacity (0–1). Set to `1` for a fully opaque line |
 | `shared` | `FALSE` | Show all mark values at the same x position |
 | `groupName` | auto | Show series/group name prefix in tooltip items |
 | `marker` | `TRUE` | Show the hover marker dot |
@@ -73,11 +74,28 @@ p |> tooltip_(crosshairsX = FALSE, crosshairsY = TRUE)
 
 ### Crosshairs Style
 
-Use `crosshairsStroke`, `crosshairsLineWidth`, and `crosshairsLineDash` to
-customize crosshair appearance.
+Use `crosshairsStroke`, `crosshairsLineWidth`, `crosshairsLineDash`, and
+`crosshairsStrokeOpacity` to customize crosshair appearance. G2 defaults to
+`strokeOpacity = 0.5` (semi-transparent), which can make custom colors appear
+washed-out on a white background. Set `crosshairsStrokeOpacity = 1` for a
+fully opaque line.
 
 ```{r}
-p |> tooltip_(crosshairs = TRUE, crosshairsStroke = 'tomato', crosshairsLineWidth = 2)
+p |> tooltip_(
+  crosshairs = TRUE, crosshairsStroke = 'tomato',
+  crosshairsLineWidth = 2, crosshairsStrokeOpacity = 1
+)
+```
+
+### Default Crosshairs in Line Charts
+
+Series marks (`mark_line()`, `mark_area()`) show a **vertical crosshair by
+default** without any `tooltip_()` call. This is controlled by G2's built-in
+`crosshairs: true` mark option. If you do not want crosshairs, pass
+`crosshairsY = FALSE` (or `crosshairs = FALSE`) to `tooltip_()`:
+
+```{r}
+p |> tooltip_(crosshairsY = FALSE)
 ```
 
 ### Marker Style
@@ -85,7 +103,8 @@ p |> tooltip_(crosshairs = TRUE, crosshairsStroke = 'tomato', crosshairsLineWidt
 The hover marker is the dot that snaps to the data point. Use `marker = FALSE`
 to hide it, or customize with `markerType`, `markerFill`, `markerStroke`, and
 `markerSize`. These examples use a line-only chart so the marker effect is
-clearly visible.
+clearly visible. The vertical crosshair that appears on hover is the default
+behavior of `mark_line()` and is not inherited from previous charts.
 
 ```{r}
 p_line = g2(air_monthly, Temp ~ Month) |> mark_line()
