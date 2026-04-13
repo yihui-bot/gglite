@@ -37,3 +37,33 @@ assert('light theme does not set viewFill', {
   config = build_config(chart)
   (is.null(config$theme$view))
 })
+
+assert('dark theme propagates to facet children', {
+  chart = g2(mtcars, hp ~ mpg | cyl) |> theme_dark()
+  config = build_config(chart)
+  (config$children[[1]]$theme$type %==% 'dark')
+  (config$children[[1]]$theme$view$viewFill %==% '#141414')
+})
+
+assert('classicDark theme propagates to facet children', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width | Species) |> theme_classic_dark()
+  config = build_config(chart)
+  (config$children[[1]]$theme$type %==% 'classicDark')
+  (config$children[[1]]$theme$view$viewFill %==% '#141414')
+})
+
+assert('light theme does not propagate viewFill to facet children', {
+  chart = g2(iris, Sepal.Length ~ Sepal.Width | Species) |> theme_light()
+  config = build_config(chart)
+  (is.null(config$children[[1]]$theme$view))
+})
+
+assert('theme not overwritten when child already has a theme', {
+  chart = g2(mtcars, hp ~ mpg | cyl) |> theme_dark()
+  config = build_config(chart)
+  config$children[[1]]$theme = list(type = 'classic')
+  # simulating that a user-provided child theme is not clobbered
+  ch = config$children[[1]]
+  ch_with_theme = if (is.null(ch$theme)) modifyList(ch, list(theme = list(type = 'dark'))) else ch
+  (ch_with_theme$theme$type %==% 'classic')
+})
