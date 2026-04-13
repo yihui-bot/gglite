@@ -295,16 +295,15 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
   # G2 dark themes render content with light colors on a transparent canvas;
   # set a dark background so the chart is visible on light pages
   dark = isTRUE(chart$theme$type %in% c('dark', 'classicDark'))
-  bg = chart$bg %||% if (dark) '#141414'
   w = if (!is.null(width)) paste0('width:', width, 'px;') else ''
   h = if (!is.null(height)) paste0('height:', height, 'px;') else ''
-  bg_css = if (!is.null(bg)) paste0('background-color:', bg, ';') else ''
+  bg = if (dark) 'background-color:#141414;'
 
   if (!is.null(threshold)) {
     # Ensure container has min-height so IntersectionObserver can trigger
     ch = if (is.null(ctor$height)) 480 else ctor$height
     mh = paste0('min-height:', ch, 'px;')
-    style = paste0(w, h, bg_css, mh)
+    style = paste0(w, h, bg, mh)
     spec_js = paste0('const spec = ', xfun::tojson(spec), ';\n')
     options_js = 'chart.options(spec);\n'
     observe_target = if (is.null(id)) 'el' else paste0('document.getElementById("', id, '")')
@@ -318,7 +317,7 @@ chart_html = function(chart, id = NULL, width = NULL, height = NULL) {
       ' }).observe(', observe_target, ');\n'
     )
   } else {
-    style = paste0(w, h, bg_css)
+    style = paste0(w, h, bg)
     spec_js = ''
     options_js = paste0('chart.options(', xfun::tojson(spec), ');\n')
     render_js = 'chart.render();\n'
