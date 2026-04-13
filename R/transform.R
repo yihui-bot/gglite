@@ -14,15 +14,11 @@
 #' `'sample'` (down-sample), `'pack'` (circle-packing layout), `'flexX'`
 #' (flexible x spacing, Marimekko charts).
 #'
-#' This is an S3 method on [base::transform()], so `chart |> transform(type,
-#' ...)` dispatches here automatically. For the `+` deferred-modifier syntax
-#' use `transform.g2(...)` directly, e.g. `chart + transform.g2('stackY')`.
 #' @param chart A `g2` object.
 #' @param type Transform type string.
 #' @param ... Additional transform options.
 #' @return The modified `g2` object.
 #' @export
-#' @rawNamespace export(transform.g2)
 #' @examples
 #' # Stacked bar chart
 #' df = data.frame(
@@ -31,29 +27,29 @@
 #' )
 #' g2(df, y ~ x, color = ~ color) |>
 #'   mark_interval() |>
-#'   transform('stackY')
+#'   transform_('stackY')
 #'
 #' # Grouped (dodged) bar chart
 #' g2(df, y ~ x, color = ~ color) |>
 #'   mark_interval() |>
-#'   transform('dodgeX')
+#'   transform_('dodgeX')
 #'
 #' # Percent stacked bar (normalizeY + stackY)
 #' g2(df, y ~ x, color = ~ color) |>
 #'   mark_interval() |>
-#'   transform('stackY') |>
-#'   transform('normalizeY')
+#'   transform_('stackY') |>
+#'   transform_('normalizeY')
 #'
 #' # Jitter on a scatter plot
 #' g2(mtcars, hp ~ cyl) |>
-#'   transform('jitterX')
+#'   transform_('jitterX')
 #'
 #' # Histogram using binX
 #' g2(mtcars, ~ mpg) |>
 #'   mark_interval(encode = list(y = 'count')) |>
-#'   transform('binX', thresholds = 15)
-transform.g2 = function(chart, type, ...) {
-  mod = check_chart(transform.g2, chart, c(if (!missing(type)) list(type), list(...)))
+#'   transform_('binX', thresholds = 15)
+transform_ = function(chart = NULL, type, ...) {
+  mod = check_chart(transform_, chart, c(if (!missing(type)) list(type), list(...)))
   if (!is.null(mod)) return(mod)
   was_empty = !length(chart$layers)
   if (was_empty) chart = ensure_mark(chart)
@@ -62,4 +58,3 @@ transform.g2 = function(chart, type, ...) {
   chart$layers[[n]]$transform = c(chart$layers[[n]]$transform, list(t))
   chart
 }
-

@@ -220,10 +220,8 @@ build_config = function(chart) {
   theme = modifyList(as.list(getOption('gglite.theme')), as.list(chart$theme))
   # For dark themes, auto-set the view background so facet subplots get a dark
   # background (G2 uses transparent by default, making axis/grid hard to see).
-  if (isTRUE(theme$type %in% c('dark', 'classicDark'))) {
-    if (is.null(theme$view)) theme$view = list()
-    if (is.null(theme$view$viewFill)) theme$view$viewFill = '#141414'
-  }
+  if (isTRUE(theme$type %in% c('dark', 'classicDark')))
+    theme = modifyList(list(view = list(viewFill = '#141414')), theme)
   if (length(theme)) config$theme = theme
 
   # Faceting wraps the spec as a facet view
