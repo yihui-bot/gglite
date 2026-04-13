@@ -2,7 +2,7 @@
 #'
 #' Customize the axis for a positional channel (`'x'` or `'y'`). Set to
 #' `FALSE` to hide the axis. When called immediately after a `mark_*()`
-#' function (or `style_mark()`, `label()`, etc.), the axis is applied to
+#' function (or `style_mark()`, `labels()`, etc.), the axis is applied to
 #' that mark only, enabling per-mark axis customization for dual-axis charts.
 #' Otherwise it applies at the chart level.
 #'
@@ -103,24 +103,61 @@ legend_opacity = function(chart = NULL, ...) legend_(chart, 'opacity', ...)
 
 #' Set the Chart Title
 #'
-#' Set the chart title and subtitle, as well as their styles.
-#' @param chart A `g2` object.
-#' @param title Title text string.
-#' @param ... Additional title options such as `subtitle`, `align`, `style`.
-#' @return The modified `g2` object.
+#' Set the chart title and subtitle, as well as their styles. When the first
+#' argument is not a `g2` object or a title string, the call is dispatched to
+#' [graphics::title()].
+#'
+#' @param chart A `g2` object, a title string (for deferred use with `+`), or
+#'   any object to be passed to [graphics::title()].
+#' @param main Title text string.
+#' @param ... Additional title options such as `subtitle`, `align`, `style`,
+#'   or arguments passed to [graphics::title()].
+#' @return The modified `g2` object, or the result of [graphics::title()].
 #' @export
 #' @examples
 #' g2(mtcars, hp ~ mpg) |>
-#'   header('Motor Trend Cars', subtitle = 'mpg vs hp')
-header = function(chart = NULL, title, ...) {
-  mod = check_chart(header, chart, c(if (!missing(title)) list(title), list(...)))
+#'   title('Motor Trend Cars', subtitle = 'mpg vs hp')
+title = function(chart = NULL, main, ...) {
+  if (!is.null(chart) && !inherits(chart, 'g2') &&
+      !inherits(chart, 'g2_mod') && !is.character(chart))
+    return(graphics::title(main = chart, ...))
+  mod = check_chart(title, chart, c(if (!missing(main)) list(main), list(...)))
   if (!is.null(mod)) return(mod)
   dots = list(...)
   if (length(dots)) {
-    chart$chart_title = c(list(title = title), dots)
+    chart$chart_title = c(list(title = main), dots)
   } else {
-    chart$chart_title = title
+    chart$chart_title = main
   }
+  chart
+}
+
+#' Add Labels to the Last Mark
+#'
+#' Append a label configuration to the most recently added mark. Can be called
+#' multiple times to add several label layers. When the first argument is not a
+#' `g2` object or `NULL`, the call is dispatched to [base::labels()].
+#'
+#' @param chart A `g2` object, `NULL` (for deferred use with `+`), or any
+#'   object to be passed to [base::labels()].
+#' @param ... Label options such as `text` (channel name as `~col` or
+#'   `'col'`), `position`, `formatter`, `style`, or arguments passed to
+#'   [base::labels()].
+#' @return The modified `g2` object, or the result of [base::labels()].
+#' @export
+#' @examples
+#' df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
+#' g2(df, y ~ x) |>
+#'   labels(text = ~ y, position = 'inside')
+labels = function(chart = NULL, ...) {
+  if (!is.null(chart) && !inherits(chart, 'g2') && !inherits(chart, 'g2_mod'))
+    return(base::labels(chart, ...))
+  mod = check_chart(labels, chart, list(...))
+  if (!is.null(mod)) return(mod)
+  was_empty = !length(chart$layers)
+  if (was_empty) chart = ensure_mark(chart)
+  n = if (was_empty) 1L else length(chart$layers)
+  chart$layers[[n]]$labels = c(chart$layers[[n]]$labels, list(as_vars(list(...))))
   chart
 }
 
@@ -171,30 +208,6 @@ tooltip = function(chart = NULL, ...) {
   }
   cur = if (is.list(chart$interactions[['tooltip']])) chart$interactions[['tooltip']] else list()
   chart$interactions[['tooltip']] = modifyList(cur, args)
-  chart
-}
-
-#' Add Labels to the Last Mark
-#'
-#' Append a label configuration to the most recently added mark. Can be called
-#' multiple times to add several label layers.
-#'
-#' @param chart A `g2` object.
-#' @param ... Label options such as `text` (channel name as `~col` or
-#'   `'col'`), `position`, `formatter`, `style`.
-#' @return The modified `g2` object.
-#' @export
-#' @examples
-#' df = data.frame(x = c('A', 'B', 'C'), y = c(3, 7, 2))
-#' g2(df, y ~ x) |>
-#'   label(text = ~ y, position = 'inside')
-label = function(chart = NULL, ...) {
-  mod = check_chart(label, chart, list(...))
-  if (!is.null(mod)) return(mod)
-  was_empty = !length(chart$layers)
-  if (was_empty) chart = ensure_mark(chart)
-  n = if (was_empty) 1L else length(chart$layers)
-  chart$layers[[n]]$labels = c(chart$layers[[n]]$labels, list(as_vars(list(...))))
   chart
 }
 
