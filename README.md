@@ -1,5 +1,13 @@
 # gglite
 
+<!-- badges: start -->
+
+[![R-CMD-check](https://github.com/yihui/gglite/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/yihui/gglite/actions/workflows/R-CMD-check.yaml)
+[![gglite on
+r-universe](https://yihui.r-universe.dev/badges/gglite)](https://yihui.r-universe.dev/gglite)
+
+<!-- badges: end -->
+
 > **Experimental** — this package is still under active development. The API may
 > change and it has been hurting my brain badly. Feedback welcome!
 
@@ -22,5 +30,5 @@ You can also try the package without installing in the package playground:
 devices, thanks to webR). See the package site (<https://pkg.yihui.org/gglite/>)
 for examples and documentation.
 
-R Markdown, [litedown](#0), Quarto, Jupyter, Shiny, and standalone HTML previews
-(in the browser) are all supported.
+R Markdown, [litedown](https://github.com/yihui/litedown), Quarto, Jupyter,
+Shiny, and standalone HTML previews (in the browser) are all supported.
