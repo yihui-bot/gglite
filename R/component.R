@@ -103,23 +103,31 @@ legend_opacity = function(chart = NULL, ...) legend_(chart, 'opacity', ...)
 
 #' Set the Chart Title
 #'
-#' Set the chart title and subtitle, as well as their styles. When the first
-#' argument is not a `g2` object or a title string, the call is dispatched to
-#' [graphics::title()].
+#' Set the chart title and subtitle, as well as their styles.
 #'
-#' @param chart A `g2` object, a title string (for deferred use with `+`), or
-#'   any object to be passed to [graphics::title()].
+#' When called as `title('string')` with an active graphics device that already
+#' has a plot drawn (i.e., `dev.cur() > 1` and `!par('page')`), the call is
+#' dispatched to [graphics::title()].  Otherwise a deferred modifier is
+#' created so it can be used in a `|>` pipeline.
+#'
+#' **Note for `+` users:** `g2_chart + title('string')` is ambiguous when a
+#' graphics device is active.  Use the named argument explicitly to guarantee
+#' gglite behavior: `g2_chart + title(main = 'string')`.  With `|>` there is
+#' no ambiguity because the chart object is passed as the first argument.
+#'
+#' @param chart A `g2` object passed via `|>`, or `NULL` when using `+`.
 #' @param main Title text string.
 #' @param ... Additional title options such as `subtitle`, `align`, `style`,
-#'   or arguments passed to [graphics::title()].
+#'   or arguments forwarded to [graphics::title()].
 #' @return The modified `g2` object, or the result of [graphics::title()].
 #' @export
 #' @examples
 #' g2(mtcars, hp ~ mpg) |>
 #'   title('Motor Trend Cars', subtitle = 'mpg vs hp')
+#' @importFrom grDevices dev.cur
+#' @importFrom graphics par
 title = function(chart = NULL, main, ...) {
-  if (!is.null(chart) && !inherits(chart, 'g2') &&
-      !inherits(chart, 'g2_mod') && !is.character(chart))
+  if (is.character(chart) && dev.cur() > 1L && !par('page'))
     return(graphics::title(main = chart, ...))
   mod = check_chart(title, chart, c(if (!missing(main)) list(main), list(...)))
   if (!is.null(mod)) return(mod)
@@ -150,8 +158,7 @@ title = function(chart = NULL, main, ...) {
 #' g2(df, y ~ x) |>
 #'   labels(text = ~ y, position = 'inside')
 labels = function(chart = NULL, ...) {
-  if (!is.null(chart) && !inherits(chart, 'g2') && !inherits(chart, 'g2_mod'))
-    return(base::labels(chart, ...))
+  if (not_g2(chart)) return(base::labels(chart, ...))
   mod = check_chart(labels, chart, list(...))
   if (!is.null(mod)) return(mod)
   was_empty = !length(chart$layers)

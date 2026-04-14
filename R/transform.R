@@ -56,8 +56,7 @@
 #' # Base R dispatch: add a computed column to a data frame
 #' transform(mtcars, kpl = mpg * 0.4251)
 transform = function(chart = NULL, type, ...) {
-  if (!is.null(chart) && !inherits(chart, 'g2') &&
-      !inherits(chart, 'g2_mod') && !is.character(chart))
+  if (not_g2(chart) && !is.character(chart))
     return(base::transform(chart, ...))
   mod = check_chart(transform, chart, c(if (!missing(type)) list(type), list(...)))
   if (!is.null(mod)) return(mod)

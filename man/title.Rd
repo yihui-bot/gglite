@@ -7,21 +7,29 @@
 title(chart = NULL, main, ...)
 }
 \arguments{
-\item{chart}{A \code{g2} object, a title string (for deferred use with \code{+}), or
-any object to be passed to \code{\link[graphics:title]{graphics::title()}}.}
+\item{chart}{A \code{g2} object passed via \verb{|>}, or \code{NULL} when using \code{+}.}
 
 \item{main}{Title text string.}
 
 \item{...}{Additional title options such as \code{subtitle}, \code{align}, \code{style},
-or arguments passed to \code{\link[graphics:title]{graphics::title()}}.}
+or arguments forwarded to \code{\link[graphics:title]{graphics::title()}}.}
 }
 \value{
 The modified \code{g2} object, or the result of \code{\link[graphics:title]{graphics::title()}}.
 }
 \description{
-Set the chart title and subtitle, as well as their styles. When the first
-argument is not a \code{g2} object or a title string, the call is dispatched to
-\code{\link[graphics:title]{graphics::title()}}.
+Set the chart title and subtitle, as well as their styles.
+}
+\details{
+When called as \code{title('string')} with an active graphics device that already
+has a plot drawn (i.e., \code{dev.cur() > 1} and \code{!par('page')}), the call is
+dispatched to \code{\link[graphics:title]{graphics::title()}}.  Otherwise a deferred modifier is
+created so it can be used in a \verb{|>} pipeline.
+
+\strong{Note for \code{+} users:} \code{g2_chart + title('string')} is ambiguous when a
+graphics device is active.  Use the named argument explicitly to guarantee
+gglite behavior: \code{g2_chart + title(main = 'string')}.  With \verb{|>} there is
+no ambiguity because the chart object is passed as the first argument.
 }
 \examples{
 g2(mtcars, hp ~ mpg) |>

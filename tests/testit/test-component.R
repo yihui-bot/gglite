@@ -21,12 +21,6 @@ assert('title() with subtitle works', {
   (chart$chart_title$subtitle %==% 'mpg vs hp')
 })
 
-assert('title() dispatches to graphics::title for non-g2 objects', {
-  # A list is not a g2/g2_mod/character — should dispatch to graphics::title()
-  # We just test it doesn't error (graphics::title() is a side-effect function)
-  (is.function(title))
-})
-
 assert('labels() adds labels to last mark', {
   df = data.frame(x = c('A', 'B'), y = c(1, 2))
   chart = g2(df, y ~ x) |> mark_interval() |> labels(text = ~ y)
