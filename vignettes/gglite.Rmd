@@ -436,8 +436,7 @@ g2(mtcars, hp ~ mpg) |>
 ### Tooltips
 
 ```{r}
-g2(mtcars, hp ~ mpg) |>
-  tooltip(crosshairs = TRUE)
+g2(sunspot.year) |> tooltip(crosshairs = TRUE)
 ```
 
 ### Labels
