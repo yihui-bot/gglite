@@ -108,6 +108,7 @@ collect_vars = function(chart) {
   vars2 = lapply(chart$layers, function(layer) {
     if (!is.data.frame(layer$data)) c(
       layer$encode, lapply(layer$labels, `[[`, 'text'),
+      if (is.list(layer$tooltip)) layer$tooltip$title,
       data_transform_vars(layer$data)
     )
   })
